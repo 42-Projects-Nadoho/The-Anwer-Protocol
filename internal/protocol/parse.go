@@ -2,11 +2,11 @@ package protocol
 
 
 import (
-	"string"
+	"strings"
 )
 
 func Parse(input string) Command {
-	cleanInput:= string.TrimSpac(input)
+	cleanInput:= strings.TrimSpace(input)
 	parts:= strings.Fields(cleanInput)
 
 	if len(parts) == 0 {
