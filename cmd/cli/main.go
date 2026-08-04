@@ -21,6 +21,16 @@ func main() {
 
 	fmt.Println("Connected! You can now type your commands.")
 
+	go func() {
+		serverScanner := bufio.NewScanner(conn)
+		for serverScanner.Scan() {
+			fmt.Printf("\r%s\n> ", serverScanner.Text())
+		}
+		if err := serverScanner.Err(); err != nil {
+			fmt.Fprintf(os.Stderr, "Error reading from server: %v\n", err)
+		}
+	}()
+
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {

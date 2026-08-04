@@ -1,15 +1,19 @@
 package main
 
 import (
-	"bufio"
+	"os"
 	"fmt"
 	"net"
-	"os"
+	"the_answer_protocol/internal/server"
 )
 
 
 func main() {
+	hub := server.NewHub()
+	go hub.Run()
+
 	fmt.Println("Starting server on port 8080......")
+
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Lancement Error: %v\n", err)
@@ -26,21 +30,6 @@ func main() {
 		}
 
 		fmt.Printf("New client connectd from : %s\n", conn.RemoteAddr())
-		go manageClient(conn)
+		server.ServeClient(hub, conn)
 	}
-}
-
-
-func manageClient(conn net.Conn) {
-	scanner := bufio.NewScanner(conn)
-
-	for scanner.Scan() {
-		texteRecu := scanner.Text()
-		fmt.Printf("[Message arrived] : %s\n", texteRecu)
-	}
-	if err := scanner.Err(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading input: %v\n", err)
-	}
-	fmt.Println("The client is deconected.")
-	conn.Close()
 }
