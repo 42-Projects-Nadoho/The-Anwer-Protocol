@@ -1,20 +1,25 @@
 package server
 
+import (
+	"the_answer_protocol/internal/world"
+)
 
 type Hub struct {
 	clients map[*Client]bool
-	broadcast chan []byte
-	register chan *Client
-	unregister chan *Client
+	broadcast	chan []byte
+	register	chan *Client
+	unregister	chan *Client
+	worldMap	*world.World
 }
 
 
-func NewHub() *Hub {
+func NewHub(w *world.World) *Hub {
 	return &Hub{
-		broadcast:  make(chan []byte),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		clients:    make(map[*Client]bool),
+		broadcast:	make(chan []byte),
+		register:	make(chan *Client),
+		unregister:	make(chan *Client),
+		clients:	make(map[*Client]bool),
+		worldMap:	w,
 	}
 }
 

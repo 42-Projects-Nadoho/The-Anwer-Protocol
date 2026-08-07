@@ -5,11 +5,23 @@ import (
 	"fmt"
 	"net"
 	"the_answer_protocol/internal/server"
+	"the_answer_protocol/internal/world"
 )
 
 
 func main() {
-	hub := server.NewHub()
+	fmt.Println("Loading world data...")
+	gameWorld, err := world.LoadWorld("data/world.yaml")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Fatal error loading world: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Printf(
+		"World loaded successfully! (%d rooms found)\n",
+		len(gameWorld.Rooms),
+	)
+
+	hub := server.NewHub(gameWorld)
 	go hub.Run()
 
 	fmt.Println("Starting server on port 8080......")

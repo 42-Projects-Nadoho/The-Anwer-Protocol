@@ -11,7 +11,7 @@ type Room struct {
 	ID			string				`yaml:"id"`
 	Name		string				`yaml:"name"`
 	Description	string				`yaml:"description"`
-	Exit		map[string]string	`yaml:"exits"`
+	Exits		map[string]string	`yaml:"exits"`
 }
 
 type World struct {
