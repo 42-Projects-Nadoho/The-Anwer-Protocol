@@ -1,14 +1,28 @@
 package protocol
 
+import "fmt"
 
-// The class Command represent an action parsing from the player entry
 type Command struct {
-	Action	string
-	Args	[]string
+	Action string
+	Args   []string
+	// Raw preserves multi-word arguments that Args would split apart.
+	Raw string
 }
 
-// The class Reponse represent a response from an action
-type Reponse struct {
-	Type	string
-	Payload	string
+func FormatOK(data string) string {
+	if data == "" {
+		return "OK\n"
+	}
+	return "OK " + data + "\n"
+}
+
+func FormatErr(code int, message string) string {
+	return fmt.Sprintf("ERR %d %s\n", code, message)
+}
+
+func FormatEvt(category, evtType, data string) string {
+	if data == "" {
+		return fmt.Sprintf("EVT %s %s\n", category, evtType)
+	}
+	return fmt.Sprintf("EVT %s %s %s\n", category, evtType, data)
 }
