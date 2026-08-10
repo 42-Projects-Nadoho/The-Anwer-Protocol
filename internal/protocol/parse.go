@@ -1,25 +1,33 @@
 package protocol
 
-
 import (
 	"strings"
 )
 
 func Parse(input string) Command {
-	cleanInput:= strings.TrimSpace(input)
-	parts:= strings.Fields(cleanInput)
+	cleanInput := strings.TrimSpace(input)
 
-	if len(parts) == 0 {
+	if cleanInput == "" {
 		return Command{
-			Action:	"UNKNOWN",
-			Args:	[]string{},
+			Action: "UNKNOWN",
+			Args:   []string{},
 		}
 	}
-	action := strings.ToUpper(parts[0])
-	args := parts[1:]
+
+	sepIdx := strings.IndexAny(cleanInput, " \t")
+	if sepIdx == -1 {
+		return Command{
+			Action: strings.ToUpper(cleanInput),
+			Args:   []string{},
+		}
+	}
+
+	action := strings.ToUpper(cleanInput[:sepIdx])
+	rest := strings.TrimSpace(cleanInput[sepIdx+1:])
 
 	return Command{
-		Action:	action,
-		Args:	args,
+		Action: action,
+		Args:   strings.Fields(rest),
+		Raw:    rest,
 	}
 }

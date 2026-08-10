@@ -21,6 +21,30 @@ func main() {
 
 	fmt.Println("Connected! You can now type your commands.")
 
+	shutdown := make(chan struct{})
+	readerDone := make(chan struct{})
+
+	go func() {
+		defer close(readerDone)
+		serverScanner := bufio.NewScanner(conn)
+		for serverScanner.Scan() {
+			select {
+			case <-shutdown:
+				return
+			default:
+			}
+			fmt.Printf("\r%s\n> ", serverScanner.Text())
+		}
+		if err := serverScanner.Err(); err != nil {
+			select {
+			case <-shutdown:
+				return
+			default:
+			}
+			fmt.Fprintf(os.Stderr, "Error reading from server: %v\n", err)
+		}
+	}()
+
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
@@ -35,6 +59,9 @@ func main() {
 
 		if cmd.Action == "QUIT" {
 			fmt.Println("Goodbye!")
+			close(shutdown)
+			_ = conn.Close()
+			<-readerDone
 			break
 		}
 
