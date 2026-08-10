@@ -1,2 +1,6 @@
 # Subject files
 protocol-rfc.html
+*.pdf
+
+# Build output
+/bin/
