@@ -21,26 +21,15 @@ func main() {
 
 	fmt.Println("Connected! You can now type your commands.")
 
-	shutdown := make(chan struct{})
 	readerDone := make(chan struct{})
 
 	go func() {
 		defer close(readerDone)
 		serverScanner := bufio.NewScanner(conn)
 		for serverScanner.Scan() {
-			select {
-			case <-shutdown:
-				return
-			default:
-			}
 			fmt.Printf("\r%s\n> ", serverScanner.Text())
 		}
 		if err := serverScanner.Err(); err != nil {
-			select {
-			case <-shutdown:
-				return
-			default:
-			}
 			fmt.Fprintf(os.Stderr, "Error reading from server: %v\n", err)
 		}
 	}()
@@ -57,19 +46,18 @@ func main() {
 		rawText := scanner.Text()
 		cmd := protocol.Parse(rawText)
 
-		if cmd.Action == "QUIT" {
-			fmt.Println("Goodbye!")
-			close(shutdown)
-			_ = conn.Close()
-			<-readerDone
-			break
-		}
-
 		if cmd.Action == "UNKNOWN" {
 			continue
 		}
 
 		fmt.Fprintf(conn, "%s\n", rawText)
+
+		if cmd.Action == "QUIT" {
+			// Server closes the connection after replying; wait for that.
+			fmt.Println("Goodbye!")
+			<-readerDone
+			break
+		}
 	}
 
 	if err := scanner.Err(); err != nil {
