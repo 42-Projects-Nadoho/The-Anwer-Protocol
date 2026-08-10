@@ -185,6 +185,24 @@ func (h *Hub) JoinGroup(c *Client, targetUsername string) (string, bool) {
 }
 
 
+func (h *Hub) InviteGroup(c *Client, targetUsername string) bool {
+	ok := false
+	h.do(func() {
+		target, exists := h.usernames[targetUsername]
+		if !exists {
+			return
+		}
+		evt := []byte(protocol.FormatEvt("GROUP", "INVITE", c.username))
+		select {
+		case target.send <- evt:
+		default:
+		}
+		ok = true
+		})
+	return ok
+}
+
+
 func (h *Hub) LeaveGroup(c *Client) bool {
 	ok := false
 	h.do(func() {
