@@ -164,11 +164,6 @@ func (h *Hub) JoinGroup(c *Client, targetUsername string) (string, bool) {
 			return
 		}
 
-		if c.groupName == groupName {
-			ok = true
-			return
-		}
-
 		members, exists := h.groups[groupName]
 		if !exists {
 			return
