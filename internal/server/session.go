@@ -12,10 +12,11 @@ type Client struct {
 	conn net.Conn
 	send chan []byte
 
-	username           string
-	authenticated      bool
-	currentRoomID      string
-	groupName string
+	username      string
+	authenticated bool
+	currentRoomID string
+	groupName     string
+	isInvited     []string
 }
 
 func (c *Client) readPump() {
@@ -109,6 +110,7 @@ func ServeClient(hub *Hub, conn net.Conn) {
 		conn:          conn,
 		send:          make(chan []byte, 256),
 		currentRoomID: "town_square",
+		isInvited:     []string{},
 	}
 
 	client.hub.register <- client

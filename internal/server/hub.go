@@ -147,25 +147,24 @@ func (h *Hub) CreateGroup(c *Client) string {
 	return groupName
 }
 
-func (h *Hub) JoinGroup(c *Client, targetUsername string) (string, bool) {
-	var (
-		groupName string
-		ok        bool
-	)
+func (h *Hub) JoinGroup(c *Client, groupID string) (string, bool) {
+	ok := false
 
 	h.do(func() {
-		target, exists := h.usernames[targetUsername]
+		members, exists := h.groups[groupID]
 		if !exists {
 			return
 		}
 
-		groupName = target.groupName
-		if groupName == "" {
-			return
+		invited := false
+		for i, g := range c.isInvited {
+			if g == groupID {
+				invited = true
+				c.isInvited = append(c.isInvited[:i], c.isInvited[i+1:]...)
+				break
+			}
 		}
-
-		members, exists := h.groups[groupName]
-		if !exists {
+		if !invited {
 			return
 		}
 
@@ -177,13 +176,12 @@ func (h *Hub) JoinGroup(c *Client, targetUsername string) (string, bool) {
 			}
 		}
 		members[c] = true
-		c.groupName = groupName
+		c.groupName = groupID
 		ok = true
 	})
 
-	return groupName, ok
+	return groupID, ok
 }
-
 
 func (h *Hub) InviteGroup(c *Client, targetUsername string) bool {
 	ok := false
@@ -192,16 +190,21 @@ func (h *Hub) InviteGroup(c *Client, targetUsername string) bool {
 		if !exists {
 			return
 		}
-		evt := []byte(protocol.FormatEvt("GROUP", "INVITE", c.username))
+		for _, g := range target.isInvited {
+			if g == c.groupName {
+				return
+			}
+		}
+		evt := []byte(protocol.FormatEvt("GROUP", "INVITE", c.username+" "+c.groupName))
+		target.isInvited = append(target.isInvited, c.groupName)
 		select {
 		case target.send <- evt:
 		default:
 		}
 		ok = true
-		})
+	})
 	return ok
 }
-
 
 func (h *Hub) LeaveGroup(c *Client) bool {
 	ok := false
@@ -225,4 +228,18 @@ func (h *Hub) LeaveGroup(c *Client) bool {
 		}
 	})
 	return ok
+}
+
+func (h *Hub) BroadcastGroup(groupID string, message []byte, exclude *Client) {
+	h.do(func() {
+		for member := range h.groups[groupID] {
+			if member == exclude {
+				continue
+			}
+			select {
+			case member.send <- message:
+			default:
+			}
+		}
+	})
 }
