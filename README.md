@@ -1,7 +1,7 @@
 *This project has been created as part of the 42 curriculum by nadoho, spacotto.*
 
 
-![TAP_KH_Images](/docs/images/image_for_tap.jpg)
+![TAP_KH_Images](/data/images/image_for_tap.jpg)
 ## Description
 
 TAP (The Answer Protocol) is a small shared-world multiplayer text

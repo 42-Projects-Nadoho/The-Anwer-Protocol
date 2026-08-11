@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "tap-gui-web",
+      "runtimeExecutable": "go",
+      "runtimeArgs": ["run", "./cmd/gui"],
+      "port": 8081
+    }
+  ]
+}
