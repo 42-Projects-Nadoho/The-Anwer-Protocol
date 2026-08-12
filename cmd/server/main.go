@@ -1,13 +1,12 @@
 package main
 
 import (
-	"os"
 	"fmt"
 	"net"
+	"os"
 	"the_answer_protocol/internal/server"
 	"the_answer_protocol/internal/world"
 )
-
 
 func main() {
 	fmt.Println("Loading world data...")

@@ -1,13 +1,10 @@
 package server
 
-
 import (
+	"bufio"
 	"fmt"
 	"net"
-	"bufio"
-	"strings"
 	"the_answer_protocol/internal/protocol"
-	"the_answer_protocol/internal/world"
 )
 
 type Client struct {
@@ -15,11 +12,25 @@ type Client struct {
 	conn net.Conn
 	send chan []byte
 
+	username      string
+	authenticated bool
 	currentRoomID string
+	groupName     string
+	isInvited     []string
 }
 
 func (c *Client) readPump() {
 	defer func() {
+		if c.authenticated {
+			if c.groupName != "" {
+				c.hub.LeaveGroup(c)
+			}
+			c.hub.BroadcastRoom(
+				c.currentRoomID,
+				[]byte(protocol.FormatEvt("ROOM", "PRESENCE LEAVE", c.username)),
+				c,
+			)
+		}
 		c.hub.unregister <- c
 		c.conn.Close()
 	}()
@@ -28,33 +39,41 @@ func (c *Client) readPump() {
 
 	for scanner.Scan() {
 		text := scanner.Text()
-
 		cmd := protocol.Parse(text)
 
+		if cmd.Action != "CONNECT" && cmd.Action != "QUIT" && !c.authenticated {
+			c.send <- []byte(protocol.FormatErr(protocol.ErrNotAuthenticated, "NOT_AUTHENTICATED"))
+			continue
+		}
+
 		switch cmd.Action {
+		case "CONNECT":
+			c.handleConnect(cmd.Args)
+
 		case "LOOK":
 			c.handleLook()
 
 		case "MOVE":
-			if len(cmd.Args) > 0 {
-				c.handleMove(cmd.Args[0])
-			} else {
-				c.send <- []byte("Move where? (e.g., MOVE north)\n")
-			}
+			c.handleMove(cmd.Args)
 
 		case "CHAT":
-			message := fmt.Appendf(
-				nil,
-				"[%s]: %s\n",
-				c.conn.RemoteAddr(),
-				text,
-			)
-			c.hub.broadcast <- message
+			c.handleChat(cmd)
+
+		case "WHO":
+			c.handleWho()
+
+		case "QUIT":
+			c.handleQuit()
+			return
+
+		case "GROUP":
+			c.handleGroup(cmd.Args)
 
 		case "UNKNOWN":
-			c.send <- []byte(
-				"Unknown command. Try LOOK, MOVE <direction>, or CHAT <message>\n",
-			)
+			c.send <- []byte(protocol.FormatErr(protocol.ErrUnknownCommand, "UNKNOWN_COMMAND"))
+
+		default:
+			c.send <- []byte(protocol.FormatErr(protocol.ErrUnknownCommand, "UNKNOWN_COMMAND"))
 		}
 	}
 
@@ -91,70 +110,13 @@ func ServeClient(hub *Hub, conn net.Conn) {
 		conn:          conn,
 		send:          make(chan []byte, 256),
 		currentRoomID: "town_square",
+		isInvited:     []string{},
 	}
 
 	client.hub.register <- client
 
 	go client.writePump()
 	go client.readPump()
-}
 
-func (c *Client) handleLook() {
-	var currentRoom *world.Room
-	for _, r := range c.hub.worldMap.Rooms {
-		if r.ID == c.currentRoomID {
-			currentRoom = &r
-			break
-		}
-	}
-
-	if currentRoom == nil {
-		c.send <- []byte("You are floating in the void...\n")
-		return
-	}
-
-	response := fmt.Sprintf(
-		"\n--- %s ---\n%s\n",
-		currentRoom.Name,
-		currentRoom.Description,
-	)
-
-	if len(currentRoom.Exits) > 0 {
-		response += "Exits: "
-		for direction := range currentRoom.Exits {
-			response += direction + " "
-		}
-		response += "\n"
-	}
-
-	c.send <- []byte(response)
-}
-
-
-func (c *Client) handleMove(direction string) {
-	direction = strings.ToLower(strings.TrimSpace(direction))
-
-	var currentRoom *world.Room
-	for _, r := range c.hub.worldMap.Rooms {
-		if r.ID == c.currentRoomID {
-			currentRoom = &r
-			break
-		}
-	}
-
-	if currentRoom == nil {
-		c.send <- []byte("Error: Current room not found.\n")
-		return
-	}
-
-	nextRoomID, exists := currentRoom.Exits[direction]
-	if !exists {
-		c.send <- []byte("You cannot go that way.\n")
-		return
-	}
-
-	c.currentRoomID = nextRoomID
-	c.send <- fmt.Appendf(nil, "You move %s.\n", direction)
-
-	c.handleLook()
+	client.send <- []byte(protocol.FormatOK("hello proto=1"))
 }
