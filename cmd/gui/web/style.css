@@ -51,3 +51,11 @@ body {
   font-weight: bold;
   cursor: pointer;
 }
+
+#status {
+  min-height: 1.2em;
+}
+
+#status.error {
+  color: #ff8080;
+}

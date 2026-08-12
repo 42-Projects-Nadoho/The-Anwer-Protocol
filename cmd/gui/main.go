@@ -10,12 +10,21 @@ import (
 const addr = ":8081"
 
 func main() {
-	http.Handle("/", http.FileServer(http.Dir("cmd/gui/web")))
-	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("data"))))
+	http.Handle("/", noCache(http.FileServer(http.Dir("cmd/gui/web"))))
+	http.Handle("/assets/", noCache(http.StripPrefix("/assets/", http.FileServer(http.Dir("data")))))
 
 	fmt.Println("Listening on " + addr)
 	go openBrowser("http://localhost" + addr)
 	http.ListenAndServe(addr, nil)
+}
+
+// noCache forces the browser to always re-fetch instead of serving a
+// stale cached copy of the page/assets while we're actively editing them.
+func noCache(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store")
+		next.ServeHTTP(w, r)
+	})
 }
 
 // openBrowser best-effort launches the system's default browser. If it
