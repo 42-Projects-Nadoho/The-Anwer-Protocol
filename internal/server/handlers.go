@@ -10,21 +10,21 @@ import (
 
 func (c *Client) handleConnect(args []string) {
 	if c.authenticated {
-		c.send <- []byte(protocol.FormatErr(protocol.ErrConnectionFailed, "ALREADY_CONNECTED"))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrConnectionFailed, "ALREADY_CONNECTED")))
 		return
 	}
 	if len(args) == 0 {
-		c.send <- []byte(protocol.FormatErr(protocol.ErrConnectionFailed, "USERNAME_REQUIRED"))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrConnectionFailed, "USERNAME_REQUIRED")))
 		return
 	}
 
 	username := args[0]
 	if !c.hub.TryConnect(c, username) {
-		c.send <- []byte(protocol.FormatErr(protocol.ErrNameInUse, "NAME_IN_USE"))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrNameInUse, "NAME_IN_USE")))
 		return
 	}
 
-	c.send <- []byte(protocol.FormatOK("connected"))
+	c.reply([]byte(protocol.FormatOK("connected")))
 
 	c.hub.BroadcastRoom(
 		c.currentRoomID,
@@ -51,7 +51,7 @@ type lookResponse struct {
 func (c *Client) handleLook() {
 	room, ok := c.hub.worldMap.RoomByID(c.currentRoomID)
 	if !ok {
-		c.send <- []byte(protocol.FormatErr(protocol.ErrConnectionFailed, "ROOM_NOT_FOUND"))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrConnectionFailed, "ROOM_NOT_FOUND")))
 		return
 	}
 
@@ -69,29 +69,29 @@ func (c *Client) handleLook() {
 
 	data, err := json.Marshal(resp)
 	if err != nil {
-		c.send <- []byte(protocol.FormatErr(protocol.ErrSendFailed, "SERIALIZATION_FAILED"))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrSendFailed, "SERIALIZATION_FAILED")))
 		return
 	}
 
-	c.send <- []byte(protocol.FormatOK(string(data)))
+	c.reply([]byte(protocol.FormatOK(string(data))))
 }
 
 func (c *Client) handleMove(args []string) {
 	if len(args) == 0 {
-		c.send <- []byte(protocol.FormatErr(protocol.ErrNoExit, "NO_EXIT"))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrNoExit, "NO_EXIT")))
 		return
 	}
 	direction := strings.ToLower(strings.TrimSpace(args[0]))
 
 	room, ok := c.hub.worldMap.RoomByID(c.currentRoomID)
 	if !ok {
-		c.send <- []byte(protocol.FormatErr(protocol.ErrConnectionFailed, "ROOM_NOT_FOUND"))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrConnectionFailed, "ROOM_NOT_FOUND")))
 		return
 	}
 
 	nextRoomID, exists := room.Exits[direction]
 	if !exists {
-		c.send <- []byte(protocol.FormatErr(protocol.ErrNoExit, "NO_EXIT"))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrNoExit, "NO_EXIT")))
 		return
 	}
 
@@ -103,7 +103,7 @@ func (c *Client) handleMove(args []string) {
 	)
 
 	c.currentRoomID = nextRoomID
-	c.send <- []byte(protocol.FormatOK("room=" + nextRoomID))
+	c.reply([]byte(protocol.FormatOK("room=" + nextRoomID)))
 
 	c.hub.BroadcastRoom(
 		nextRoomID,
@@ -114,7 +114,7 @@ func (c *Client) handleMove(args []string) {
 
 func (c *Client) handleChat(cmd protocol.Command) {
 	if len(cmd.Args) < 2 {
-		c.send <- []byte(protocol.FormatErr(protocol.ErrUnknownCommand, "USAGE: CHAT <scope> <message>"))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrUnknownCommand, "USAGE: CHAT <scope> <message>")))
 		return
 	}
 
@@ -132,31 +132,33 @@ func (c *Client) handleChat(cmd protocol.Command) {
 
 	case "GROUP":
 		if c.groupName == "" {
-			c.send <- []byte(protocol.FormatErr(protocol.ErrNotInGroup, "NOT_IN_GROUP"))
+			c.reply([]byte(protocol.FormatErr(protocol.ErrNotInGroup, "NOT_IN_GROUP")))
 			return
 		}
 		c.hub.BroadcastGroup(c.groupName, evt, nil)
 
 	default:
-		c.send <- []byte(protocol.FormatErr(protocol.ErrUnknownCommand, "UNKNOWN_SCOPE"))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrUnknownCommand, "UNKNOWN_SCOPE")))
 		return
 	}
 
-	c.send <- []byte(protocol.FormatOK(""))
+	c.reply([]byte(protocol.FormatOK("")))
 }
 
 func (c *Client) handleWho() {
-	c.send <- []byte(protocol.FormatOK(fmt.Sprintf("players=%d", c.hub.PlayerCount())))
+	c.reply([]byte(protocol.FormatOK(fmt.Sprintf("players=%d", c.hub.PlayerCount()))))
 }
 
 func (c *Client) handleQuit() {
+	msg := []byte(protocol.FormatOK("bye"))
+	c.hub.logger.Info("response_sent", "username", c.username, "response", "OK bye")
 	// Direct write: guarantees delivery before readPump's deferred Close().
-	c.conn.Write([]byte(protocol.FormatOK("bye")))
+	c.conn.Write(msg)
 }
 
 func (c *Client) handleGroup(args []string) {
 	if len(args) == 0 {
-		c.send <- []byte(protocol.FormatErr(protocol.ErrUnknownCommand, "USAGE: GROUP <CREATE|INVITE|JOIN|LEAVE>"))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrUnknownCommand, "USAGE: GROUP <CREATE|INVITE|JOIN|LEAVE>")))
 		return
 	}
 	scope := strings.ToUpper(args[0])
@@ -164,48 +166,48 @@ func (c *Client) handleGroup(args []string) {
 	switch scope {
 	case "CREATE":
 		if c.groupName != "" {
-			c.send <- []byte(protocol.FormatErr(protocol.ErrAlreadyInGroup, "ALREADY_IN_GROUP"))
+			c.reply([]byte(protocol.FormatErr(protocol.ErrAlreadyInGroup, "ALREADY_IN_GROUP")))
 			return
 		}
 		groupID := c.hub.CreateGroup(c)
-		c.send <- []byte(protocol.FormatOK("group=" + groupID))
+		c.reply([]byte(protocol.FormatOK("group=" + groupID)))
 
 	case "LEAVE":
 		if c.groupName == "" {
-			c.send <- []byte(protocol.FormatErr(protocol.ErrNotInGroup, "NOT_IN_GROUP"))
+			c.reply([]byte(protocol.FormatErr(protocol.ErrNotInGroup, "NOT_IN_GROUP")))
 			return
 		}
 		c.hub.LeaveGroup(c)
-		c.send <- []byte(protocol.FormatOK(""))
+		c.reply([]byte(protocol.FormatOK("")))
 
 	case "INVITE":
 		if c.groupName == "" {
-			c.send <- []byte(protocol.FormatErr(protocol.ErrNotInGroup, "NOT_IN_GROUP"))
+			c.reply([]byte(protocol.FormatErr(protocol.ErrNotInGroup, "NOT_IN_GROUP")))
 			return
 		} else if len(args) < 2 {
-			c.send <- []byte(protocol.FormatErr(protocol.ErrUnknownCommand, "USAGE: GROUP INVITE <username>"))
+			c.reply([]byte(protocol.FormatErr(protocol.ErrUnknownCommand, "USAGE: GROUP INVITE <username>")))
 			return
 		} else {
 			c.hub.InviteGroup(c, args[1])
-			c.send <- []byte(protocol.FormatOK(""))
+			c.reply([]byte(protocol.FormatOK("")))
 		}
 
 	case "JOIN":
 		if c.groupName != "" {
-			c.send <- []byte(protocol.FormatErr(protocol.ErrAlreadyInGroup, "ALREADY_IN_GROUP"))
+			c.reply([]byte(protocol.FormatErr(protocol.ErrAlreadyInGroup, "ALREADY_IN_GROUP")))
 			return
 		} else if len(args) < 2 {
-			c.send <- []byte(protocol.FormatErr(protocol.ErrUnknownCommand, "USAGE: GROUP JOIN <group-id>"))
+			c.reply([]byte(protocol.FormatErr(protocol.ErrUnknownCommand, "USAGE: GROUP JOIN <group-id>")))
 			return
 		} else if groupID, ok := c.hub.JoinGroup(c, args[1]); ok {
-			c.send <- []byte(protocol.FormatOK("group=" + groupID))
+			c.reply([]byte(protocol.FormatOK("group=" + groupID)))
 			return
 		} else {
-			c.send <- []byte(protocol.FormatErr(protocol.ErrNotInGroup, "NOT_IN_GROUP"))
+			c.reply([]byte(protocol.FormatErr(protocol.ErrNotInGroup, "NOT_IN_GROUP")))
 		}
 
 	default:
-		c.send <- []byte(protocol.FormatErr(protocol.ErrUnknownCommand, "UNKNOWN_SCOPE"))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrUnknownCommand, "UNKNOWN_SCOPE")))
 		return
 	}
 }

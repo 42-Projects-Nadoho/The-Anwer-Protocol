@@ -2,13 +2,17 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"net"
 	"os"
+
 	"the_answer_protocol/internal/server"
 	"the_answer_protocol/internal/world"
 )
 
 func main() {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
 	fmt.Println("Loading world data...")
 	gameWorld, err := world.LoadWorld("data/world.yaml")
 	if err != nil {
@@ -20,7 +24,7 @@ func main() {
 		len(gameWorld.Rooms),
 	)
 
-	hub := server.NewHub(gameWorld)
+	hub := server.NewHub(gameWorld, logger)
 	go hub.Run()
 
 	fmt.Println("Starting server on port 8080......")
@@ -36,11 +40,10 @@ func main() {
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Acceptation Error: %v\n", err)
+			logger.Error("accept_error", "error", err.Error())
 			continue
 		}
 
-		fmt.Printf("New client connectd from : %s\n", conn.RemoteAddr())
 		server.ServeClient(hub, conn)
 	}
 }

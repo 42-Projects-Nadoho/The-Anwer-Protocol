@@ -10,14 +10,79 @@
     <source src="/assets/audios/loading_page.mp3" type="audio/mpeg">
   </audio>
 
-  <div class="panel">
-    <h1>TAP - Spadoho Quest</h1>
-    <form id="connect-form">
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username" placeholder="username">
-      <button type="submit">Connect</button>
-    </form>
-    <p id="status"></p>
+  <div id="login-view" class="login-view">
+    <div class="panel">
+      <h1>TAP - Spadoho Quest</h1>
+      <form id="connect-form">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="username">
+        <button type="submit">Connect</button>
+      </form>
+      <p id="status"></p>
+    </div>
+  </div>
+
+  <div id="game-view" class="game-view hidden">
+    <div class="top-bar">
+      <div id="room-name" class="room-name">-</div>
+      <div class="top-bar-actions">
+        <span id="who-count">Players online: ?</span>
+        <button id="who-btn" type="button">WHO</button>
+        <button id="quit-btn" type="button">QUIT</button>
+      </div>
+    </div>
+
+    <div class="main-area">
+      <aside class="side-panel">
+        <div class="card">
+          <h2>Room</h2>
+          <p id="room-desc"></p>
+          <p id="room-players"></p>
+          <div id="exits" class="exits"></div>
+        </div>
+
+        <div class="card">
+          <h2>Group</h2>
+          <p id="group-status">Not in a group.</p>
+          <div class="row">
+            <button id="group-create-btn" type="button">Create</button>
+            <button id="group-leave-btn" type="button">Leave</button>
+          </div>
+          <form id="group-invite-form" class="row">
+            <input type="text" id="invite-username" placeholder="username to invite">
+            <button type="submit">Invite</button>
+          </form>
+          <form id="group-join-form" class="row">
+            <input type="text" id="join-groupid" placeholder="group id (e.g. group-1)">
+            <button type="submit">Join</button>
+          </form>
+        </div>
+      </aside>
+
+      <section class="chat-area">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="chat">Chat</button>
+          <button class="tab-btn" data-tab="log">Log</button>
+        </div>
+
+        <div id="chat-tab" class="tab-panel active">
+          <pre id="chat-log" class="log-box"></pre>
+          <form id="chat-form" class="row">
+            <select id="chat-scope">
+              <option value="GLOBAL">Global</option>
+              <option value="ROOM">Room</option>
+              <option value="GROUP">Group</option>
+            </select>
+            <input type="text" id="chat-input" placeholder="Message...">
+            <button type="submit">Send</button>
+          </form>
+        </div>
+
+        <div id="log-tab" class="tab-panel">
+          <pre id="event-log" class="log-box"></pre>
+        </div>
+      </section>
+    </div>
   </div>
 
   <script src="/script.js"></script>

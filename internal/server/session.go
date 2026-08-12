@@ -2,8 +2,9 @@ package server
 
 import (
 	"bufio"
-	"fmt"
 	"net"
+	"time"
+
 	"the_answer_protocol/internal/protocol"
 )
 
@@ -12,11 +13,17 @@ type Client struct {
 	conn net.Conn
 	send chan []byte
 
+	remoteAddr    string
 	username      string
 	authenticated bool
 	currentRoomID string
 	groupName     string
 	isInvited     []string
+
+	// recentCmds tracks this client's own recent command timestamps, for
+	// the command-flooding abuse signal. Only readPump's own goroutine
+	// touches it, so no synchronization is needed.
+	recentCmds []time.Time
 }
 
 func (c *Client) readPump() {
@@ -31,6 +38,10 @@ func (c *Client) readPump() {
 				c,
 			)
 		}
+		c.hub.logger.Info("client_disconnected",
+			"username", c.username,
+			"remote_addr", c.remoteAddr,
+		)
 		c.hub.unregister <- c
 		c.conn.Close()
 	}()
@@ -41,8 +52,16 @@ func (c *Client) readPump() {
 		text := scanner.Text()
 		cmd := protocol.Parse(text)
 
+		c.hub.logger.Info("command_received",
+			"username", c.username,
+			"remote_addr", c.remoteAddr,
+			"action", cmd.Action,
+			"args", cmd.Args,
+		)
+		c.checkFlood()
+
 		if cmd.Action != "CONNECT" && cmd.Action != "QUIT" && !c.authenticated {
-			c.send <- []byte(protocol.FormatErr(protocol.ErrNotAuthenticated, "NOT_AUTHENTICATED"))
+			c.reply([]byte(protocol.FormatErr(protocol.ErrNotAuthenticated, "NOT_AUTHENTICATED")))
 			continue
 		}
 
@@ -70,18 +89,46 @@ func (c *Client) readPump() {
 			c.handleGroup(cmd.Args)
 
 		case "UNKNOWN":
-			c.send <- []byte(protocol.FormatErr(protocol.ErrUnknownCommand, "UNKNOWN_COMMAND"))
+			c.reply([]byte(protocol.FormatErr(protocol.ErrUnknownCommand, "UNKNOWN_COMMAND")))
 
 		default:
-			c.send <- []byte(protocol.FormatErr(protocol.ErrUnknownCommand, "UNKNOWN_COMMAND"))
+			c.reply([]byte(protocol.FormatErr(protocol.ErrUnknownCommand, "UNKNOWN_COMMAND")))
 		}
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Printf(
-			"Read error for client %s: %v\n",
-			c.conn.RemoteAddr(),
-			err,
+		c.hub.logger.Error("read_error",
+			"username", c.username,
+			"remote_addr", c.remoteAddr,
+			"error", err.Error(),
+		)
+	}
+}
+
+// checkFlood logs a warning if this client is sending commands faster than
+// a reasonable human-driven rate.
+func (c *Client) checkFlood() {
+	const (
+		window    = 1 * time.Second
+		threshold = 10
+	)
+	now := time.Now()
+	cutoff := now.Add(-window)
+
+	kept := c.recentCmds[:0]
+	for _, t := range c.recentCmds {
+		if t.After(cutoff) {
+			kept = append(kept, t)
+		}
+	}
+	c.recentCmds = append(kept, now)
+
+	if len(c.recentCmds) > threshold {
+		c.hub.logger.Warn("possible_abuse",
+			"type", "command_flooding",
+			"username", c.username,
+			"remote_addr", c.remoteAddr,
+			"commands_in_window", len(c.recentCmds),
 		)
 	}
 }
@@ -94,10 +141,10 @@ func (c *Client) writePump() {
 	for message := range c.send {
 		_, err := c.conn.Write(message)
 		if err != nil {
-			fmt.Printf(
-				"Write error for client %s: %v\n",
-				c.conn.RemoteAddr(),
-				err,
+			c.hub.logger.Error("write_error",
+				"username", c.username,
+				"remote_addr", c.remoteAddr,
+				"error", err.Error(),
 			)
 			return
 		}
@@ -105,10 +152,13 @@ func (c *Client) writePump() {
 }
 
 func ServeClient(hub *Hub, conn net.Conn) {
+	remoteAddr := conn.RemoteAddr().String()
+
 	client := &Client{
 		hub:           hub,
 		conn:          conn,
 		send:          make(chan []byte, 256),
+		remoteAddr:    remoteAddr,
 		currentRoomID: "town_square",
 		isInvited:     []string{},
 	}
@@ -118,5 +168,18 @@ func ServeClient(hub *Hub, conn net.Conn) {
 	go client.writePump()
 	go client.readPump()
 
-	client.send <- []byte(protocol.FormatOK("hello proto=1"))
+	hub.logger.Info("client_connected", "remote_addr", remoteAddr)
+
+	ip, _, err := net.SplitHostPort(remoteAddr)
+	if err == nil {
+		if attempts := hub.RecordConnection(ip); attempts > 5 {
+			hub.logger.Warn("possible_abuse",
+				"type", "rapid_connections",
+				"remote_addr", remoteAddr,
+				"attempts_in_window", attempts,
+			)
+		}
+	}
+
+	client.reply([]byte(protocol.FormatOK("hello proto=1")))
 }

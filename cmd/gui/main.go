@@ -1,21 +1,78 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"net"
 	"net/http"
 	"os/exec"
 	"runtime"
+
+	"github.com/gorilla/websocket"
 )
 
-const addr = ":8081"
+const (
+	addr           = ":8081"
+	gameServerAddr = "localhost:8080"
+)
+
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool { return true },
+}
 
 func main() {
 	http.Handle("/", noCache(http.FileServer(http.Dir("cmd/gui/web"))))
 	http.Handle("/assets/", noCache(http.StripPrefix("/assets/", http.FileServer(http.Dir("data")))))
+	http.HandleFunc("/ws", handleWS)
 
 	fmt.Println("Listening on " + addr)
 	go openBrowser("http://localhost" + addr)
 	http.ListenAndServe(addr, nil)
+}
+
+// handleWS bridges one browser WebSocket connection to one fresh TCP
+// connection against the real game server. It doesn't parse or understand
+// any of the RFC 42TAP traffic — it only relays lines in both directions;
+// the actual game server on the other end does all the real work.
+func handleWS(w http.ResponseWriter, r *http.Request) {
+	ws, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println("WebSocket upgrade failed:", err)
+		return
+	}
+	defer ws.Close()
+
+	game, err := net.Dial("tcp", gameServerAddr)
+	if err != nil {
+		ws.WriteMessage(websocket.TextMessage, []byte("ERR 900 SERVER_UNREACHABLE"))
+		return
+	}
+	defer game.Close()
+
+	done := make(chan struct{})
+
+	// game -> browser
+	go func() {
+		defer close(done)
+		scanner := bufio.NewScanner(game)
+		for scanner.Scan() {
+			if err := ws.WriteMessage(websocket.TextMessage, scanner.Bytes()); err != nil {
+				return
+			}
+		}
+	}()
+
+	// browser -> game
+	for {
+		_, msg, err := ws.ReadMessage()
+		if err != nil {
+			break
+		}
+		fmt.Fprintf(game, "%s\n", msg)
+	}
+
+	game.Close()
+	<-done
 }
 
 // noCache forces the browser to always re-fetch instead of serving a

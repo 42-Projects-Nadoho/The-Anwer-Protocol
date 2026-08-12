@@ -2,7 +2,10 @@ module the_answer_protocol
 
 go 1.25.1
 
-require gopkg.in/yaml.v3 v3.0.1
+require (
+	github.com/gorilla/websocket v1.5.3
+	gopkg.in/yaml.v3 v3.0.1
+)
 
 require (
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect

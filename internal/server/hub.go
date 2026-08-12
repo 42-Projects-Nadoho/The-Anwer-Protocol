@@ -2,6 +2,9 @@ package server
 
 import (
 	"fmt"
+	"log/slog"
+	"time"
+
 	"the_answer_protocol/internal/protocol"
 	"the_answer_protocol/internal/world"
 )
@@ -21,20 +24,49 @@ type Hub struct {
 	ops chan func()
 
 	worldMap *world.World
+	logger   *slog.Logger
+
+	// connAttempts tracks recent connection timestamps per IP, for the
+	// rapid-connections abuse signal.
+	connAttempts map[string][]time.Time
 }
 
-func NewHub(w *world.World) *Hub {
+func NewHub(w *world.World, logger *slog.Logger) *Hub {
 	return &Hub{
-		broadcast:  make(chan []byte),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		ops:        make(chan func()),
-		clients:    make(map[*Client]bool),
-		usernames:  make(map[string]*Client),
-		groups:     make(map[string]map[*Client]bool),
-		worldMap:   w,
-		nextGroup:  0,
+		broadcast:    make(chan []byte),
+		register:     make(chan *Client),
+		unregister:   make(chan *Client),
+		ops:          make(chan func()),
+		clients:      make(map[*Client]bool),
+		usernames:    make(map[string]*Client),
+		groups:       make(map[string]map[*Client]bool),
+		worldMap:     w,
+		logger:       logger,
+		nextGroup:    0,
+		connAttempts: make(map[string][]time.Time),
 	}
+}
+
+// RecordConnection registers a connection attempt from ip and returns how
+// many attempts from that same ip landed within the last window — a simple
+// rapid-connections abuse signal for the caller to act on.
+func (h *Hub) RecordConnection(ip string) int {
+	const window = 10 * time.Second
+	count := 0
+	h.do(func() {
+		now := time.Now()
+		cutoff := now.Add(-window)
+		var kept []time.Time
+		for _, t := range h.connAttempts[ip] {
+			if t.After(cutoff) {
+				kept = append(kept, t)
+			}
+		}
+		kept = append(kept, now)
+		h.connAttempts[ip] = kept
+		count = len(kept)
+	})
+	return count
 }
 
 func (h *Hub) Run() {
