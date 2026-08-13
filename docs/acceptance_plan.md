@@ -110,7 +110,12 @@ The server must handle:
 - [ ] `QUESTS` command: list active and completed quests
 
 ## Data Integrity
-- [ ] 
+- [ ] `LOOK` outputs:
+  - [ ] are valid JSON
+  - [ ] contain consistent IDs
+  - [ ] match the current game state
+- [ ] All items and NPCs in rooms are defined in the world data
+- [ ] Moving between rooms and back is consistent and accurate in `LOOK` data.
 
 ## Dynamic Item Management
 - [ ] 
