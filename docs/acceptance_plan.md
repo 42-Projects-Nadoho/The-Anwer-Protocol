@@ -92,8 +92,22 @@ Server and client edge cases:
 - [ ] Attempt simultaneous MOVE actions from different clients and check for correct presence events
 - [ ] Create and disband groups while members join/leave quickly: group state remains consistent
 
-## Network Features
-- [ ] 
+## Network Features: Server
+The server must handle:
+- [ ] Multiple commands in a single TCP packet
+- [ ] Commands split across packets
+- [ ] Unicode characters in usernames or messages without encoding errors
+- [ ] Control characters in messages are either rejected or safely handled
+
+## Network Features: Inventory and NPC Interactions
+- [ ] `TAKE` command: pick up items from rooms
+- [ ] `DROP` command: drop items from inventory
+- [ ] `INVENTORY` command: list player's items
+- [ ] `TALK` command: interact with NPCs
+- [ ] `ATTACK` command: initiate combat with enemy NPCs
+- [ ] `STATUS` command: check player health and combat status
+- [ ] `QUEST` command: request quests from quest-giver NPCs
+- [ ] `QUESTS` command: list active and completed quests
 
 ## Data Integrity
 - [ ] 
