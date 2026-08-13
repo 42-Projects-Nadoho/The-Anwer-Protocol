@@ -7,7 +7,7 @@ The repository shall contain all mandatory deliverables:
 
 |  | Test | Expected |
 | :--- | :--- | :--- |
-| [ ] | Building tool (Makefile or equivalent) at the root with targets/commands | Targets exist for: install dependencies, run-server, run-client, run-client-gui, lint, clean |
+| [x] | Building tool (Makefile or equivalent) at the root with targets/commands | Targets exist for: install dependencies, run-server, run-client, run-client-gui, lint, clean |
 | [ ] | TCP server implementation | Present |
 | [ ] | CLI client | Present |
 | [ ] | GUI client | Present |
