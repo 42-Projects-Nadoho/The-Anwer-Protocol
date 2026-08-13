@@ -86,7 +86,11 @@ Connect using the GUI client:
 - [ ] The GUI remains responsive while receiving events
 
 ## Robustness
-- [ ] 
+Server and client edge cases:
+- [ ] Disconnect a client abruptly: server must continue and remove the session
+- [ ] Send multiple commands quickly from different clients: responses remain correct
+- [ ] Attempt simultaneous MOVE actions from different clients and check for correct presence events
+- [ ] Create and disband groups while members join/leave quickly: group state remains consistent
 
 ## Network Features
 - [ ] 
