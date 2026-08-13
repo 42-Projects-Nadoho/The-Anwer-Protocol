@@ -3,7 +3,6 @@
 An **Acceptance Test Plan (ATP)** is a formal document that outlines how a system or software product will be tested to verify if it meets business requirements and user needs. It acts as a guide for checking whether a system is ready for final delivery and client sign-off.
 
 ## Project Structure
-
 The repository shall contain all mandatory deliverables:
 - [ ] Building tool (Makefile or equivalent) at the root with targets/commands:
   - [ ] install dependencies
@@ -20,7 +19,6 @@ The repository shall contain all mandatory deliverables:
 - [ ] No unauthorised files are present
 
 ## README Documentation
-
 The README.md file shall contain all the required sections:
 - [ ] First line in italics: `This project has been created as part of the 42 curriculum by <login1>, <login2>...`. All group members’ logins must be present.
 - [ ] Description section clearly presenting the project goal and overview
@@ -37,8 +35,26 @@ The README.md file shall contain all the required sections:
 - [ ] Testing section explaining how to test functionality
 
 ## World Requirements
+- [ ] At least 8 interconnected rooms forming loops with at least one optional branch
+- [ ] At least 3 distinct NPC roles: dialogue NPCs, quest-giver NPCs, and enemy NPCs
+- [ ] At least 4 distinct items with at least 2 obtainable in-world
+- [ ] At least 2 implemented quests of different types
+- [ ] Movement allows full circuit exploration (no "line-only" maps)
+- [ ] All NPCs and items referenced in rooms are properly defined in world data
 
 ## Build
+- [ ] Verify the project is implemented in one of the allowed languages: C, C++, Rust, Go, or Zig
+- [ ] On a clean environment, verify the building tool provides targets/commands for:
+  - [ ] install dependencies
+  - [ ] run-server
+  - [ ] run-client
+  - [ ] run-client-gui
+  - [ ] lint
+  - [ ] clean
+- [ ] Run install: it must complete without errors
+- [ ] Run-server, run-client, and run-client-gui must start the expected components
+- [ ] Run lint and clean must complete without errors
+- [ ] Only appropriate dependencies for the chosen language are allowed (networking libraries, GUI toolkit, data parsers such as YAML/JSON parsers)
 
 ## Protocol Compliance
 
