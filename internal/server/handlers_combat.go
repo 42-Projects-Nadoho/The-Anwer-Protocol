@@ -1,0 +1,124 @@
+package server
+
+import (
+	"fmt"
+	"strings"
+
+	"the_answer_protocol/internal/protocol"
+)
+
+func (c *Client) handleAttack(args []string) {
+	if len(args) == 0 {
+		c.reply([]byte(protocol.FormatErr(protocol.ErrUnknownCommand, "USAGE: ATTACK <npc>")))
+		return
+	}
+	targetName := strings.ToLower(strings.Join(args, " "))
+
+	var npcID string
+	var npcType string
+	var found bool
+	var hostile bool
+	var dmgDealt int = 15 // Base player damage
+	var enemyHp int
+	var counterDmg int = 0
+	var enemyDied bool
+
+	c.hub.do(func() {
+		// Find NPC in room
+		for id, dynamicNpc := range c.hub.roomNPCs[c.currentRoomID] {
+			npcData, exists := c.hub.worldMap.NPCs[dynamicNpc.NPCType]
+			if !exists {
+				continue
+			}
+			if strings.ToLower(id) == targetName || strings.ToLower(npcData.Name) == targetName {
+				npcID = id
+				npcType = dynamicNpc.NPCType
+				found = true
+				if npcData.Role == "enemy" {
+					hostile = true
+					// Deal damage
+					dynamicNpc.HP -= dmgDealt
+					enemyHp = dynamicNpc.HP
+					if dynamicNpc.HP <= 0 {
+						enemyDied = true
+						// Delete from room
+						delete(c.hub.roomNPCs[c.currentRoomID], id)
+						
+						c.hub.logger.Info("npc_defeated",
+							"username", c.username,
+							"npc_id", id,
+							"room_id", c.currentRoomID,
+						)
+					} else {
+						// Counter attack
+						counterDmg = npcData.Stats.Damage
+						c.hp -= counterDmg
+					}
+				}
+				break
+			}
+		}
+	})
+
+	if !found {
+		c.reply([]byte(protocol.FormatErr(protocol.ErrNPCNotFound, "NPC_NOT_FOUND")))
+		return
+	}
+	if !hostile {
+		c.reply([]byte(protocol.FormatErr(protocol.ErrNPCNotHostile, "NPC_NOT_HOSTILE")))
+		return
+	}
+
+	// Broadcast combat logs
+	if enemyDied {
+		msg := fmt.Sprintf("%s dealt %d damage to %s. The enemy is defeated!", c.username, dmgDealt, npcID)
+		c.hub.BroadcastRoom(c.currentRoomID, []byte(protocol.FormatEvt("ROOM", "CHAT", "CombatSys "+msg)), nil)
+		c.reply([]byte(protocol.FormatOK(fmt.Sprintf("defeated=%s", npcID))))
+		
+		// If player had a defeat quest for this, mark it (simple logic)
+		c.hub.do(func() {
+			c.quests = append(c.quests, "defeated:"+npcType)
+		})
+	} else {
+		msg := fmt.Sprintf("%s dealt %d damage to %s. %s has %d HP left. %s counter-attacked for %d damage!", 
+			c.username, dmgDealt, npcID, npcID, enemyHp, npcID, counterDmg)
+		c.hub.BroadcastRoom(c.currentRoomID, []byte(protocol.FormatEvt("ROOM", "CHAT", "CombatSys "+msg)), nil)
+		
+		c.reply([]byte(protocol.FormatOK(fmt.Sprintf("hit=%d", dmgDealt))))
+
+		// Check if player died from counter-attack
+		var died bool
+		c.hub.do(func() {
+			if c.hp <= 0 {
+				died = true
+				c.hp = 100 // Respawn with full health (or reduced)
+				
+				// Move to start room
+				oldRoom := c.currentRoomID
+				c.currentRoomID = c.hub.worldMap.StartRoomID
+				
+				c.hub.logger.Info("player_died",
+					"username", c.username,
+					"killed_by", npcID,
+					"room_id", oldRoom,
+				)
+			}
+		})
+
+		if died {
+			deathMsg := fmt.Sprintf("%s has been defeated and sent back to safety.", c.username)
+			c.hub.BroadcastGlobal([]byte(protocol.FormatEvt("GLOBAL", "CHAT", "CombatSys "+deathMsg)))
+			c.reply([]byte(protocol.FormatEvt("ROOM", "CHAT", "CombatSys You died! Respawning...")))
+			// Need to notify player of room change
+			c.reply([]byte(protocol.FormatOK("room=" + c.hub.worldMap.StartRoomID)))
+		}
+	}
+}
+
+func (c *Client) handleStatus() {
+	var hp int
+	c.hub.do(func() {
+		hp = c.hp
+	})
+	c.reply([]byte(protocol.FormatOK(fmt.Sprintf("hp=%d", hp))))
+}
