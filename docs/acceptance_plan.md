@@ -121,12 +121,13 @@ The server must handle:
 
 | Check | Test | Expected |
 | :--- | :--- | :--- |
-| - [ ] | Take an item from a room | It disappears from `LOOK` output |
-- [ ] Attempt to take the same item again: it returns `ITEM_NOT_FOUND` error
-- [ ] Have a second player try to take the same item: they cannot
-- [ ] Drop the item: verify it reappears in the room for other players
-Test both item IDs (e.g., "item.herbs") and display names (e.g., "Herbs")
-Verify multi-word item names work correctly (e.g., "Loaf of Bread")
+|  | Take an item from a room | The item disappears from `LOOK` output |
+|  | Attempt to take the same item again | The item returns `ITEM_NOT_FOUND` error |
+|  | Have a second player try to take the same item | The second player cannot take the same item |
+|  | Drop the item | The item reappears in the room for other players |
+|  | Test item IDs (e.g., "item.herbs") | |
+|  | Test display names (e.g., "Herbs") | |
+|  | Multi-word item names work correctly (e.g., "Loaf of Bread") | |
 
 ## Combat System
 - [ ] 
