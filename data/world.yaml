@@ -1,12 +1,132 @@
-rooms:
-  - id: "town_square"
-    name: "The Town Square"
-    description: "A quiet cobblestone square. There is a path leading north."
-    exits:
-      north: "dark_forest"
+world:
+  locations:
+    destiny_islands:
+      name: "Destiny Islands"
+      description: "A beautiful tropical island where journeys begin. The sun is shining brightly."
+      exits:
+        north: "traverse_town"
+        east: "hollow_bastion"
+      spawns:
+        - npc_type: "yen_sid"
+          count: 1
+      items: ["potion"]
 
-  - id: "dark_forest"
-    name: "The Dark Forest"
-    description: "The trees are thick and block out the sun. The town square is to the south."
-    exits:
-      south: "town_square"
+    traverse_town:
+      name: "Traverse Town"
+      description: "A quiet town under a starry night sky. A refuge for those who have lost their worlds."
+      exits:
+        south: "destiny_islands"
+        east: "wonderland"
+      spawns:
+        - npc_type: "leon"
+          count: 1
+      items: ["keyblade"]
+
+    wonderland:
+      name: "Wonderland"
+      description: "A bizarre and nonsensical world filled with oddities and peculiar characters."
+      exits:
+        west: "traverse_town"
+        south: "olympus_coliseum"
+
+    olympus_coliseum:
+      name: "Olympus Coliseum"
+      description: "A grand arena where heroes test their might in fierce tournaments."
+      exits:
+        north: "wonderland"
+        west: "agrabah"
+      spawns:
+        - npc_type: "large_body"
+          count: 1
+
+    agrabah:
+      name: "Agrabah"
+      description: "A desert city full of mysteries, bustling streets, and hidden treasures."
+      exits:
+        east: "olympus_coliseum"
+        south: "halloween_town"
+      items: ["ether"]
+
+    halloween_town:
+      name: "Halloween Town"
+      description: "A spooky world where every day is Halloween. Ghosts and goblins roam the streets."
+      exits:
+        north: "agrabah"
+        east: "neverland"
+
+    neverland:
+      name: "Neverland"
+      description: "A magical pirate ship flying through the night sky. You can almost fly!"
+      exits:
+        west: "halloween_town"
+        north: "hollow_bastion"
+      items: ["wayfinder"]
+
+    hollow_bastion:
+      name: "Hollow Bastion"
+      description: "A majestic yet decaying castle suspended over a void, steeped in dark magic."
+      exits:
+        south: "neverland"
+        west: "destiny_islands"
+      spawns:
+        - npc_type: "shadow_heartless"
+          count: 2
+
+  items:
+    potion:
+      name: "Potion"
+      description: "A restorative item that heals a small amount of HP."
+      obtainable: true
+    ether:
+      name: "Ether"
+      description: "An item that restores magic power."
+      obtainable: true
+    keyblade:
+      name: "Kingdom Key"
+      description: "A mysterious weapon shaped like a giant key. It holds immense power."
+      obtainable: true
+    wayfinder:
+      name: "Wayfinder"
+      description: "A star-shaped charm made of thalassa shells. It binds friends together."
+      obtainable: true
+
+  npcs:
+    yen_sid:
+      name: "Master Yen Sid"
+      role: "quest_giver"
+      description: "A wise and powerful sorcerer, retired Keyblade Master."
+      dialogue: ["Welcome, young one.", "The worlds are in peril. I have a task for you."]
+      quests: ["find_wayfinder", "defeat_shadow"]
+    leon:
+      name: "Leon"
+      role: "dialogue"
+      description: "A stoic warrior wielding a gunblade. He seems to know a lot about the Heartless."
+      dialogue: ["The Heartless are drawn to the darkness in people's hearts.", "Stay sharp out there."]
+    shadow_heartless:
+      name: "Shadow"
+      role: "enemy"
+      description: "A pureblood Heartless born from the darkness in a heart. It twitches erratically."
+      stats:
+        hp: 30
+        damage: 10
+    large_body:
+      name: "Large Body"
+      role: "enemy"
+      description: "A massive Heartless that blocks attacks with its big belly."
+      stats:
+        hp: 100
+        damage: 25
+
+  quests:
+    find_wayfinder:
+      name: "Bonds of Friendship"
+      description: "Find a Wayfinder and show it to Yen Sid."
+      type: "fetch"
+      target: "wayfinder"
+      reward: "You feel your heart grow stronger."
+    defeat_shadow:
+      name: "Push Back the Darkness"
+      description: "Defeat a Shadow Heartless."
+      type: "defeat"
+      target: "shadow_heartless"
+      reward: "You gained valuable combat experience."
