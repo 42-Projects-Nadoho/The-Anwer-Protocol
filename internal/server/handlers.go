@@ -55,6 +55,19 @@ func (c *Client) handleLook() {
 		return
 	}
 
+	var items []string
+	var npcs []string
+	c.hub.do(func() {
+		for itemID, present := range c.hub.roomItems[c.currentRoomID] {
+			if present {
+				items = append(items, itemID)
+			}
+		}
+		for npcID := range c.hub.roomNPCs[c.currentRoomID] {
+			npcs = append(npcs, npcID)
+		}
+	})
+
 	resp := lookResponse{
 		Room: lookRoom{
 			ID:          room.ID,
@@ -63,8 +76,8 @@ func (c *Client) handleLook() {
 			Exits:       room.Exits,
 		},
 		Players: c.hub.PlayersInRoom(c.currentRoomID),
-		Items:   []string{},
-		NPCs:    []string{},
+		Items:   items,
+		NPCs:    npcs,
 	}
 
 	data, err := json.Marshal(resp)

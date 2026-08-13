@@ -9,6 +9,12 @@ import (
 	"the_answer_protocol/internal/world"
 )
 
+type DynamicNPC struct {
+	ID      string
+	NPCType string
+	HP      int
+}
+
 type Hub struct {
 	clients   map[*Client]bool
 	usernames map[string]*Client
@@ -29,10 +35,14 @@ type Hub struct {
 	// connAttempts tracks recent connection timestamps per IP, for the
 	// rapid-connections abuse signal.
 	connAttempts map[string][]time.Time
+
+	// dynamic world state
+	roomItems map[string]map[string]bool
+	roomNPCs  map[string]map[string]*DynamicNPC
 }
 
 func NewHub(w *world.World, logger *slog.Logger) *Hub {
-	return &Hub{
+	h := &Hub{
 		broadcast:    make(chan []byte),
 		register:     make(chan *Client),
 		unregister:   make(chan *Client),
@@ -44,7 +54,37 @@ func NewHub(w *world.World, logger *slog.Logger) *Hub {
 		logger:       logger,
 		nextGroup:    0,
 		connAttempts: make(map[string][]time.Time),
+		roomItems:    make(map[string]map[string]bool),
+		roomNPCs:     make(map[string]map[string]*DynamicNPC),
 	}
+
+	// Initialize dynamic state from world
+	for roomID, r := range w.Rooms {
+		h.roomItems[roomID] = make(map[string]bool)
+		for _, itemID := range r.Items {
+			h.roomItems[roomID][itemID] = true
+		}
+
+		h.roomNPCs[roomID] = make(map[string]*DynamicNPC)
+		for _, spawn := range r.Spawns {
+			npcData, ok := w.NPCs[spawn.NPCType]
+			if !ok {
+				continue
+			}
+			for i := 0; i < spawn.Count; i++ {
+				id := spawn.NPCType
+				if spawn.Count > 1 {
+					id = fmt.Sprintf("%s_%d", spawn.NPCType, i+1)
+				}
+				h.roomNPCs[roomID][id] = &DynamicNPC{
+					ID:      id,
+					NPCType: spawn.NPCType,
+					HP:      npcData.Stats.HP,
+				}
+			}
+		}
+	}
+	return h
 }
 
 // RecordConnection registers a connection attempt from ip and returns how

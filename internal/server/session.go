@@ -19,6 +19,9 @@ type Client struct {
 	currentRoomID string
 	groupName     string
 	isInvited     []string
+	hp            int
+	inventory     []string
+	quests        []string
 
 	// recentCmds tracks this client's own recent command timestamps, for
 	// the command-flooding abuse signal. Only readPump's own goroutine
@@ -68,29 +71,37 @@ func (c *Client) readPump() {
 		switch cmd.Action {
 		case "CONNECT":
 			c.handleConnect(cmd.Args)
-
 		case "LOOK":
 			c.handleLook()
-
 		case "MOVE":
 			c.handleMove(cmd.Args)
-
 		case "CHAT":
 			c.handleChat(cmd)
-
 		case "WHO":
 			c.handleWho()
-
 		case "QUIT":
 			c.handleQuit()
 			return
-
 		case "GROUP":
 			c.handleGroup(cmd.Args)
-
+		case "TAKE":
+			c.handleTake(cmd.Args)
+		case "DROP":
+			c.handleDrop(cmd.Args)
+		case "INVENTORY":
+			c.handleInventory()
+		case "TALK":
+			c.handleTalk(cmd.Args)
+		case "ATTACK":
+			c.handleAttack(cmd.Args)
+		case "STATUS":
+			c.handleStatus()
+		case "QUEST":
+			c.handleQuest(cmd.Args)
+		case "QUESTS":
+			c.handleQuests()
 		case "UNKNOWN":
 			c.reply([]byte(protocol.FormatErr(protocol.ErrUnknownCommand, "UNKNOWN_COMMAND")))
-
 		default:
 			c.reply([]byte(protocol.FormatErr(protocol.ErrUnknownCommand, "UNKNOWN_COMMAND")))
 		}
@@ -159,8 +170,11 @@ func ServeClient(hub *Hub, conn net.Conn) {
 		conn:          conn,
 		send:          make(chan []byte, 256),
 		remoteAddr:    remoteAddr,
-		currentRoomID: "town_square",
+		currentRoomID: hub.worldMap.StartRoomID,
 		isInvited:     []string{},
+		hp:            100,
+		inventory:     []string{},
+		quests:        []string{},
 	}
 
 	client.hub.register <- client
