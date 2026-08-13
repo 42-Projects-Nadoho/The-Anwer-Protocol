@@ -51,12 +51,21 @@ The README.md file shall contain all the required sections:
   - [ ] run-client-gui
   - [ ] lint
   - [ ] clean
-- [ ] Run install: it must complete without errors
+- [ ] Run install must complete without errors
 - [ ] Run-server, run-client, and run-client-gui must start the expected components
 - [ ] Run lint and clean must complete without errors
 - [ ] Only appropriate dependencies for the chosen language are allowed (networking libraries, GUI toolkit, data parsers such as YAML/JSON parsers)
 
 ## Protocol Compliance
+- [ ] Start the server and connect with both the CLI and GUI clients
+- [ ] Verify that the greeting matches RFC 42TAP specifications
+- [ ] Execute every command and event defined in the RFC document to confirm they behave as specified.
+Verify that all message formats follow the ABNF syntax
+definitions in the RFC.
+Send malformed or invalid commands and ensure the server returns
+the correct ERR response without crashing.
+Check that error codes match exactly those specified in Section
+7.2 of the RFC.
 
 ## Server Behaviour
 
