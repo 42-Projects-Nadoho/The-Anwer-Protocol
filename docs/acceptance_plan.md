@@ -65,23 +65,46 @@ The README.md file shall contain all the required sections:
 - [ ] Check that error codes match exactly those specified in Section 7.2 of the RFC
 
 ## Server Behaviour
+- [ ] The server loads the world data and validates exits and references
+- [ ] The room is present
+- [ ] The chat events are broadcast only to the intended recipients
+- [ ] Disconnect a client while an event is being broadcast: the server removes the client cleanly and continues operating
 
 ## CLI Client
+Connect using the CLI client:
+- [ ] Commands can be sent interactively
+- [ ] Responses are displayed immediately
+- [ ] Asynchronous events (chat, presence) appear while waiting for input
+- [ ] Full flow works as expected: `CONNECT > LOOK > MOVE > CHAT > WHO > QUIT`
 
 ## GUI Client
+Connect using the GUI client:
+- [ ] Room details, items, NPCs, and exits are displayed
+- [ ] Chat is separated by scope (Global, Room, Group)
+- [ ] Buttons for actions send the correct commands
+- [ ] Player counts in the room and on the server update in real time
+- [ ] The GUI remains responsive while receiving events
 
 ## Robustness
+- [ ] 
 
 ## Network Features
+- [ ] 
 
 ## Data Integrity
+- [ ] 
 
 ## Dynamic Item Management
+- [ ] 
 
 ## Combat System
+- [ ] 
 
 ## Quest System
+- [ ] 
 
 ## Server Logging
+- [ ] 
 
 ## Recode Exercise
+- [ ] 
