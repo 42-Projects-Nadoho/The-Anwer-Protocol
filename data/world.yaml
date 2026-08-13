@@ -38,6 +38,8 @@ world:
       spawns:
         - npc_type: "large_body"
           count: 1
+        - npc_type: "sephiroth"
+          count: 1
 
     agrabah:
       name: "Agrabah"
@@ -116,6 +118,13 @@ world:
       stats:
         hp: 100
         damage: 25
+    sephiroth:
+      name: "Sephiroth"
+      role: "enemy"
+      description: "A legendary SOLDIER with a massive nodachi. One-Winged Angel plays ominously in the background..."
+      stats:
+        hp: 9999
+        damage: 9999
 
   quests:
     find_wayfinder:
