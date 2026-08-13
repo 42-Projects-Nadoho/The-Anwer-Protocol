@@ -119,7 +119,7 @@ The server must handle:
 
 ## Dynamic Item Management
 
-| Check | Test | Expected |
+|  | Test | Expected |
 | :--- | :--- | :--- |
 |  | Take an item from a room | The item disappears from `LOOK` output |
 |  | Attempt to take the same item again | The item returns `ITEM_NOT_FOUND` error |
@@ -130,13 +130,53 @@ The server must handle:
 |  | Multi-word item names work correctly (e.g., "Loaf of Bread") | |
 
 ## Combat System
-- [ ] 
+
+|  | Test | Expected |
+| :--- | :--- | :--- |
+|  | Use `STATUS` command at the beginning of the fight | Players start with 100 HP |
+|  | Use `ATTACK` command on enemy NPCs | Damage is dealt |
+|  | Enemy NPCs can counter-attack and reduce player HP | |
+|  | Players with 0 HP respawn at a safe location with reduced health | |
+|  | Non-hostile NPCs cannot be attacked (should return `NPC_NOT_HOSTILE` error) | |
+|  | Combat results are logged and broadcast to relevant players | |
+|  | The group's combat mechanics design is documented in `README` with clear justification | |
 
 ## Quest System
-- [ ] 
+
+|  | Test | Expected |
+| :--- | :--- | :--- |
+Use QUEST command on quest-giver NPCs to receive quests
+Use QUESTS command to list active and completed quests
+Verify at least 2 different quest types are implemented (fetch item, defeat NPC, deliver item)
+Test quest completion validation and reward systems
+Confirm NPCs without quests return NO_QUEST_AVAILABLE error
+Verify the group's quest progression mechanics are documented in README with implementation approach
 
 ## Server Logging
-- [ ] 
+
+|  | Test | Expected |
+| :--- | :--- | :--- |
+Check that all client connections and disconnections are logged with timestamps and IP addresses
+Verify every command received from clients is logged with player name and parameters
+Confirm all server responses and error codes sent to clients are logged
+Test that world state changes (item movements, NPC interactions, combat results) are logged
+Verify quest progress and completion events are logged
+Check that structured logging format (JSON recommended) is used for easy parsing
+Confirm log levels (INFO, WARN, ERROR) are included for different event types
+Test that potential abuse patterns (command flooding, rapid connections) are monitored and logged
+Verify all logs include precise timestamps and are written to appropriate output streams
+Check that logging does not significantly impact server performance or responsiveness
 
 ## Recode Exercise
-- [ ] 
+
+|  | Test | Expected |
+| :--- | :--- | :--- |
+
+
+Request a brief modification to verify understanding of the
+project:
+
+    Ask the group to make a small change to one of the systems (e.g., modify NPC dialogue, adjust combat damage, add a simple quest step)
+    The modification should be feasible within a few minutes
+    Verify that both group members understand the codebase and can explain their implementation choices
+    Confirm the modification works correctly and doesn't break existing functionality This step verifies actual understanding of the project implementation.
