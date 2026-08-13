@@ -118,7 +118,15 @@ The server must handle:
 - [ ] Moving between rooms and back is consistent and accurate in `LOOK` data.
 
 ## Dynamic Item Management
-- [ ] 
+
+| Check | Test | Expected |
+| :--- | :--- | :--- |
+| - [ ] | Take an item from a room | It disappears from `LOOK` output |
+- [ ] Attempt to take the same item again: it returns `ITEM_NOT_FOUND` error
+- [ ] Have a second player try to take the same item: they cannot
+- [ ] Drop the item: verify it reappears in the room for other players
+Test both item IDs (e.g., "item.herbs") and display names (e.g., "Herbs")
+Verify multi-word item names work correctly (e.g., "Loaf of Bread")
 
 ## Combat System
 - [ ] 
