@@ -59,13 +59,10 @@ The README.md file shall contain all the required sections:
 ## Protocol Compliance
 - [ ] Start the server and connect with both the CLI and GUI clients
 - [ ] Verify that the greeting matches RFC 42TAP specifications
-- [ ] Execute every command and event defined in the RFC document to confirm they behave as specified.
-Verify that all message formats follow the ABNF syntax
-definitions in the RFC.
-Send malformed or invalid commands and ensure the server returns
-the correct ERR response without crashing.
-Check that error codes match exactly those specified in Section
-7.2 of the RFC.
+- [ ] Execute every command and event defined in the RFC document to confirm they behave as specified
+- [ ] Verify that all message formats follow the ABNF syntax definitions in the RFC
+- [ ] Send malformed or invalid commands and ensure the server returns the correct ERR response without crashing
+- [ ] Check that error codes match exactly those specified in Section 7.2 of the RFC
 
 ## Server Behaviour
 
