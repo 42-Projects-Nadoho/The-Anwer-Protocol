@@ -31,9 +31,9 @@ The README.md file shall contain all the required sections:
 
 ## World Requirements
 
-|  | Test | Expected |
-| :--- | :--- | :--- |
-- [ ]  Room interconnection | At least 8 interconnected rooms forming loops with at least one optional branch |
+### Room interconnection
+At least 8 interconnected rooms forming loops with at least one optional branch.
+
 - [ ]  NPC roles | At least 3 distinct NPC roles: dialogue NPCs, quest-giver NPCs, and enemy NPCs |
 - [ ]  Item availability | At least 4 distinct items with at least 2 obtainable in-world |
 - [ ]  Implemented quests | At least 2 implemented quests of different types |
@@ -42,8 +42,7 @@ The README.md file shall contain all the required sections:
 
 ## Build
 
-|  | Test | Expected |
-| :--- | :--- | :--- |
+
 - [ ]  Project implementation language | Verify the project is implemented in one of the allowed languages: C, C++, Rust, Go, or Zig |
 - [ ]  Building tool targets | On a clean environment, verify the building tool provides targets/commands for: install dependencies, run-server, run-client, run-client-gui, lint, clean |
 - [ ]  `install` target | Run install must complete without errors |
@@ -53,8 +52,7 @@ The README.md file shall contain all the required sections:
 
 ## Protocol Compliance
 
-|  | Test | Expected |
-| :--- | :--- | :--- |
+
 - [ ]  Connect with clients | Start the server and connect with both the CLI and GUI clients |
 - [ ]  Greeting match | Verify that the greeting matches RFC 42TAP specifications |
 - [ ]  Command execution | Execute every command and event defined in the RFC document to confirm they behave as specified |
@@ -64,8 +62,7 @@ The README.md file shall contain all the required sections:
 
 ## Server Behaviour
 
-|  | Test | Expected |
-| :--- | :--- | :--- |
+
 - [ ]  Load world data | The server loads the world data and validates exits and references |
 - [ ]  Room presence | The room is present |
 - [ ]  Chat event broadcasting | The chat events are broadcast only to the intended recipients |
@@ -74,8 +71,7 @@ The README.md file shall contain all the required sections:
 ## CLI Client
 Connect using the CLI client:
 
-|  | Test | Expected |
-| :--- | :--- | :--- |
+
 - [ ]  Interactive commands | Commands can be sent interactively |
 - [ ]  Response time | Responses are displayed immediately |
 - [ ]  Asynchronous events | Asynchronous events (chat, presence) appear while waiting for input |
@@ -84,8 +80,7 @@ Connect using the CLI client:
 ## GUI Client
 Connect using the GUI client:
 
-|  | Test | Expected |
-| :--- | :--- | :--- |
+
 - [ ]  UI Display | Room details, items, NPCs, and exits are displayed |
 - [ ]  Chat separation | Chat is separated by scope (Global, Room, Group) |
 - [ ]  Buttons function | Buttons for actions send the correct commands |
@@ -95,8 +90,7 @@ Connect using the GUI client:
 ## Robustness
 Server and client edge cases:
 
-|  | Test | Expected |
-| :--- | :--- | :--- |
+
 - [ ]  Abrupt client disconnect | Disconnect a client abruptly: server must continue and remove the session |
 - [ ]  Command spam | Send multiple commands quickly from different clients: responses remain correct |
 - [ ]  Simultaneous moves | Attempt simultaneous MOVE actions from different clients and check for correct presence events |
@@ -105,8 +99,7 @@ Server and client edge cases:
 ## Network Features: Server
 The server must handle:
 
-|  | Test | Expected |
-| :--- | :--- | :--- |
+
 - [ ]  Single packet | Multiple commands in a single TCP packet |
 - [ ]  Split packets | Commands split across packets |
 - [ ]  Unicode | Unicode characters in usernames or messages without encoding errors |
@@ -114,8 +107,7 @@ The server must handle:
 
 ## Network Features: Inventory and NPC Interactions
 
-|  | Test | Expected |
-| :--- | :--- | :--- |
+
 - [ ]  `TAKE` command | Pick up items from rooms |
 - [ ]  `DROP` command | Drop items from inventory |
 - [ ]  `INVENTORY` command | List player's items |
@@ -127,16 +119,14 @@ The server must handle:
 
 ## Data Integrity
 
-|  | Test | Expected |
-| :--- | :--- | :--- |
+
 - [ ]  `LOOK` outputs format | Are valid JSON, contain consistent IDs, and match the current game state |
 - [ ]  Room definitions | All items and NPCs in rooms are defined in the world data |
 - [ ]  Room traversal | Moving between rooms and back is consistent and accurate in `LOOK` data |
 
 ## Dynamic Item Management
 
-|  | Test | Expected |
-| :--- | :--- | :--- |
+
 - [ ]  Take an item from a room | The item disappears from `LOOK` output |
 - [ ]  Attempt to take the same item again | The item returns `ITEM_NOT_FOUND` error |
 - [ ]  Have a second player try to take the same item | The second player cannot take the same item |
@@ -147,8 +137,7 @@ The server must handle:
 
 ## Combat System
 
-|  | Test | Expected |
-| :--- | :--- | :--- |
+
 - [ ]  Use `STATUS` command at the beginning of the fight | Players start with 100 HP |
 - [ ]  Use `ATTACK` command on enemy NPCs | Damage is dealt |
 - [ ]  Enemy NPCs counter-attack | Reduce player HP |
@@ -159,8 +148,7 @@ The server must handle:
 
 ## Quest System
 
-|  | Test | Expected |
-| :--- | :--- | :--- |
+
 - [ ]  Receive quests | Use `QUEST` command on quest-giver NPCs to receive quests |
 - [ ]  List quests | Use `QUESTS` command to list active and completed quests |
 - [ ]  Quest types | Verify at least 2 different quest types are implemented (fetch item, defeat NPC, deliver item) |
@@ -170,8 +158,7 @@ The server must handle:
 
 ## Server Logging
 
-|  | Test | Expected |
-| :--- | :--- | :--- |
+
 - [ ]  Client connections and disconnections | Logged with timestamps and IP addresses |
 - [ ]  Commands received from clients | Logged with player name and parameters |
 - [ ]  Server responses and error codes | Confirmed to be logged |
@@ -185,8 +172,7 @@ The server must handle:
 
 ## Recode Exercise
 
-|  | Test | Expected |
-| :--- | :--- | :--- |
+
 - [ ]  Request a brief modification to verify understanding | Ask the group to make a small change to one of the systems (e.g., modify NPC dialogue, adjust combat damage, add a simple quest step) |
 - [ ]  Modification feasibility | The modification should be feasible within a few minutes |
 - [ ]  Team understanding | Verify that both group members understand the codebase and can explain their implementation choices |
