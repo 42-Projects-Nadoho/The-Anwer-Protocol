@@ -60,7 +60,11 @@ The primary components of the system include:
 > Read the detailed Architecture documentation [here](docs/001-architecture.md).
 
 ## Protocol Implementation
-Protocol Implementation section documenting any RFC deviations
+
+The server handshake, initial greeting (`S: OK hello proto=1`), and all subsequent command parsing strictly adhere to the RFC 42TAP specifications for both CLI and GUI clients.
+
+> [!NOTE]
+> Read the detailed Protocol Implementation documentation [here](docs/002-protocol-implementation.md).
 
 ## Combat System
 Combat System section describing combat mechanics and design choices
@@ -115,7 +119,11 @@ The project utilizes `make` for dependency management, compilation, and executio
 > Read the detailed Building and Running documentation [here](docs/008-building-and-running.md).
 
 ## Testing
-Testing section explaining how to test functionality
+
+Our testing documentation covers how to manually verify the RFC protocol handshake, test multiplayer interactions, and validate the combat and quest systems.
+
+> [!NOTE]
+> Read the detailed Testing documentation [here](docs/009-testing.md) for step-by-step verification instructions.
 
 ## Resources
 Resources section listing references and describing AI usage (if any)

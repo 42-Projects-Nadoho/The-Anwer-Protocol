@@ -27,7 +27,31 @@ The README.md file shall contain all the required sections:
 - [ ] Server Logging section: Documenting logging implementation and monitoring capabilities
 - [ ] Group Contributions section: Indicating each member's responsibilities
 - [ ] Building and Running section: With detailed instructions
-- [ ] Testing section: Explaining how to test functionality
+- [ ] Testing section:
+
+This document explains how to manually test the multiplayer functionality, combat system, and quest mechanics of the TAP server.
+
+## Verifying Protocol Handshake
+
+To verify that the initial greeting matches the RFC 42TAP specification:
+1. Start the server in one terminal: 
+   ```bash
+   make run-server
+   ```
+2. In a new terminal, start the CLI client: 
+   ```bash
+   make run-client
+   ```
+3. In another terminal, start the GUI client: 
+   ```bash
+   make run-client-gui
+   ```
+4. Check the logs/output of both clients to verify that the very first message received is exactly:
+   ```text
+   S: OK hello proto=1
+   ```
+
+*(Additional test procedures for combat, quests, and multiplayer state changes will be detailed here.)*
 
 ## [World Requirements](/data/world.yaml)
 
