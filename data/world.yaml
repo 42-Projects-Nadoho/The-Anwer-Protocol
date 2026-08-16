@@ -81,24 +81,6 @@ world:
         - npc_type: "shadow_heartless"
           count: 2
 
-  items:
-    potion:
-      name: "Potion"
-      description: "A restorative item that heals a small amount of HP."
-      obtainable: true
-    ether:
-      name: "Ether"
-      description: "An item that restores magic power."
-      obtainable: true
-    keyblade:
-      name: "Kingdom Key"
-      description: "A mysterious weapon shaped like a giant key. It holds immense power."
-      obtainable: true
-    wayfinder:
-      name: "Wayfinder"
-      description: "A star-shaped charm made of thalassa shells. It binds friends together."
-      obtainable: true
-
   npcs:
     yen_sid:
       name: "Master Yen Sid"
@@ -132,6 +114,24 @@ world:
       stats:
         hp: 9999
         damage: 9999
+
+  items:
+    potion:
+      name: "Potion"
+      description: "A restorative item that heals a small amount of HP."
+      obtainable: true
+    ether:
+      name: "Ether"
+      description: "An item that restores magic power."
+      obtainable: true
+    keyblade:
+      name: "Kingdom Key"
+      description: "A mysterious weapon shaped like a giant key. It holds immense power."
+      obtainable: true
+    wayfinder:
+      name: "Wayfinder"
+      description: "A star-shaped charm made of thalassa shells. It binds friends together."
+      obtainable: true
 
   quests:
     find_wayfinder:
