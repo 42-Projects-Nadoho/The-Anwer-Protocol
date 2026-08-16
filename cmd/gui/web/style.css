@@ -215,3 +215,9 @@ input, select {
   font-size: 0.85rem;
   margin: 0 0 0.5rem;
 }
+
+.item-list, .entity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

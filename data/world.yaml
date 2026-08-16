@@ -17,6 +17,9 @@ world:
       description: "A dark, hidden cave where strange drawings line the walls."
       exits:
         south: "destiny_islands"
+      spawns:
+        - npc_type: "chest"
+          count: 1
 
     traverse_town:
       name: "Traverse Town"
@@ -114,6 +117,11 @@ world:
       stats:
         hp: 9999
         damage: 9999
+    chest:
+      name: "Mysterious Chest"
+      role: "dialogue"
+      description: "An old wooden chest bound in iron."
+      dialogue: ["It's locked tight."]
 
   items:
     potion:
@@ -136,13 +144,15 @@ world:
   quests:
     find_wayfinder:
       name: "Bonds of Friendship"
-      description: "Find a Wayfinder and show it to Yen Sid."
-      type: "fetch"
-      target: "wayfinder"
-      reward: "You feel your heart grow stronger."
+      description: "Find the chest in the Secret Cave."
+      goal: "Find the chest in the Secret Cave."
+      type: "multi_stage"
+      target: "chest"
+      reward: "Unlocked new quest: Push Back the Darkness!"
     defeat_shadow:
       name: "Push Back the Darkness"
       description: "Defeat a Shadow Heartless."
+      goal: "Defeat a Shadow Heartless."
       type: "defeat"
       target: "shadow_heartless"
-      reward: "You gained valuable combat experience."
+      reward: "Your HP has been fully restored!"

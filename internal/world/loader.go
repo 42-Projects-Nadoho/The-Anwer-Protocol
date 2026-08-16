@@ -47,6 +47,7 @@ type Quest struct {
 	ID          string `yaml:"-"`
 	Name        string `yaml:"name"`
 	Description string `yaml:"description"`
+	Goal        string `yaml:"goal"`
 	Type        string `yaml:"type"`
 	Target      string `yaml:"target"`
 	Reward      string `yaml:"reward"`

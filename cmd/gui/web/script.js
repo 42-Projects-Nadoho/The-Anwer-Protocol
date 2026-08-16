@@ -35,6 +35,18 @@ const roomName = document.getElementById('room-name');
 const roomDesc = document.getElementById('room-desc');
 const roomPlayers = document.getElementById('room-players');
 const exitsBox = document.getElementById('exits');
+const roomItems = document.getElementById('room-items');
+const roomNpcs = document.getElementById('room-npcs');
+const playerHp = document.getElementById('player-hp');
+const statusBtn = document.getElementById('status-btn');
+const inventoryList = document.getElementById('inventory-list');
+const invBtn = document.getElementById('inv-btn');
+const questsList = document.getElementById('quests-list');
+const questsBtn = document.getElementById('quests-btn');
+
+if (statusBtn) statusBtn.addEventListener('click', () => send('STATUS'));
+if (invBtn) invBtn.addEventListener('click', () => send('INVENTORY'));
+if (questsBtn) questsBtn.addEventListener('click', () => send('QUESTS'));
 const whoCount = document.getElementById('who-count');
 const groupStatus = document.getElementById('group-status');
 const chatLog = document.getElementById('chat-log');
@@ -124,7 +136,59 @@ function handleLine(line, username) {
   }
 
   if (line.startsWith('OK {')) {
-    renderRoom(JSON.parse(line.slice(3)));
+    try {
+      const data = JSON.parse(line.slice(3));
+      if (data.room) {
+        renderRoom(data);
+      } else if (data.hp !== undefined) {
+        playerHp.textContent = `HP: ${data.hp}/${data.max_hp} (${data.status})`;
+      } else if (data.quest_id !== undefined) {
+        appendChat(`[System] Quest: ${data.quest_id} - ${data.description}`);
+        send('QUESTS');
+      } else if (data.npc !== undefined) {
+        appendChat(`[${data.npc}]: ${data.dialogue}`);
+      } else if (data.attacker_hp !== undefined) {
+        appendChat(`[Combat] You hit for ${data.damage}. Target HP: ${data.target_hp}. Your HP: ${data.attacker_hp}. Status: ${data.status}`);
+        send('STATUS');
+        if (data.status === 'victory') {
+          send('LOOK');
+          send('QUESTS');
+          send('INVENTORY');
+        }
+      } else {
+        appendLog(line);
+      }
+    } catch(e) {
+      appendLog(line);
+    }
+    return;
+  }
+
+  if (line.startsWith('OK [')) {
+    try {
+      const data = JSON.parse(line.slice(3));
+      if (data.length === 0 || typeof data[0] === 'string') {
+        renderInventory(data);
+      } else {
+        renderQuests(data);
+      }
+    } catch(e) {
+      appendLog(line);
+    }
+    return;
+  }
+
+  if (line.startsWith('OK taken=')) {
+    appendChat(`[System] Item taken.`);
+    send('LOOK');
+    send('INVENTORY');
+    return;
+  }
+
+  if (line.startsWith('OK dropped=')) {
+    appendChat(`[System] Item dropped.`);
+    send('LOOK');
+    send('INVENTORY');
     return;
   }
 
@@ -166,6 +230,52 @@ function handleLine(line, username) {
 function showGameView() {
   loginView.classList.add('hidden');
   gameView.classList.remove('hidden');
+  send('STATUS');
+  send('INVENTORY');
+  send('QUESTS');
+}
+
+function renderInventory(items) {
+  inventoryList.innerHTML = '';
+  if (!items || items.length === 0) {
+    inventoryList.innerHTML = '<li style="color:#ccc; font-size:0.9em;">Empty</li>';
+    return;
+  }
+  items.forEach(item => {
+    const li = document.createElement('li');
+    li.style.display = 'flex';
+    li.style.justifyContent = 'space-between';
+    li.style.alignItems = 'center';
+    li.style.marginBottom = '4px';
+    
+    const span = document.createElement('span');
+    span.textContent = item;
+    
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = 'Drop';
+    btn.style.padding = '2px 5px';
+    btn.addEventListener('click', () => send('DROP ' + item));
+    
+    li.appendChild(span);
+    li.appendChild(btn);
+    inventoryList.appendChild(li);
+  });
+}
+
+function renderQuests(quests) {
+  questsList.innerHTML = '';
+  if (!quests || quests.length === 0) {
+    questsList.innerHTML = '<li style="color:#ccc; font-size:0.9em;">None</li>';
+    return;
+  }
+  quests.forEach(q => {
+    const li = document.createElement('li');
+    li.style.marginBottom = '4px';
+    li.textContent = `[${q.status.toUpperCase()}] ${q.quest_id}`;
+    if (q.progress) li.textContent += ` (${q.progress})`;
+    questsList.appendChild(li);
+  });
 }
 
 function renderRoom(data) {
@@ -181,6 +291,72 @@ function renderRoom(data) {
     btn.addEventListener('click', () => send('MOVE ' + direction));
     exitsBox.appendChild(btn);
   });
+  
+  roomItems.innerHTML = '';
+  if (!data.items || data.items.length === 0) {
+    roomItems.textContent = 'None';
+  } else {
+    data.items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.style.alignItems = 'center';
+      row.style.marginBottom = '5px';
+      
+      const span = document.createElement('span');
+      span.textContent = item;
+      span.style.flex = '1';
+      
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = 'Take';
+      btn.style.padding = '2px 5px';
+      btn.addEventListener('click', () => send('TAKE ' + item));
+      
+      row.appendChild(span);
+      row.appendChild(btn);
+      roomItems.appendChild(row);
+    });
+  }
+  
+  roomNpcs.innerHTML = '';
+  if (!data.npcs || data.npcs.length === 0) {
+    roomNpcs.textContent = 'None';
+  } else {
+    data.npcs.forEach(npc => {
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.style.alignItems = 'center';
+      row.style.marginBottom = '5px';
+      
+      const span = document.createElement('span');
+      span.textContent = npc;
+      span.style.flex = '1';
+      
+      const btnTalk = document.createElement('button');
+      btnTalk.type = 'button';
+      btnTalk.textContent = 'Talk';
+      btnTalk.style.padding = '2px 5px';
+      btnTalk.addEventListener('click', () => send('TALK ' + npc));
+      
+      const btnAttack = document.createElement('button');
+      btnAttack.type = 'button';
+      btnAttack.textContent = 'Atk';
+      btnAttack.style.padding = '2px 5px';
+      btnAttack.addEventListener('click', () => send('ATTACK ' + npc));
+      
+      const btnQuest = document.createElement('button');
+      btnQuest.type = 'button';
+      btnQuest.textContent = 'Quest';
+      btnQuest.style.padding = '2px 5px';
+      btnQuest.addEventListener('click', () => send('QUEST ' + npc));
+      
+      row.appendChild(span);
+      row.appendChild(btnTalk);
+      row.appendChild(btnAttack);
+      row.appendChild(btnQuest);
+      roomNpcs.appendChild(row);
+    });
+  }
 }
 
 function appendChat(line) {

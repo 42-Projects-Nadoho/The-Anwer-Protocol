@@ -17,6 +17,7 @@ func (c *Client) handleTalk(args []string) {
 	var found bool
 	var dialogue []string
 	var npcID string
+	var npcType string
 
 	c.hub.do(func() {
 		for id, dynamicNpc := range c.hub.roomNPCs[c.currentRoomID] {
@@ -27,6 +28,7 @@ func (c *Client) handleTalk(args []string) {
 			if strings.ToLower(id) == targetName || strings.ToLower(npcData.Name) == targetName {
 				found = true
 				npcID = id
+				npcType = dynamicNpc.NPCType
 				dialogue = npcData.Dialogue
 				break
 			}
@@ -36,6 +38,94 @@ func (c *Client) handleTalk(args []string) {
 	if !found {
 		c.reply([]byte(protocol.FormatErr(protocol.ErrNPCNotFound, "NPC_NOT_FOUND")))
 		return
+	}
+
+	var questUnlocked string
+	var healToFull bool
+	var completedQuest string
+	c.hub.do(func() {
+		if npcType == "chest" {
+			hasQuest := false
+			for _, q := range c.quests {
+				if q == "find_wayfinder" {
+					hasQuest = true
+					break
+				}
+			}
+			if hasQuest {
+				dialogue = []string{"You open the chest and find the Wayfinder! Return to Yen Sid."}
+				for i, q := range c.quests {
+					if q == "find_wayfinder" {
+						c.quests[i] = "find_wayfinder_found"
+						break
+					}
+				}
+			} else {
+				dialogue = []string{"It's locked tight."}
+			}
+		} else if npcType == "yen_sid" {
+			hasFoundWayfinder := false
+			hasFoundShadow := false
+			for _, q := range c.quests {
+				if q == "find_wayfinder_found" {
+					hasFoundWayfinder = true
+				}
+				if q == "defeat_shadow_found" {
+					hasFoundShadow = true
+				}
+			}
+			
+			if hasFoundWayfinder {
+				dialogue = []string{"Ah, you found it! Now, you must push back the darkness."}
+				questUnlocked = "defeat_shadow"
+				for i, q := range c.quests {
+					if q == "find_wayfinder_found" {
+						c.quests[i] = "find_wayfinder_completed"
+						break
+					}
+				}
+				// Give them the next quest automatically
+				hasNext := false
+				for _, q := range c.quests {
+					if q == "defeat_shadow" || q == "defeat_shadow_completed" || q == "defeat_shadow_found" {
+						hasNext = true
+						break
+					}
+				}
+				if !hasNext {
+					c.quests = append(c.quests, "defeat_shadow")
+				}
+			} else if hasFoundShadow {
+				dialogue = []string{"You have proven your strength. Your heart is fully restored!"}
+				healToFull = true
+				completedQuest = "defeat_shadow"
+				for i, q := range c.quests {
+					if q == "defeat_shadow_found" {
+						c.quests[i] = "defeat_shadow_completed"
+						break
+					}
+				}
+			}
+		}
+	})
+
+	if questUnlocked != "" {
+		msg := "You completed a quest: Bonds of Friendship! Unlocked new quest: Push Back the Darkness!"
+		c.hub.BroadcastGlobal([]byte(protocol.FormatEvt("GLOBAL", "CHAT", "QuestSys "+msg)))
+	}
+
+	if completedQuest != "" {
+		if healToFull {
+			c.hub.do(func() { c.hp = 100 })
+		}
+		var qName, qReward string
+		c.hub.do(func() { 
+			qData := c.hub.worldMap.Quests[completedQuest]
+			qName = qData.Name
+			qReward = qData.Reward
+		})
+		msg := "You completed a quest: " + qName + "! " + qReward
+		c.hub.BroadcastGlobal([]byte(protocol.FormatEvt("GLOBAL", "CHAT", "QuestSys "+msg)))
 	}
 
 	dialogueStr := ""
@@ -99,7 +189,7 @@ func (c *Client) handleQuest(args []string) {
 		for _, q := range questsToGive {
 			has := false
 			for _, active := range c.quests {
-				if active == q || active == q+"_completed" {
+				if active == q || active == q+"_completed" || active == q+"_found" {
 					has = true
 					break
 				}
@@ -125,7 +215,7 @@ func (c *Client) handleQuest(args []string) {
 	var qDesc, qReward string
 	c.hub.do(func() {
 		qData := c.hub.worldMap.Quests[questID]
-		qDesc = qData.Name
+		qDesc = qData.Goal
 		qReward = qData.Reward
 	})
 
@@ -176,18 +266,22 @@ func (c *Client) handleQuests() {
 			}
 
 			if completed {
-				c.quests[i] = q + "_completed"
-				
-				c.hub.logger.Info("quest_completed",
-					"username", c.username,
-					"quest_id", q,
-				)
-				
-				// Send a reward message
-				msg := "You completed a quest: " + questData.Name + "! " + questData.Reward
-				select {
-				case c.send <- []byte(protocol.FormatEvt("GLOBAL", "CHAT", "QuestSys "+msg)):
-				default:
+				if q == "defeat_shadow" {
+					c.quests[i] = q + "_found"
+				} else {
+					c.quests[i] = q + "_completed"
+					
+					c.hub.logger.Info("quest_completed",
+						"username", c.username,
+						"quest_id", q,
+					)
+					
+					// Send a reward message
+					msg := "You completed a quest: " + questData.Name + "! " + questData.Reward
+					select {
+					case c.send <- []byte(protocol.FormatEvt("GLOBAL", "CHAT", "QuestSys "+msg)):
+					default:
+					}
 				}
 			}
 		}
@@ -203,6 +297,15 @@ func (c *Client) handleQuests() {
 					activeQuests = append(activeQuests, map[string]interface{}{
 						"quest_id": base,
 						"status":   "completed",
+					})
+				}
+			} else if strings.HasSuffix(q, "_found") {
+				base := strings.TrimSuffix(q, "_found")
+				if _, ok := c.hub.worldMap.Quests[base]; ok {
+					activeQuests = append(activeQuests, map[string]interface{}{
+						"quest_id": base,
+						"status":   "return to npc",
+						"progress": "1/1",
 					})
 				}
 			} else {

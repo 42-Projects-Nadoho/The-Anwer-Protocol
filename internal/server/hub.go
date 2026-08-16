@@ -219,10 +219,17 @@ func (h *Hub) CreateGroup(c *Client) string {
 	return groupName
 }
 
-func (h *Hub) JoinGroup(c *Client, groupID string) (string, bool) {
+func (h *Hub) JoinGroup(c *Client, leaderName string) (string, bool) {
 	ok := false
+	var groupID string
 
 	h.do(func() {
+		leader, exists := h.usernames[leaderName]
+		if !exists || leader.groupName == "" {
+			return
+		}
+		groupID = leader.groupName
+
 		members, exists := h.groups[groupID]
 		if !exists {
 			return
@@ -230,7 +237,7 @@ func (h *Hub) JoinGroup(c *Client, groupID string) (string, bool) {
 
 		invited := false
 		for i, g := range c.isInvited {
-			if g == groupID {
+			if g == leaderName {
 				invited = true
 				c.isInvited = append(c.isInvited[:i], c.isInvited[i+1:]...)
 				break
@@ -263,12 +270,12 @@ func (h *Hub) InviteGroup(c *Client, targetUsername string) bool {
 			return
 		}
 		for _, g := range target.isInvited {
-			if g == c.groupName {
+			if g == c.username {
 				return
 			}
 		}
-		evt := []byte(protocol.FormatEvt("GROUP", "INVITE", c.username+" "+c.groupName))
-		target.isInvited = append(target.isInvited, c.groupName)
+		evt := []byte(protocol.FormatEvt("GROUP", "INVITE", c.username))
+		target.isInvited = append(target.isInvited, c.username)
 		select {
 		case target.send <- evt:
 		default:
