@@ -11,42 +11,11 @@ The Answer Protocol (TAP) is a collaborative multiplayer text adventure game, in
 
 ## Instructions
 
-This project uses `make` as its build tool. The following commands are available to compile, install, and execute the project:
-
-- **Install dependencies:**
-  ```bash
-  make install
-  ```
-
-- **Run the server:**
-  ```bash
-  make run-server
-  ```
-
-- **Run the CLI client:**
-  ```bash
-  make run-client
-  ```
-
-- **Run the GUI client:**
-  ```bash
-  make run-client-gui
-  ```
-
-- **Lint the code:**
-  Checks formatting (`gofmt`) and runs static analysis (`go vet`).
-  ```bash
-  make lint
-  ```
-
-- **Clean build artifacts:**
-  Removes compiled binaries and cleans the workspace.
-  ```bash
-  make clean
-  ```
-
-> [!TIP]
-> To simply build all binaries without running them, use `make build` or `make`)
+This project uses `make` as its build tool. You can compile all components (server, CLI, GUI) simply by running:
+```bash
+make
+```
+For detailed, component-specific commands and targets, see the **Building and Running** section below.
 
 ## Architecture
 
@@ -87,7 +56,50 @@ Server Logging section documenting logging implementation and monitoring capabil
 Group Contributions section indicating each member's responsibilities
 
 ## Building and Running
-Building and Running section with detailed instructions
+
+The project utilizes `make` for dependency management, compilation, and execution. The following targets verify our building tool meets all mandatory project requirements:
+
+- **Install dependencies (`make install`):**
+  Resolves and installs all required Go modules.
+  ```bash
+  make install
+  ```
+
+- **Run the server (`make run-server`):**
+  Builds and starts the authoritative TAP server.
+  ```bash
+  make run-server
+  ```
+
+- **Run the CLI client (`make run-client`):**
+  Builds and starts the command-line interface.
+  ```bash
+  make run-client
+  ```
+
+- **Run the GUI client (`make run-client-gui`):**
+  Builds and starts the graphical user interface.
+  ```bash
+  make run-client-gui
+  ```
+
+- **Lint the code (`make lint`):**
+  Checks formatting (`gofmt`) and runs static analysis (`go vet`) to ensure code quality.
+  ```bash
+  make lint
+  ```
+
+- **Clean build artifacts (`make clean`):**
+  Removes compiled binaries and cleans the workspace.
+  ```bash
+  make clean
+  ```
+
+> [!TIP]
+> To simply build all binaries without running them, use `make build` or `make`.
+
+> [!NOTE]
+> Read the detailed Building and Running documentation [here](docs/008-building-and-running.md).
 
 ## Testing
 Testing section explaining how to test functionality
