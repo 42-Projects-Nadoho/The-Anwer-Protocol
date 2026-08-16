@@ -28,30 +28,34 @@ To confirm that the implementation behaves strictly as specified by the RFC, you
 
 In either the CLI or GUI client, execute the following commands and verify the server's expected `S: OK ...` responses:
 
-1. `CONNECT <username>` - Connects a player to the server.
-2. `LOOK` - Displays the current room description, exits, items, and NPCs.
-3. `MOVE <direction>` - Moves the player to an adjacent room.
-4. `CHAT <target> <message>` - Sends a message globally, to a room, or to a group.
-5. `TAKE <item>` - Picks up an obtainable item from the current room.
-6. `DROP <item>` - Drops an item from the inventory into the room.
-7. `INVENTORY` - Lists items currently held by the player.
-8. `TALK <npc>` - Initiates dialogue with an NPC.
-9. `ATTACK <target>` - Initiates or continues combat with an enemy NPC.
-10. `STATUS` - Displays current health and combat status.
-11. `QUEST <action>` - Manages specific quest interactions.
-12. `QUESTS` - Lists active and completed quests.
-13. `WHO` - Lists players currently online or in the room.
-14. `GROUP <action>` - Manages party creation and invites.
-15. `QUIT` - Safely disconnects from the server.
+| Command | Description |
+| :--- | :--- |
+| `CONNECT <username>` | Connects a player to the server. |
+| `LOOK` | Displays the current room description, exits, items, and NPCs. |
+| `MOVE <direction>` | Moves the player to an adjacent room. |
+| `CHAT <target> <message>` | Sends a message globally, to a room, or to a group. |
+| `TAKE <item>` | Picks up an obtainable item from the current room. |
+| `DROP <item>` | Drops an item from the inventory into the room. |
+| `INVENTORY` | Lists items currently held by the player. |
+| `TALK <npc>` | Initiates dialogue with an NPC. |
+| `ATTACK <target>` | Initiates or continues combat with an enemy NPC. |
+| `STATUS` | Displays current health and combat status. |
+| `QUEST <action>` | Manages specific quest interactions. |
+| `QUESTS` | Lists active and completed quests. |
+| `WHO` | Lists players currently online or in the room. |
+| `GROUP <action>` | Manages party creation and invites. |
+| `QUIT` | Safely disconnects from the server. |
 
 ### Expected Broadcast Events
 
 While executing the above commands with multiple connected clients, verify that the server correctly pushes the following asynchronous events to the appropriate clients:
 
-- `EVT ROOM PRESENCE ENTER <username>` (Broadcasted when a player enters your room)
-- `EVT ROOM PRESENCE LEAVE <username>` (Broadcasted when a player leaves your room)
-- `EVT GLOBAL CHAT <username> <message>` (Broadcasted globally)
-- `EVT ROOM CHAT <username> <message>` (Broadcasted to the room)
-- `EVT COMBAT <details>` (Broadcasted during attack rounds)
+| Event | Description |
+| :--- | :--- |
+| `EVT ROOM PRESENCE ENTER <username>` | Broadcasted when a player enters your room. |
+| `EVT ROOM PRESENCE LEAVE <username>` | Broadcasted when a player leaves your room. |
+| `EVT GLOBAL CHAT <username> <message>` | Broadcasted globally. |
+| `EVT ROOM CHAT <username> <message>` | Broadcasted to the room. |
+| `EVT COMBAT <details>` | Broadcasted during attack rounds. |
 
 If any command returns an `ERR` instead of `OK` (or if an event fails to broadcast to other connected clients), cross-reference the exact syntax with the RFC 42TAP specification document.
