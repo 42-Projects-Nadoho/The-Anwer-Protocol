@@ -47,8 +47,8 @@ In either the CLI or GUI client, execute the following commands and verify the s
 | `GROUP LEAVE` | Leave current group. | `OK` |
 
 ### Resource Interaction Commands
-| Command | Description | Response |
-| :--- | :--- | :--- |
+| Command | Description |
+| :--- | :--- |
 | `TAKE <item>` | Picks up an obtainable item from the current room. |
 | `DROP <item>` | Drops an item from the inventory into the room. |
 | `INVENTORY` | Lists items currently held by the player. |
