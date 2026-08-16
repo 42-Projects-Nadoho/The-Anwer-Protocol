@@ -33,9 +33,9 @@ The README.md file shall contain all the required sections:
 
 - [ ] Room interconnection: At least 8 interconnected rooms forming loops with at least one optional branch.
 - [ ] NPC roles: At least 3 distinct NPC roles.
- - [ ] Dialogue NPCs: `leon`
- - [ ] Quest-giver NPCs: `yen_sid`, 
- - [ ] Enemy NPCs: `shadow_heartless`, `large_body`, `sephiroth`
+  - [ ] Dialogue NPCs: `leon`
+  - [ ] Quest-giver NPCs: `yen_sid`, 
+  - [ ] Enemy NPCs: `shadow_heartless`, `large_body`, `sephiroth`
 - [ ] Item availability: At least 4 distinct items with at least 2 obtainable in-world: `potion`, `ether`, `keyblade`, `wayfinder`
 - [ ] At least 2 implemented quests of different types: `find_wayfinder`, `defeat_shadow`
 - [ ] Movement allows full circuit exploration (no "line-only" maps).
