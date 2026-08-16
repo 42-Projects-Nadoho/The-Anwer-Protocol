@@ -122,11 +122,25 @@ func (c *Client) handleQuest(args []string) {
 		return
 	}
 
-	c.reply([]byte(protocol.FormatOK("quest_accepted=" + questID)))
+	var qDesc, qReward string
+	c.hub.do(func() {
+		qData := c.hub.worldMap.Quests[questID]
+		qDesc = qData.Name
+		qReward = qData.Reward
+	})
+
+	resp := map[string]interface{}{
+		"quest_id":    questID,
+		"description": qDesc,
+		"reward":      qReward,
+		"status":      "available",
+	}
+	data, _ := json.Marshal(resp)
+	c.reply([]byte(protocol.FormatOK(string(data))))
 }
 
 func (c *Client) handleQuests() {
-	var activeQuests []string
+	var activeQuests []map[string]interface{}
 	
 	c.hub.do(func() {
 		// First pass: check for completion
@@ -185,12 +199,19 @@ func (c *Client) handleQuests() {
 			}
 			if strings.HasSuffix(q, "_completed") {
 				base := strings.TrimSuffix(q, "_completed")
-				if qData, ok := c.hub.worldMap.Quests[base]; ok {
-					activeQuests = append(activeQuests, "[DONE] "+qData.Name)
+				if _, ok := c.hub.worldMap.Quests[base]; ok {
+					activeQuests = append(activeQuests, map[string]interface{}{
+						"quest_id": base,
+						"status":   "completed",
+					})
 				}
 			} else {
-				if qData, ok := c.hub.worldMap.Quests[q]; ok {
-					activeQuests = append(activeQuests, "[ACTIVE] "+qData.Name)
+				if _, ok := c.hub.worldMap.Quests[q]; ok {
+					activeQuests = append(activeQuests, map[string]interface{}{
+						"quest_id": q,
+						"status":   "active",
+						"progress": "0/1",
+					})
 				}
 			}
 		}

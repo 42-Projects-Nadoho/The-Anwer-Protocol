@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -73,7 +74,17 @@ func (c *Client) handleAttack(args []string) {
 	if enemyDied {
 		msg := fmt.Sprintf("%s dealt %d damage to %s. The enemy is defeated!", c.username, dmgDealt, npcID)
 		c.hub.BroadcastRoom(c.currentRoomID, []byte(protocol.FormatEvt("ROOM", "CHAT", "CombatSys "+msg)), nil)
-		c.reply([]byte(protocol.FormatOK(fmt.Sprintf("defeated=%s", npcID))))
+		
+		var php int
+		c.hub.do(func() { php = c.hp })
+		resp := map[string]interface{}{
+			"attacker_hp": php,
+			"target_hp":   0,
+			"damage":      dmgDealt,
+			"status":      "victory",
+		}
+		data, _ := json.Marshal(resp)
+		c.reply([]byte(protocol.FormatOK(string(data))))
 		
 		// If player had a defeat quest for this, mark it (simple logic)
 		c.hub.do(func() {
@@ -84,7 +95,16 @@ func (c *Client) handleAttack(args []string) {
 			c.username, dmgDealt, npcID, npcID, enemyHp, npcID, counterDmg)
 		c.hub.BroadcastRoom(c.currentRoomID, []byte(protocol.FormatEvt("ROOM", "CHAT", "CombatSys "+msg)), nil)
 		
-		c.reply([]byte(protocol.FormatOK(fmt.Sprintf("hit=%d", dmgDealt))))
+		var php int
+		c.hub.do(func() { php = c.hp })
+		resp := map[string]interface{}{
+			"attacker_hp": php,
+			"target_hp":   enemyHp,
+			"damage":      dmgDealt,
+			"status":      "combat",
+		}
+		data, _ := json.Marshal(resp)
+		c.reply([]byte(protocol.FormatOK(string(data))))
 
 		// Check if player died from counter-attack
 		var died bool
@@ -120,5 +140,15 @@ func (c *Client) handleStatus() {
 	c.hub.do(func() {
 		hp = c.hp
 	})
-	c.reply([]byte(protocol.FormatOK(fmt.Sprintf("hp=%d", hp))))
+	status := "healthy"
+	if hp <= 0 {
+		status = "dead"
+	}
+	resp := map[string]interface{}{
+		"hp":     hp,
+		"max_hp": 100,
+		"status": status,
+	}
+	data, _ := json.Marshal(resp)
+	c.reply([]byte(protocol.FormatOK(string(data))))
 }
