@@ -81,9 +81,9 @@ flowchart TD
 
 Our static world data successfully fulfills all the mandatory subject requirements to create a robust game environment:
 
-- **At least 8 interconnected rooms forming loops with at least one optional branch:** The map consists of an 8-room central loop (Destiny Islands, Traverse Town, Wonderland, Olympus Coliseum, Agrabah, Halloween Town, Neverland, Hollow Bastion) with one optional branch leading to the Secret Cave.
+- **At least 8 interconnected rooms forming loops with at least one optional branch:** The map consists of an 8-room central loop (`Destiny Islands`, `Traverse Town`, `Wonderland`, `Olympus Coliseum`, `Agrabah`, `Halloween Town`, `Neverland`, `Hollow Bastion`) with one optional branch leading to the Secret Cave.
 - **Movement allows full circuit exploration (no "line-only" maps):** The core 8 rooms form a continuous, bi-directional loop, meaning players are never forced into dead-ends on the main path.
-- **At least 3 distinct NPC roles:** We have Quest Givers (Master Yen Sid), Dialogue NPCs (Leon), and Enemy NPCs (Shadow, Large Body, Sephiroth).
+- **At least 3 distinct NPC roles:** We have Quest Givers (`Master Yen Sid`), Dialogue NPCs (`Leon`), and Enemy NPCs (`Shadow`, `Large Body`, `Sephiroth`).
 - **At least 4 distinct items with at least 2 obtainable in-world:** We defined 4 items (`potion`, `ether`, `keyblade`, `wayfinder`), all of which are mapped directly to rooms where players can pick them up.
 - **At least 2 implemented quests of different types:** We implemented a Fetch quest (`find_wayfinder`) and a Defeat/Combat quest (`defeat_shadow`).
 - **All NPCs and items referenced in rooms are properly defined in world data:** All entities spawned in the rooms (e.g., Potion, Leon, Shadow) are thoroughly defined in the NPC and Items tables to prevent parsing errors.
