@@ -42,11 +42,13 @@ In either the CLI or GUI client, execute the following commands and verify the s
 | Command | Description | Response |
 | :--- | :--- | :--- |
 | `GROUP CREATE` | Create a new player group. | `OK group=` |
-| `GROUP INVITE` | Invite a player to the current group. | `OK` |
-| `GROUP JOIN` | Join an existing group. | `OK group=` |
+| `GROUP INVITE <user>` | Invite a player to the current group. | `OK` |
+| `GROUP JOIN <groupleader>` | Join an existing group. | `OK group=` |
 | `GROUP LEAVE` | Leave current group. | `OK` |
 
-
+### Resource Interaction Commands
+| Command | Description | Response |
+| :--- | :--- | :--- |
 | `TAKE <item>` | Picks up an obtainable item from the current room. |
 | `DROP <item>` | Drops an item from the inventory into the room. |
 | `INVENTORY` | Lists items currently held by the player. |
