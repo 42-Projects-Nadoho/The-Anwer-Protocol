@@ -49,11 +49,8 @@ This project uses `make` as its build tool. The following commands are available
 
 The Answer Protocol (TAP) is built around a robust client-server architecture written in Go, specifically designed to handle concurrent connections and real-time state synchronization over TCP. The core server acts as the single source of truth, employing an event-driven dispatcher to manage player actions, combat, and world state across a shared environment. By isolating responsibilities into distinct modules—such as protocol serialization, world management, and network I/O—the system remains highly maintainable and scalable. This backend seamlessly supports two independent client implementations: a fast, text-based CLI and a richer, interactive GUI.
 
-[Read the detailed Architecture documentation here](docs/001-architecture.md).
-
-```
-add tree
-```
+> [!NOTE]
+> Read the detailed Architecture documentation [here](docs/001-architecture.md).
 
 ## Protocol Implementation
 Protocol Implementation section documenting any RFC deviations
