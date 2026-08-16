@@ -68,10 +68,11 @@ While executing the above commands with multiple connected clients, verify that 
 | `ROOM` | `PRESENCE LEAVE` | `EVT ROOM PRESENCE LEAVE <username>` | Broadcasted when a player leaves your room. |
 | `ROOM` | `CHAT` | `EVT ROOM CHAT <username> <message>` | Broadcasted to the room. |
 | `GLOBAL` | `CHAT` | `EVT GLOBAL CHAT <username> <message>` | Broadcasted globally. |
-| `GROUP` | `INVITE` | `EVT GROUP INVITE ` | Broadcasted during attack rounds. |
-| `GROUP` | `JOIN` | `EVT GROUP JOIN` | Broadcasted during attack rounds. |
-| `GROUP` | `LEAVE` | `EVT GROUP LEAVE` | Broadcasted during attack rounds. |
-| `GROUP` | `CHAT` | `EVT GROUP CHAT` | Broadcasted during attack rounds. |
-| `STATS` | `PLAYERS` | `EVT STATS players=` | Updated player count. |
+| `GROUP` | `INVITE` | `EVT GROUP INVITE <username>` | Broadcasted when invited to a group. |
+| `GROUP` | `JOIN` | `EVT GROUP JOIN <username>` | Broadcasted when a player joins the group. |
+| `GROUP` | `LEAVE` | `EVT GROUP LEAVE <username>` | Broadcasted when a player leaves the group. |
+| `GROUP` | `CHAT` | `EVT GROUP CHAT <username> <message>` | Broadcasted to group members. |
+| `COMBAT`| `UPDATE` | `EVT COMBAT <details>` | Broadcasted during attack rounds. |
+| `STATS` | `PLAYERS` | `EVT STATS players=<count>` | Updated server player count. |
 
 If any command returns an `ERR` instead of `OK` (or if an event fails to broadcast to other connected clients), cross-reference the exact syntax with the RFC 42TAP specification document.
