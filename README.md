@@ -11,14 +11,40 @@ The Answer Protocol (TAP) is a collaborative multiplayer text adventure game, in
 
 ## Instructions
 
-This project uses `make` as its build tool. You can compile all components (server, CLI, GUI) simply by running:
-```bash
-make
-```
-For detailed, component-specific commands and targets, see the **Building and Running** section below.
+- **Install dependencies:**
+  ```bash
+  make install
+  ```
+- **Run the server:**
+  ```bash
+  make run-server
+  ```
+- **Run the CLI client:**
+  ```bash
+  make run-client
+  ```
+- **Run the GUI client:**
+  ```bash
+  make run-client-gui
+  ```
+- **Lint the code:**
+  Checks formatting (`gofmt`) and runs static analysis (`go vet`).
+  ```bash
+  make lint
+  ```
+- **Clean build artifacts:**
+  Removes compiled binaries and cleans the workspace.
+  ```bash
+  make clean
+  ```
+  
+> [!TIP]
+> To simply build all binaries without running them, use `make build` or `make`)
+
+> [!NOTE]
+> For detailed, component-specific commands and targets, see the **Building and Running** section below.
 
 ## Architecture
-
 The Answer Protocol (TAP) is built around a robust client-server architecture written in Go, specifically designed to handle concurrent connections and real-time state synchronization over TCP. The core server acts as the single source of truth, employing an event-driven dispatcher to manage player actions, combat, and world state across a shared environment. By isolating responsibilities into distinct modules—such as protocol serialization, world management, and network I/O—the system remains highly maintainable and scalable. This backend seamlessly supports two independent client implementations: a fast, text-based CLI and a richer, interactive GUI.
 
 The primary components of the system include:
@@ -43,7 +69,6 @@ Combat System section describing combat mechanics and design choices
 Quest System section explaining quest progression and implementation
 
 ## World Design
-
 The game world in The Answer Protocol is meticulously designed as a fully interconnected, non-linear environment that encourages deep exploration and cooperative gameplay. Moving away from simple linear paths, the layout features a central hub with branching loops and secret optional areas, ensuring players can freely traverse the world without hitting dead ends. This rich environment is populated by a diverse cast of NPCs—ranging from helpful dialogue characters and quest-givers to hostile enemies—and is scattered with unique items to discover, collect, and use. The deliberate distribution of these elements not only breathes life into the world but also seamlessly integrates with our dynamic combat and questing systems.
 
 > [!NOTE]
@@ -81,18 +106,6 @@ The project utilizes `make` for dependency management, compilation, and executio
   Builds and starts the graphical user interface.
   ```bash
   make run-client-gui
-  ```
-
-- **Lint the code (`make lint`):**
-  Checks formatting (`gofmt`) and runs static analysis (`go vet`) to ensure code quality.
-  ```bash
-  make lint
-  ```
-
-- **Clean build artifacts (`make clean`):**
-  Removes compiled binaries and cleans the workspace.
-  ```bash
-  make clean
   ```
 
 > [!TIP]
