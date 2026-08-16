@@ -20,9 +20,21 @@ To verify that the initial greeting matches the RFC 42TAP specification:
    S: OK hello proto=1
    ```
 
-## Commands Testing
+## Commands and Events Testing
 
-In either the CLI or GUI client, execute the following commands and verify the server's expected `S: OK ...` responses.
+To confirm that the implementation behaves strictly as specified by the RFC, you must manually execute every mandatory command and verify the broadcasted events.
+
+### Verifying ABNF Syntax Compliance
+
+To verify that message formats strictly follow the ABNF syntax definitions, test the server's error handling by sending malformed commands from the CLI client:
+
+1. **Unknown Command:** Send an undefined command (e.g., `GIBBERISH`) and verify the server responds with a protocol-compliant error.
+2. **Missing Arguments:** Send a command that requires arguments without them (e.g., `MOVE` or `CHAT`) and verify it is rejected.
+3. **Invalid Formatting:** Send commands with invalid characters to test the robustness of the ABNF parser.
+
+The server should gracefully return `ERR` messages and never crash, proving that the ABNF syntax definitions are strictly enforced.
+
+### Mandatory Commands `S: OK ...` responses.
 
 ### Core Commands
 | Command | Description |

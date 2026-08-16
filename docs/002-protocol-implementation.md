@@ -10,4 +10,9 @@ Example greeting:
 S: OK hello proto=1
 ```
 
-*(Any further deviations or specific implementation choices regarding ABNF syntax parsing or event broadcasting will be documented here.)*
+## ABNF Syntax Compliance
+
+The server's message parser is strictly built against the ABNF syntax definitions provided in the RFC:
+- All incoming client commands are validated against their expected ABNF structure.
+- Malformed commands, missing arguments, or invalid syntax immediately trigger protocol-compliant error responses (e.g., `ERR`) rather than causing server instability.
+- All outbound events and responses from the server are formatted strictly according to the RFC ABNF rules, ensuring perfect compatibility with any compliant third-party clients.
