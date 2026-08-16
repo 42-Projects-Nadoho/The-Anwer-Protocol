@@ -1,5 +1,7 @@
 # World Design
 
+The game world in The Answer Protocol is meticulously designed as a fully interconnected, non-linear environment that encourages deep exploration and cooperative gameplay. Moving away from simple linear paths, the layout features a central hub with branching loops and secret optional areas, ensuring players can freely traverse the world without hitting dead ends. This rich environment is populated by a diverse cast of NPCs—ranging from helpful dialogue characters and quest-givers to hostile enemies—and is scattered with unique items to discover, collect, and use. The deliberate distribution of these elements not only breathes life into the world but also seamlessly integrates with our dynamic combat and questing systems.
+
 This document provides a comprehensive overview of the game world, including room connections, item distribution, NPCs, and available quests.
 
 ## Map Overview
@@ -74,3 +76,14 @@ flowchart TD
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `find_wayfinder` | Bonds of Friendship | Fetch | `wayfinder` | You feel your heart grow stronger. | Master Yen Sid |
 | `defeat_shadow` | Push Back the Darkness | Defeat | `shadow_heartless` | You gained valuable combat experience. | Master Yen Sid |
+
+## Minimum Requirements Met
+
+Our static world data successfully fulfills all the mandatory subject requirements to create a robust game environment:
+
+- **At least 8 interconnected rooms forming loops with at least one optional branch:** The map consists of an 8-room central loop (Destiny Islands, Traverse Town, Wonderland, Olympus Coliseum, Agrabah, Halloween Town, Neverland, Hollow Bastion) with one optional branch leading to the Secret Cave.
+- **Movement allows full circuit exploration (no "line-only" maps):** The core 8 rooms form a continuous, bi-directional loop, meaning players are never forced into dead-ends on the main path.
+- **At least 3 distinct NPC roles:** We have Quest Givers (Master Yen Sid), Dialogue NPCs (Leon), and Enemy NPCs (Shadow, Large Body, Sephiroth).
+- **At least 4 distinct items with at least 2 obtainable in-world:** We defined 4 items (`potion`, `ether`, `keyblade`, `wayfinder`), all of which are mapped directly to rooms where players can pick them up.
+- **At least 2 implemented quests of different types:** We implemented a Fetch quest (`find_wayfinder`) and a Defeat/Combat quest (`defeat_shadow`).
+- **All NPCs and items referenced in rooms are properly defined in world data:** All entities spawned in the rooms (e.g., Potion, Leon, Shadow) are thoroughly defined in the NPC and Items tables to prevent parsing errors.

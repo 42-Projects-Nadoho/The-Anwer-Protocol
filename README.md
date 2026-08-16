@@ -71,7 +71,11 @@ Combat System section describing combat mechanics and design choices
 Quest System section explaining quest progression and implementation
 
 ## World Design
-World Design section describing world layout and NPC/item distribution
+
+The game world in The Answer Protocol is meticulously designed as a fully interconnected, non-linear environment that encourages deep exploration and cooperative gameplay. Moving away from simple linear paths, the layout features a central hub with branching loops and secret optional areas, ensuring players can freely traverse the world without hitting dead ends. This rich environment is populated by a diverse cast of NPCs—ranging from helpful dialogue characters and quest-givers to hostile enemies—and is scattered with unique items to discover, collect, and use. The deliberate distribution of these elements not only breathes life into the world but also seamlessly integrates with our dynamic combat and questing systems.
+
+> [!NOTE]
+> Read the detailed World Design documentation [here](docs/005-world%20-design.md).
 
 ## Server Logging
 Server Logging section documenting logging implementation and monitoring capabilities
