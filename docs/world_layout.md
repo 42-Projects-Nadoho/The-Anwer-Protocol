@@ -7,18 +7,45 @@ This document provides a comprehensive overview of the game world, including roo
 The map consists of an 8-room loop, allowing continuous exploration, with one optional branch leading to the Secret Cave. 
 
 ```mermaid
-graph TD
-    classDef room fill:#fff,stroke:#333,stroke-width:2px,text-align:left;
+flowchart TD
+    classDef room fill:#fff,stroke:#000,stroke-width:2px;
 
-    TT["<div style='text-align: left'><b>Traverse Town</b><hr>+ Items: Kingdom Key<br>+ NPCs: Leon</div>"]:::room
-    W["<div style='text-align: left'><b>Wonderland</b><hr><i>(Empty)</i></div>"]:::room
-    DI["<div style='text-align: left'><b>Destiny Islands</b><hr>+ Items: Potion<br>+ NPCs: Master Yen Sid</div>"]:::room
-    HB["<div style='text-align: left'><b>Hollow Bastion</b><hr>+ NPCs: Shadow</div>"]:::room
     SC["<div style='text-align: left'><b>Secret Cave</b><hr><i>(Optional Branch)</i></div>"]:::room
+    DI["<div style='text-align: left'><b>Destiny Islands</b><hr>+ Items: Potion<br>+ NPCs: Master Yen Sid</div>"]:::room
+    TT["<div style='text-align: left'><b>Traverse Town</b><hr>+ Items: Kingdom Key<br>+ NPCs: Leon</div>"]:::room
+    WL["<div style='text-align: left'><b>Wonderland</b><hr><i>(Empty)</i></div>"]:::room
     OC["<div style='text-align: left'><b>Olympus Coliseum</b><hr>+ NPCs: Large Body<br>+ NPCs: Sephiroth</div>"]:::room
     A["<div style='text-align: left'><b>Agrabah</b><hr>+ Items: Ether</div>"]:::room
     HT["<div style='text-align: left'><b>Halloween Town</b><hr><i>(Empty)</i></div>"]:::room
-    N["<div style='text-align: left'><b>Neverland</b><hr>+ Items: Wayfinder</div>"]:::room
+    NL["<div style='text-align: left'><b>Neverland</b><hr>+ Items: Wayfinder</div>"]:::room
+    HB["<div style='text-align: left'><b>Hollow Bastion</b><hr>+ NPCs: Shadow</div>"]:::room
+
+    SC --South--> DI 
+
+    DI --North--> SC
+    DI --East--> TT
+    DI --South--> HB
+
+    TT --West--> DI
+    TT --East--> WL
+
+    WL --West--> TT
+    WL --South--> OC
+
+    OC --North--> WL
+    OC --South--> A
+
+    A --North--> OC
+    A --West--> HT
+
+    HT --East--> A
+    HT --West--> NL
+
+    NL --East--> HT
+    NL --North--> HB
+
+    HB --South--> NL
+    HB --North--> DI
 
 ```
 
