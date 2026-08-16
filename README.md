@@ -42,7 +42,8 @@ This project uses `make` as its build tool. The following commands are available
   make clean
   ```
 
-*(To simply build all binaries without running them, use `make build` or `make`)*
+> [!TIP]
+> To simply build all binaries without running them, use `make build` or `make`)
 
 ## Architecture
 Architecture section explaining server design choices
