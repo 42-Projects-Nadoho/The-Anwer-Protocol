@@ -34,11 +34,20 @@ The README.md file shall contain all the required sections:
 ### Room interconnection
 At least 8 interconnected rooms forming loops with at least one optional branch.
 
-- [ ]  NPC roles | At least 3 distinct NPC roles: dialogue NPCs, quest-giver NPCs, and enemy NPCs |
-- [ ]  Item availability | At least 4 distinct items with at least 2 obtainable in-world |
-- [ ]  Implemented quests | At least 2 implemented quests of different types |
-- [ ]  Map exploration | Movement allows full circuit exploration (no "line-only" maps) |
-- [ ]  Definition in world data | All NPCs and items referenced in rooms are properly defined in world data |
+### NPC roles
+At least 3 distinct NPC roles: dialogue NPCs, quest-giver NPCs and enemy NPCs.
+
+### Item availability
+At least 4 distinct items with at least 2 obtainable in-world.
+
+### Implemented quests
+At least 2 implemented quests of different types.
+
+### Map exploration
+Movement allows full circuit exploration (no "line-only" maps).
+ 
+### Definition in world data
+All NPCs and items referenced in rooms are properly defined in world data.
 
 ## Build
 
