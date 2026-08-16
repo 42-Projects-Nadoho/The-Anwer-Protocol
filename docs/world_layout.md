@@ -20,27 +20,6 @@ graph TD
     HT["<div style='text-align: left'><b>Halloween Town</b><hr><i>(Empty)</i></div>"]:::room
     N["<div style='text-align: left'><b>Neverland</b><hr>+ Items: Wayfinder</div>"]:::room
 
-    %% North-South Links (Forces Vertical Placement)
-    TT -->|South| DI
-    DI -.->|North| TT
-
-    DI -->|South| SC
-    SC -.->|North| DI
-
-    W -->|South| OC
-    OC -.->|North| W
-
-    A -->|South| HT
-    HT -.->|North| A
-
-    HB -->|South| N
-    N -.->|North| HB
-
-    %% East-West Links
-    TT <-->|East / West| W
-    DI <-->|East / West| HB
-    OC <-->|West / East| A
-    HT <-->|East / West| N
 ```
 
 ## Rooms & Exits
