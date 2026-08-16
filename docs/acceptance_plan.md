@@ -31,15 +31,15 @@ The README.md file shall contain all the required sections:
 
 ## [World Requirements](/data/world.yaml)
 
-- [ ] [Room interconnection](/docs/world_layout.md): At least 8 interconnected rooms forming loops with at least one optional branch.
-- [ ] NPC roles: At least 3 distinct NPC roles.
-  - [ ] Dialogue NPCs: `leon`
-  - [ ] Quest-giver NPCs: `yen_sid`, 
-  - [ ] Enemy NPCs: `shadow_heartless`, `large_body`, `sephiroth`
-- [ ] Item availability: At least 4 distinct items with at least 2 obtainable in-world: `potion`, `ether`, `keyblade`, `wayfinder`
-- [ ] At least 2 implemented quests of different types: `find_wayfinder`, `defeat_shadow`
-- [ ] Movement allows full circuit exploration (no "line-only" maps).
-- [ ] Definition in world data: All NPCs and items referenced in rooms are properly defined in [world data](/data/world.yaml).
+- [x] [Room interconnection](/docs/world_layout.md): At least 8 interconnected rooms forming loops with at least one optional branch.
+- [x] NPC roles: At least 3 distinct NPC roles.
+  - [x] Dialogue NPCs: `leon`
+  - [x] Quest-giver NPCs: `yen_sid`, 
+  - [x] Enemy NPCs: `shadow_heartless`, `large_body`, `sephiroth`
+- [x] Item availability: At least 4 distinct items with at least 2 obtainable in-world: `potion`, `ether`, `keyblade`, `wayfinder`
+- [x] At least 2 implemented quests of different types: `find_wayfinder`, `defeat_shadow`
+- [x] Movement allows full circuit exploration (no "line-only" maps).
+- [x] Definition in world data: All NPCs and items referenced in rooms are properly defined in [world data](/data/world.yaml).
 
 ## Build
 - [ ]  Project implementation language: Verify the project is implemented in one of the allowed languages: C, C++, Rust, Go, or Zig.
