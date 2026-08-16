@@ -4,9 +4,9 @@ world:
       name: "Destiny Islands"
       description: "A beautiful tropical island where journeys begin. The sun is shining brightly."
       exits:
-        north: "traverse_town"
-        east: "hollow_bastion"
-        south: "secret_cave"
+        east: "traverse_town"
+        south: "hollow_bastion"
+        north: "secret_cave"
       spawns:
         - npc_type: "yen_sid"
           count: 1
@@ -16,13 +16,13 @@ world:
       name: "Secret Cave"
       description: "A dark, hidden cave where strange drawings line the walls."
       exits:
-        north: "destiny_islands"
+        south: "destiny_islands"
 
     traverse_town:
       name: "Traverse Town"
       description: "A quiet town under a starry night sky. A refuge for those who have lost their worlds."
       exits:
-        south: "destiny_islands"
+        west: "destiny_islands"
         east: "wonderland"
       spawns:
         - npc_type: "leon"
@@ -41,7 +41,7 @@ world:
       description: "A grand arena where heroes test their might in fierce tournaments."
       exits:
         north: "wonderland"
-        west: "agrabah"
+        south: "agrabah"
       spawns:
         - npc_type: "large_body"
           count: 1
@@ -52,22 +52,22 @@ world:
       name: "Agrabah"
       description: "A desert city full of mysteries, bustling streets, and hidden treasures."
       exits:
-        east: "olympus_coliseum"
-        south: "halloween_town"
+        north: "olympus_coliseum"
+        west: "halloween_town"
       items: ["ether"]
 
     halloween_town:
       name: "Halloween Town"
       description: "A spooky world where every day is Halloween. Ghosts and goblins roam the streets."
       exits:
-        north: "agrabah"
-        east: "neverland"
+        east: "agrabah"
+        west: "neverland"
 
     neverland:
       name: "Neverland"
       description: "A magical pirate ship flying through the night sky. You can almost fly!"
       exits:
-        west: "halloween_town"
+        east: "halloween_town"
         north: "hollow_bastion"
       items: ["wayfinder"]
 
@@ -76,7 +76,7 @@ world:
       description: "A majestic yet decaying castle suspended over a void, steeped in dark magic."
       exits:
         south: "neverland"
-        west: "destiny_islands"
+        north: "destiny_islands"
       spawns:
         - npc_type: "shadow_heartless"
           count: 2
