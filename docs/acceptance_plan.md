@@ -29,7 +29,7 @@ The README.md file shall contain all the required sections:
 - [ ] Building and Running section: With detailed instructions
 - [ ] Testing section: Explaining how to test functionality
 
-## World Requirements
+## [World Requirements](/data/world.yaml)
 
 - [ ] [Room interconnection](/docs/world_layout.md): At least 8 interconnected rooms forming loops with at least one optional branch.
 - [ ] NPC roles: At least 3 distinct NPC roles.
