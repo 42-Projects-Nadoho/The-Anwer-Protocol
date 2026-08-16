@@ -245,7 +245,7 @@ func (c *Client) handleQuest(args []string) {
 }
 
 func (c *Client) handleQuests() {
-	var activeQuests []map[string]interface{}
+	activeQuests := make([]map[string]interface{}, 0)
 	
 	c.hub.do(func() {
 		// First pass: check for completion
