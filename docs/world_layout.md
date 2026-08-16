@@ -8,16 +8,39 @@ The map consists of an 8-room loop, allowing continuous exploration, with one op
 
 ```mermaid
 graph TD
-    DI["Destiny Islands"] <-->|North / South| TT["Traverse Town"]
-    DI <-->|East / West| HB["Hollow Bastion"]
-    DI <-->|South / North| SC["Secret Cave (Branch)"]
-    
-    TT <-->|East / West| W["Wonderland"]
-    W <-->|South / North| OC["Olympus Coliseum"]
-    OC <-->|West / East| A["Agrabah"]
-    A <-->|South / North| HT["Halloween Town"]
-    HT <-->|East / West| N["Neverland"]
-    N <-->|North / South| HB
+    classDef room fill:#fff,stroke:#333,stroke-width:2px,text-align:left;
+
+    TT["<div style='text-align: left'><b>Traverse Town</b><hr>+ Items: Kingdom Key<br>+ NPCs: Leon</div>"]:::room
+    W["<div style='text-align: left'><b>Wonderland</b><hr><i>(Empty)</i></div>"]:::room
+    DI["<div style='text-align: left'><b>Destiny Islands</b><hr>+ Items: Potion<br>+ NPCs: Master Yen Sid</div>"]:::room
+    HB["<div style='text-align: left'><b>Hollow Bastion</b><hr>+ NPCs: Shadow</div>"]:::room
+    SC["<div style='text-align: left'><b>Secret Cave</b><hr><i>(Optional Branch)</i></div>"]:::room
+    OC["<div style='text-align: left'><b>Olympus Coliseum</b><hr>+ NPCs: Large Body<br>+ NPCs: Sephiroth</div>"]:::room
+    A["<div style='text-align: left'><b>Agrabah</b><hr>+ Items: Ether</div>"]:::room
+    HT["<div style='text-align: left'><b>Halloween Town</b><hr><i>(Empty)</i></div>"]:::room
+    N["<div style='text-align: left'><b>Neverland</b><hr>+ Items: Wayfinder</div>"]:::room
+
+    %% North-South Links (Forces Vertical Placement)
+    TT -->|South| DI
+    DI -.->|North| TT
+
+    DI -->|South| SC
+    SC -.->|North| DI
+
+    W -->|South| OC
+    OC -.->|North| W
+
+    A -->|South| HT
+    HT -.->|North| A
+
+    HB -->|South| N
+    N -.->|North| HB
+
+    %% East-West Links
+    TT <-->|East / West| W
+    DI <-->|East / West| HB
+    OC <-->|West / East| A
+    HT <-->|East / West| N
 ```
 
 ## Rooms & Exits
