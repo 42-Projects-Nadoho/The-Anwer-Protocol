@@ -6,6 +6,9 @@
 ## Description
 The Answer Protocol (TAP) is a collaborative multiplayer text adventure game, inspired by the classic Multi-User Dungeons (MUDs) of the early internet era. It features a persistent virtual world where players can connect in real-time to explore interconnected rooms, interact with characters, complete quests, and battle enemies together. Behind the scenes, the project showcases robust network programming through a custom-built server that manages the shared world and communicates seamlessly with players. Users can experience the adventure through two distinct interfaces: a nostalgic command-line client or a more accessible graphical application. Ultimately, TAP demonstrates the ability to design and build a complex, real-time multiplayer system from the ground up, blending technical architecture with engaging game design.
 
+> [!IMPORTANT]
+> This project is implemented in **Go**, strictly adhering to the language constraints of the subject (C, C++, Rust, Go, Zig are allowed; Python is forbidden). **Go (or  Golang)** has been chosen for its native concurrency model and excellent standard library for TCP networking.
+
 ## Instructions
 
 This project uses `make` as its build tool. The following commands are available to compile, install, and execute the project:
