@@ -70,7 +70,7 @@ The server should gracefully return `ERR` messages and never crash, proving that
 | `QUEST <action>` | Manages specific quest interactions. |
 | `QUESTS` | Lists active and completed quests. |
 
-## Events Testing
+### Events Testing
 
 While executing the above commands with multiple connected clients, verify that the server correctly pushes the following asynchronous events to the appropriate clients.
 
