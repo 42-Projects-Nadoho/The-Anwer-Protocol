@@ -31,7 +31,7 @@ The README.md file shall contain all the required sections:
 
 ## World Requirements
 
-- [ ] Room interconnection: At least 8 interconnected rooms forming loops with at least one optional branch.
+- [ ] [Room interconnection](/docs/world_layout.md): At least 8 interconnected rooms forming loops with at least one optional branch.
 - [ ] NPC roles: At least 3 distinct NPC roles.
   - [ ] Dialogue NPCs: `leon`
   - [ ] Quest-giver NPCs: `yen_sid`, 
