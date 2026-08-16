@@ -58,16 +58,20 @@ In either the CLI or GUI client, execute the following commands and verify the s
 | `QUEST <action>` | Manages specific quest interactions. |
 | `QUESTS` | Lists active and completed quests. |
 
-### Events Testing
+## Events Testing
 
-While executing the above commands with multiple connected clients, verify that the server correctly pushes the following asynchronous events to the appropriate clients:
+While executing the above commands with multiple connected clients, verify that the server correctly pushes the following asynchronous events to the appropriate clients.
 
-| Event | Description |
-| :--- | :--- |
-| `EVT ROOM PRESENCE ENTER <username>` | Broadcasted when a player enters your room. |
-| `EVT ROOM PRESENCE LEAVE <username>` | Broadcasted when a player leaves your room. |
-| `EVT GLOBAL CHAT <username> <message>` | Broadcasted globally. |
-| `EVT ROOM CHAT <username> <message>` | Broadcasted to the room. |
-| `EVT COMBAT <details>` | Broadcasted during attack rounds. |
+| Category | Type | Event | Description |
+| :--- | :--- | :--- | :--- |
+| `ROOM` | `PRESENCE ENTER` | `EVT ROOM PRESENCE ENTER <username>` | Broadcasted when a player enters your room. |
+| `ROOM` | `PRESENCE LEAVE` | `EVT ROOM PRESENCE LEAVE <username>` | Broadcasted when a player leaves your room. |
+| `ROOM` | `CHAT` | `EVT ROOM CHAT <username> <message>` | Broadcasted to the room. |
+| `GLOBAL` | `CHAT` | `EVT GLOBAL CHAT <username> <message>` | Broadcasted globally. |
+| `GROUP` | `INVITE` | `EVT GROUP INVITE ` | Broadcasted during attack rounds. |
+| `GROUP` | `JOIN` | `EVT GROUP JOIN` | Broadcasted during attack rounds. |
+| `GROUP` | `LEAVE` | `EVT GROUP LEAVE` | Broadcasted during attack rounds. |
+| `GROUP` | `CHAT` | `EVT GROUP CHAT` | Broadcasted during attack rounds. |
+| `STATS` | `PLAYERS` | `EVT STATS players=` | Updated player count. |
 
 If any command returns an `ERR` instead of `OK` (or if an event fails to broadcast to other connected clients), cross-reference the exact syntax with the RFC 42TAP specification document.
