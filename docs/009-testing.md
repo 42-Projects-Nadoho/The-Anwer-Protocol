@@ -26,7 +26,7 @@ To confirm that the implementation behaves strictly as specified by the RFC, you
 
 ### Verifying ABNF Syntax Compliance
 
-To verify that message formats strictly follow the ABNF syntax definitions, test the server's error handling by sending malformed commands from the CLI client:
+To verify that message formats strictly follow the [ABNF syntax definitions](https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form), test the server's error handling by sending malformed commands from the CLI client:
 
 1. **Unknown Command:** Send an undefined command (e.g., `GIBBERISH`) and verify the server responds with a protocol-compliant error.
 2. **Missing Arguments:** Send a command that requires arguments without them (e.g., `MOVE` or `CHAT`) and verify it is rejected.
