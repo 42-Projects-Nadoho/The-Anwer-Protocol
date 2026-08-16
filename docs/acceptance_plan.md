@@ -33,6 +33,29 @@ The README.md file shall contain all the required sections:
 
 ### Room interconnection
 At least 8 interconnected rooms forming loops with at least one optional branch.
+- [ ] `make run-server`
+- [ ] `make run-client`
+- [ ] `CONNECT <username>`
+- [ ] `LOOK`
+- [ ] At least one optional branch must be present: `secret_cave`
+- [ ] Test the loop:
+ - Start at Destiny Islands
+ - `MOVE north`
+ - Arrive at Traverse Town
+ - `MOVE east`
+ - Arrive at Wonderland
+ - `MOVE south`
+ - Arrive at Olympus Coliseum
+ - `MOVE west`
+ - Arrive at Agrabah
+ - `MOVE south`
+ - Arrive at Halloween Town
+ - `MOVE east`
+ - Arrive at Neverland
+ - `MOVE north`
+ - Arrive at Hollow Bastion
+ - `MOVE west`
+ - Arrive back at Destiny Islands 
 
 ### NPC roles
 At least 3 distinct NPC roles: dialogue NPCs, quest-giver NPCs and enemy NPCs.
