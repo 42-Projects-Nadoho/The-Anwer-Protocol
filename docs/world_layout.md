@@ -25,7 +25,7 @@ graph TD
 ## NPCs
 
 | NPC ID | Name | Role | Location | Description | Stats |
-| : | : | : | : | : | : |
+| :--- | :--- | :--- | :--- | :--- | :--- |
 | `yen_sid` | Master Yen Sid | Quest Giver | Destiny Islands | A wise and powerful sorcerer, retired Keyblade Master. | - |
 | `leon` | Leon | Dialogue | Traverse Town | A stoic warrior wielding a gunblade. | - |
 | `shadow_heartless` | Shadow | Enemy | Hollow Bastion | A pureblood Heartless born from the darkness in a heart. | HP: 30, DMG: 10 |
@@ -35,7 +35,7 @@ graph TD
 ## Items
 
 | Item ID | Name | Description | Location |
-| : | : | : | : |
+| :--- | :--- | :--- | :--- |
 | `potion` | Potion | A restorative item that heals a small amount of HP. | Destiny Islands |
 | `ether` | Ether | An item that restores magic power. | Agrabah |
 | `keyblade` | Kingdom Key | A mysterious weapon shaped like a giant key. | Traverse Town |
@@ -44,6 +44,6 @@ graph TD
 ## Quests
 
 | Quest ID | Name | Type | Target | Reward | Given By |
-| : | : | : | : | : | : |
+| :--- | :--- | :--- | :--- | :--- | :--- |
 | `find_wayfinder` | Bonds of Friendship | Fetch | `wayfinder` | You feel your heart grow stronger. | Master Yen Sid |
 | `defeat_shadow` | Push Back the Darkness | Defeat | `shadow_heartless` | You gained valuable combat experience. | Master Yen Sid |
