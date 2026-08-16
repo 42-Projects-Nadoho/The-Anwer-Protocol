@@ -64,14 +64,23 @@ func (c *Client) handleTalk(args []string) {
 				dialogue = []string{"It's locked tight."}
 			}
 		} else if npcType == "yen_sid" {
+			hasFindWayfinderActive := false
 			hasFoundWayfinder := false
+			hasDefeatShadowActive := false
 			hasFoundShadow := false
+			isAllCompleted := false
+
 			for _, q := range c.quests {
-				if q == "find_wayfinder_found" {
+				if q == "find_wayfinder" {
+					hasFindWayfinderActive = true
+				} else if q == "find_wayfinder_found" {
 					hasFoundWayfinder = true
-				}
-				if q == "defeat_shadow_found" {
+				} else if q == "defeat_shadow" {
+					hasDefeatShadowActive = true
+				} else if q == "defeat_shadow_found" {
 					hasFoundShadow = true
+				} else if q == "defeat_shadow_completed" {
+					isAllCompleted = true
 				}
 			}
 			
@@ -105,6 +114,12 @@ func (c *Client) handleTalk(args []string) {
 						break
 					}
 				}
+			} else if isAllCompleted {
+				dialogue = []string{"You have done well. The islands are safe for now."}
+			} else if hasDefeatShadowActive {
+				dialogue = []string{"The Heartless still linger. You must defeat the Shadow Heartless."}
+			} else if hasFindWayfinderActive {
+				dialogue = []string{"What are you waiting for? Find the chest in the Secret Cave!"}
 			}
 		}
 	})
