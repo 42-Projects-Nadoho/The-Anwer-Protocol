@@ -31,49 +31,17 @@ The README.md file shall contain all the required sections:
 
 ## World Requirements
 
-### Room interconnection
-At least 8 interconnected rooms forming loops with at least one optional branch.
-- [ ] `make run-server`
-- [ ] `make run-client`
-- [ ] `CONNECT <username>`
-- [ ] `LOOK`
-- [ ] At least one optional branch must be present: `secret_cave`
-- [ ] Test the loop:
- - Start at Destiny Islands
- - `MOVE north`
- - Arrive at Traverse Town
- - `MOVE east`
- - Arrive at Wonderland
- - `MOVE south`
- - Arrive at Olympus Coliseum
- - `MOVE west`
- - Arrive at Agrabah
- - `MOVE south`
- - Arrive at Halloween Town
- - `MOVE east`
- - Arrive at Neverland
- - `MOVE north`
- - Arrive at Hollow Bastion
- - `MOVE west`
- - Arrive back at Destiny Islands 
-
-### NPC roles
-At least 3 distinct NPC roles: dialogue NPCs, quest-giver NPCs and enemy NPCs.
-
-### Item availability
-At least 4 distinct items with at least 2 obtainable in-world.
-
-### Implemented quests
-At least 2 implemented quests of different types.
-
-### Map exploration
-Movement allows full circuit exploration (no "line-only" maps).
- 
-### Definition in world data
-All NPCs and items referenced in rooms are properly defined in world data.
+- [ ] Room interconnection: At least 8 interconnected rooms forming loops with at least one optional branch.
+- [ ] NPC roles: At least 3 distinct NPC roles.
+ - [ ] Dialogue NPCs: `leon`
+ - [ ] Quest-giver NPCs: `yen_sid`, 
+ - [ ] Enemy NPCs: `shadow_heartless`, `large_body`, `sephiroth`
+- [ ] Item availability: At least 4 distinct items with at least 2 obtainable in-world: `potion`, `ether`, `keyblade`, `wayfinder`
+- [ ] At least 2 implemented quests of different types: `find_wayfinder`, `defeat_shadow`
+- [ ] Movement allows full circuit exploration (no "line-only" maps).
+- [ ] Definition in world data: All NPCs and items referenced in rooms are properly defined in [world data](/data/world.yaml).
 
 ## Build
-
 
 - [ ]  Project implementation language | Verify the project is implemented in one of the allowed languages: C, C++, Rust, Go, or Zig |
 - [ ]  Building tool targets | On a clean environment, verify the building tool provides targets/commands for: install dependencies, run-server, run-client, run-client-gui, lint, clean |
@@ -84,7 +52,6 @@ All NPCs and items referenced in rooms are properly defined in world data.
 
 ## Protocol Compliance
 
-
 - [ ]  Connect with clients | Start the server and connect with both the CLI and GUI clients |
 - [ ]  Greeting match | Verify that the greeting matches RFC 42TAP specifications |
 - [ ]  Command execution | Execute every command and event defined in the RFC document to confirm they behave as specified |
@@ -94,7 +61,6 @@ All NPCs and items referenced in rooms are properly defined in world data.
 
 ## Server Behaviour
 
-
 - [ ]  Load world data | The server loads the world data and validates exits and references |
 - [ ]  Room presence | The room is present |
 - [ ]  Chat event broadcasting | The chat events are broadcast only to the intended recipients |
@@ -102,8 +68,6 @@ All NPCs and items referenced in rooms are properly defined in world data.
 
 ## CLI Client
 Connect using the CLI client:
-
-
 - [ ]  Interactive commands | Commands can be sent interactively |
 - [ ]  Response time | Responses are displayed immediately |
 - [ ]  Asynchronous events | Asynchronous events (chat, presence) appear while waiting for input |
@@ -111,8 +75,6 @@ Connect using the CLI client:
 
 ## GUI Client
 Connect using the GUI client:
-
-
 - [ ]  UI Display | Room details, items, NPCs, and exits are displayed |
 - [ ]  Chat separation | Chat is separated by scope (Global, Room, Group) |
 - [ ]  Buttons function | Buttons for actions send the correct commands |
@@ -121,8 +83,6 @@ Connect using the GUI client:
 
 ## Robustness
 Server and client edge cases:
-
-
 - [ ]  Abrupt client disconnect | Disconnect a client abruptly: server must continue and remove the session |
 - [ ]  Command spam | Send multiple commands quickly from different clients: responses remain correct |
 - [ ]  Simultaneous moves | Attempt simultaneous MOVE actions from different clients and check for correct presence events |
@@ -130,16 +90,12 @@ Server and client edge cases:
 
 ## Network Features: Server
 The server must handle:
-
-
 - [ ]  Single packet | Multiple commands in a single TCP packet |
 - [ ]  Split packets | Commands split across packets |
 - [ ]  Unicode | Unicode characters in usernames or messages without encoding errors |
 - [ ]  Control characters | Control characters in messages are either rejected or safely handled |
 
 ## Network Features: Inventory and NPC Interactions
-
-
 - [ ]  `TAKE` command | Pick up items from rooms |
 - [ ]  `DROP` command | Drop items from inventory |
 - [ ]  `INVENTORY` command | List player's items |
@@ -150,15 +106,11 @@ The server must handle:
 - [ ]  `QUESTS` command | List active and completed quests |
 
 ## Data Integrity
-
-
 - [ ]  `LOOK` outputs format | Are valid JSON, contain consistent IDs, and match the current game state |
 - [ ]  Room definitions | All items and NPCs in rooms are defined in the world data |
 - [ ]  Room traversal | Moving between rooms and back is consistent and accurate in `LOOK` data |
 
 ## Dynamic Item Management
-
-
 - [ ]  Take an item from a room | The item disappears from `LOOK` output |
 - [ ]  Attempt to take the same item again | The item returns `ITEM_NOT_FOUND` error |
 - [ ]  Have a second player try to take the same item | The second player cannot take the same item |
@@ -168,8 +120,6 @@ The server must handle:
 - [ ]  Multi-word item names | Work correctly (e.g., "Loaf of Bread") |
 
 ## Combat System
-
-
 - [ ]  Use `STATUS` command at the beginning of the fight | Players start with 100 HP |
 - [ ]  Use `ATTACK` command on enemy NPCs | Damage is dealt |
 - [ ]  Enemy NPCs counter-attack | Reduce player HP |
@@ -179,8 +129,6 @@ The server must handle:
 - [ ]  Document combat mechanics | The group's combat mechanics design is documented in `README` with clear justification |
 
 ## Quest System
-
-
 - [ ]  Receive quests | Use `QUEST` command on quest-giver NPCs to receive quests |
 - [ ]  List quests | Use `QUESTS` command to list active and completed quests |
 - [ ]  Quest types | Verify at least 2 different quest types are implemented (fetch item, defeat NPC, deliver item) |
@@ -189,8 +137,6 @@ The server must handle:
 - [ ]  Document quest mechanics | Verify the group's quest progression mechanics are documented in `README` with implementation approach |
 
 ## Server Logging
-
-
 - [ ]  Client connections and disconnections | Logged with timestamps and IP addresses |
 - [ ]  Commands received from clients | Logged with player name and parameters |
 - [ ]  Server responses and error codes | Confirmed to be logged |
@@ -203,8 +149,6 @@ The server must handle:
 - [ ]  Performance impact | Check that logging does not significantly impact server performance or responsiveness |
 
 ## Recode Exercise
-
-
 - [ ]  Request a brief modification to verify understanding | Ask the group to make a small change to one of the systems (e.g., modify NPC dialogue, adjust combat damage, add a simple quest step) |
 - [ ]  Modification feasibility | The modification should be feasible within a few minutes |
 - [ ]  Team understanding | Verify that both group members understand the codebase and can explain their implementation choices |
