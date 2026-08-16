@@ -6,10 +6,17 @@ world:
       exits:
         north: "traverse_town"
         east: "hollow_bastion"
+        south: "secret_cave"
       spawns:
         - npc_type: "yen_sid"
           count: 1
       items: ["potion"]
+
+    secret_cave:
+      name: "Secret Cave"
+      description: "A dark, hidden cave where strange drawings line the walls."
+      exits:
+        north: "destiny_islands"
 
     traverse_town:
       name: "Traverse Town"
