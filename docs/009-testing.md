@@ -20,20 +20,33 @@ To verify that the initial greeting matches the RFC 42TAP specification:
    S: OK hello proto=1
    ```
 
-## Commands and Events Testing
+## Commands Testing
 
-To confirm that the implementation behaves strictly as specified by the RFC, you must manually execute every mandatory command and verify the broadcasted events.
+In either the CLI or GUI client, execute the following commands and verify the server's expected `S: OK ...` responses.
 
-### Mandatory Commands
-
-In either the CLI or GUI client, execute the following commands and verify the server's expected `S: OK ...` responses:
-
+### Core Commands
 | Command | Description |
 | :--- | :--- |
 | `CONNECT <username>` | Connects a player to the server. |
-| `LOOK` | Displays the current room description, exits, items, and NPCs. |
+| `LOOK` | Displays the current room description, exits, items, and NPCs (JSON Structure). |
 | `MOVE <direction>` | Moves the player to an adjacent room. |
-| `CHAT <target> <message>` | Sends a message globally, to a room, or to a group. |
+| `QUIT` | Safely disconnects from the server. |
+
+### Communication Commands
+| Command | Description |
+| :--- | :--- |
+| `CHAT <scope> <message>` | Sends a message globally, to a room, or to a group. Available scopes: `GLOBAL`, `ROOM`, `GROUP`. |
+| `WHO` | Lists players currently online or in the room. |
+
+### Group Management Commands
+| Command | Description | Response |
+| :--- | :--- | :--- |
+| `GROUP CREATE` | Create a new player group. | `OK group=` |
+| `GROUP INVITE` | Invite a player to the current group. | `OK` |
+| `GROUP JOIN` | Join an existing group. | `OK group=` |
+| `GROUP LEAVE` | Leave current group. | `OK` |
+
+
 | `TAKE <item>` | Picks up an obtainable item from the current room. |
 | `DROP <item>` | Drops an item from the inventory into the room. |
 | `INVENTORY` | Lists items currently held by the player. |
@@ -42,11 +55,8 @@ In either the CLI or GUI client, execute the following commands and verify the s
 | `STATUS` | Displays current health and combat status. |
 | `QUEST <action>` | Manages specific quest interactions. |
 | `QUESTS` | Lists active and completed quests. |
-| `WHO` | Lists players currently online or in the room. |
-| `GROUP <action>` | Manages party creation and invites. |
-| `QUIT` | Safely disconnects from the server. |
 
-### Expected Broadcast Events
+### Events Testing
 
 While executing the above commands with multiple connected clients, verify that the server correctly pushes the following asynchronous events to the appropriate clients:
 
