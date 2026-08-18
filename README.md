@@ -78,7 +78,10 @@ Our combat system employs a synchronous, real-time architecture where actions ar
 > Read the detailed Combat System documentation [here](docs/003-combat-system.md).
 
 ## Quest System
-section explaining your quest progression mechanics, completion validation, and reward systems.
+The quest engine is designed to handle multiple objective types to keep progression engaging. Quests are acquired from `quest_giver` NPCs via the `QUEST <npc>` command and tracked using the `QUESTS` command. We implemented two distinct quest types: `multi_stage` (e.g., interacting with specific entities) and `defeat` (e.g., slaying a specific enemy). The server securely validates objectives on the backend—preventing client-side cheating—and distributes rewards such as unlocking new progression paths or restoring health.
+
+> [!NOTE]
+> Read the detailed Quest System documentation [here](docs/004-quest-system.md).
 
 ## World Design
 section describing your world layout, room connections, NPC roles, and item distribution.\
