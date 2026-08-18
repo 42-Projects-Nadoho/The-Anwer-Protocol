@@ -34,41 +34,28 @@ To verify that message formats strictly follow the [ABNF syntax definitions](htt
 
 The server should gracefully return `ERR` messages and never crash, proving that the ABNF syntax definitions are strictly enforced.
 
-### Mandatory Commands `S: OK ...` responses.
+### Commands Testing
 
-### Core Commands
-| Command | Description |
-| :--- | :--- |
-| `CONNECT <username>` | Connects a player to the server. |
-| `LOOK` | Displays the current room description, exits, items, and NPCs (JSON Structure). |
-| `MOVE <direction>` | Moves the player to an adjacent room. |
-| `QUIT` | Safely disconnects from the server. |
-
-### Communication Commands
-| Command | Description |
-| :--- | :--- |
-| `CHAT <scope> <message>` | Sends a message globally, to a room, or to a group. Available scopes: `GLOBAL`, `ROOM`, `GROUP`. |
-| `WHO` | Lists players currently online or in the room. |
-
-### Group Management Commands
-| Command | Description | Response |
+| Category | Command | Description |
 | :--- | :--- | :--- |
-| `GROUP CREATE` | Create a new player group. | `OK group=` |
-| `GROUP INVITE <user>` | Invite a player to the current group. | `OK` |
-| `GROUP JOIN <groupleader>` | Join an existing group. | `OK group=` |
-| `GROUP LEAVE` | Leave current group. | `OK` |
-
-### Resource Interaction Commands
-| Command | Description |
-| :--- | :--- |
-| `TAKE <item>` | Picks up an obtainable item from the current room. |
-| `DROP <item>` | Drops an item from the inventory into the room. |
-| `INVENTORY` | Lists items currently held by the player. |
-| `TALK <npc>` | Initiates dialogue with an NPC. |
-| `ATTACK <target>` | Initiates or continues combat with an enemy NPC. |
-| `STATUS` | Displays current health and combat status. |
-| `QUEST <action>` | Manages specific quest interactions. |
-| `QUESTS` | Lists active and completed quests. |
+| Core | `CONNECT <username>` | Connects a player to the server. |
+| Core | `LOOK` | Displays the current room description, exits, items, and NPCs (JSON Structure). |
+| Core | `MOVE <direction>` | Moves the player to an adjacent room. |
+| Core | `QUIT` | Safely disconnects from the server. |
+| Communication | `CHAT <scope> <message>` | Sends a message globally, to a room, or to a group. Available scopes: `GLOBAL`, `ROOM`, `GROUP`. |
+| Communication | `WHO` | Lists players currently online or in the room. |
+| Group Management | `GROUP CREATE` | Create a new player group. |
+| Group Management | `GROUP INVITE <user>` | Invite a player to the current group. |
+| Group Management | `GROUP JOIN <groupleader>` | Join an existing group. | 
+| Group Management | `GROUP LEAVE` | Leave current group. |
+| Resource Interaction | `TAKE <item>` | Picks up an obtainable item from the current room. |
+| Resource Interaction | `DROP <item>` | Drops an item from the inventory into the room. |
+| Resource Interaction | `INVENTORY` | Lists items currently held by the player. |
+| Resource Interaction | `TALK <npc>` | Initiates dialogue with an NPC. |
+| Resource Interaction | `ATTACK <target>` | Initiates or continues combat with an enemy NPC. |
+| Resource Interaction | `STATUS` | Displays current health and combat status. |
+| Resource Interaction | `QUEST <action>` | Manages specific quest interactions. |
+| Resource Interaction | `QUESTS` | Lists active and completed quests. |
 
 ### Events Testing
 
