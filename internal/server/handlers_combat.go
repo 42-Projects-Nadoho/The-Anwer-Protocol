@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"the_answer_protocol/internal/protocol"
 )
@@ -50,6 +51,27 @@ func (c *Client) handleAttack(args []string) {
 							"npc_id", id,
 							"room_id", c.currentRoomID,
 						)
+
+						// Schedule respawn (e.g. 30 seconds)
+						respawnID := id
+						respawnRoom := c.currentRoomID
+						respawnMaxHP := npcData.Stats.HP
+						respawnType := npcType
+						
+						time.AfterFunc(30*time.Second, func() {
+							c.hub.do(func() {
+								if c.hub.roomNPCs[respawnRoom] == nil {
+									c.hub.roomNPCs[respawnRoom] = make(map[string]*DynamicNPC)
+								}
+								c.hub.roomNPCs[respawnRoom][respawnID] = &DynamicNPC{
+									ID:      respawnID,
+									NPCType: respawnType,
+									HP:      respawnMaxHP,
+								}
+							})
+							// Notify the room that the enemy respawned
+							c.hub.BroadcastRoom(respawnRoom, []byte(protocol.FormatEvt("ROOM", "RESPAWN", "The air shifts... "+respawnID+" has respawned!")), nil)
+						})
 					} else {
 						// Counter attack
 						counterDmg = npcData.Stats.Damage
@@ -73,7 +95,12 @@ func (c *Client) handleAttack(args []string) {
 	// Broadcast combat logs
 	if enemyDied {
 		msg := fmt.Sprintf("%s dealt %d damage to %s. The enemy is defeated!", c.username, dmgDealt, npcID)
-		c.hub.BroadcastRoom(c.currentRoomID, []byte(protocol.FormatEvt("ROOM", "CHAT", "CombatSys "+msg)), nil)
+		c.hub.BroadcastRoom(c.currentRoomID, []byte(protocol.FormatEvt("ROOM", "COMBAT", msg)), nil)
+		
+		// Broadcast custom combat event for client parsing
+		customEvt := fmt.Sprintf("DEFEAT %s %s", c.username, npcID)
+		c.hub.BroadcastRoom(c.currentRoomID, []byte(protocol.FormatEvt("ROOM", "COMBAT", customEvt)), nil)
+
 		
 		var php int
 		c.hub.do(func() { php = c.hp })
@@ -94,7 +121,7 @@ func (c *Client) handleAttack(args []string) {
 	} else {
 		msg := fmt.Sprintf("%s dealt %d damage to %s. %s has %d HP left. %s counter-attacked for %d damage!", 
 			c.username, dmgDealt, npcID, npcID, enemyHp, npcID, counterDmg)
-		c.hub.BroadcastRoom(c.currentRoomID, []byte(protocol.FormatEvt("ROOM", "CHAT", "CombatSys "+msg)), nil)
+		c.hub.BroadcastRoom(c.currentRoomID, []byte(protocol.FormatEvt("ROOM", "COMBAT", msg)), nil)
 		
 		var php int
 		c.hub.do(func() { php = c.hp })

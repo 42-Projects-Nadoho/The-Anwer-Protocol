@@ -67,7 +67,14 @@ While executing the above commands with multiple connected clients, verify that 
 | `GROUP` | `JOIN` | `EVT GROUP JOIN <username>` | Broadcasted when a player joins the group. |
 | `GROUP` | `LEAVE` | `EVT GROUP LEAVE <username>` | Broadcasted when a player leaves the group. |
 | `GROUP` | `CHAT` | `EVT GROUP CHAT <username> <message>` | Broadcasted to group members. |
-| `ROOM` | `CHAT` | `EVT ROOM CHAT CombatSys <details>` | Broadcasted during attack rounds. |
+| `ROOM` | `COMBAT` | `EVT ROOM COMBAT DEFEAT <username> <npc_id>` | Custom event broadcasted when a hostile NPC is defeated. |
 | `STATS` | `PLAYERS` | `EVT STATS players=<count>` | Updated server player count. |
+
+2 custom events have been added to the mandatory events list:
+
+| Category | Type | Event | Description |
+| :--- | :--- | :--- | :--- |
+| `ROOM` | `CUSTOM` | `EVT ROOM COMBAT <details>` | Broadcasted during attack rounds. |
+| `ROOM` | `CUSTOM` | `EVT ROOM RESPAWN The air shifts... <npc_id> has respawned!` | Broadcasted when a defeated NPC respawns after 30 seconds. |
 
 If any command returns an `ERR` instead of `OK` (or if an event fails to broadcast to other connected clients), cross-reference the exact syntax with the RFC 42TAP specification document.

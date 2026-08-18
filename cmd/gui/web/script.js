@@ -223,6 +223,11 @@ function handleLine(line, username) {
     return;
   }
 
+  if (/^EVT ROOM (COMBAT|RESPAWN) /.test(line)) {
+    appendChat(`[System] ${line.slice(9)}`);
+    return;
+  }
+
   if (line.startsWith('EVT GROUP LEAVE') && line.includes(username)) {
     myGroupID = '';
     groupStatus.textContent = 'Not in a group.';
