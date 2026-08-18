@@ -90,6 +90,7 @@ func (c *Client) handleAttack(args []string) {
 		c.hub.do(func() {
 			c.quests = append(c.quests, "defeated:"+npcType)
 		})
+		c.checkQuestCompletion()
 	} else {
 		msg := fmt.Sprintf("%s dealt %d damage to %s. %s has %d HP left. %s counter-attacked for %d damage!", 
 			c.username, dmgDealt, npcID, npcID, enemyHp, npcID, counterDmg)

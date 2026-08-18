@@ -99,10 +99,12 @@ function openConnection(username) {
 
   ws.onclose = () => {
     if (!gameView.classList.contains('hidden')) {
-      appendLog('--- disconnected ---');
-    } else {
-      connectButton.disabled = false;
+      gameView.classList.add('hidden');
+      loginView.classList.remove('hidden');
+      status.textContent = 'Disconnected.';
+      status.classList.remove('error');
     }
+    connectButton.disabled = false;
   };
 
   ws.onmessage = (event) => handleLine(event.data, username);
@@ -198,7 +200,9 @@ function handleLine(line, username) {
   }
 
   if (line.startsWith('OK players=')) {
-    whoCount.textContent = 'Players online: ' + line.slice('OK players='.length);
+    const text = line.slice('OK players='.length);
+    whoCount.textContent = 'Players online: ' + text.split(' ')[0]; // Just the count for the top bar
+    appendChat(`[System] Players online: ${text}`);
     return;
   }
 

@@ -52,7 +52,8 @@ func (c *Client) handleTake(args []string) {
 
 	c.reply([]byte(protocol.FormatOK("taken=" + itemID)))
 
-	// Check if this fulfills a fetch quest? (Optional passive completion, or done via QUESTS/TALK. We'll do it on QUESTS or TALK).
+	// Check if this fulfills a fetch quest
+	c.checkQuestCompletion()
 }
 
 func (c *Client) handleDrop(args []string) {

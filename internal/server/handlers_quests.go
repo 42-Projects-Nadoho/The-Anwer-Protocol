@@ -247,61 +247,9 @@ func (c *Client) handleQuest(args []string) {
 func (c *Client) handleQuests() {
 	activeQuests := make([]map[string]interface{}, 0)
 	
+	c.checkQuestCompletion()
+
 	c.hub.do(func() {
-		// First pass: check for completion
-		for i, q := range c.quests {
-			if strings.HasSuffix(q, "_completed") {
-				continue
-			}
-			if strings.HasPrefix(q, "defeated:") {
-				continue
-			}
-			questData, exists := c.hub.worldMap.Quests[q]
-			if !exists {
-				continue
-			}
-			
-			completed := false
-			if questData.Type == "fetch" {
-				// check inventory
-				for _, item := range c.inventory {
-					if item == questData.Target {
-						completed = true
-						break
-					}
-				}
-			} else if questData.Type == "defeat" {
-				// check history
-				for _, hist := range c.quests {
-					if hist == "defeated:"+questData.Target {
-						completed = true
-						break
-					}
-				}
-			}
-
-			if completed {
-				if q == "defeat_shadow" {
-					c.quests[i] = q + "_found"
-				} else {
-					c.quests[i] = q + "_completed"
-					
-					c.hub.logger.Info("quest_completed",
-						"username", c.username,
-						"quest_id", q,
-					)
-					
-					// Send a reward message
-					msg := "You completed a quest: " + questData.Name + "! " + questData.Reward
-					select {
-					case c.send <- []byte(protocol.FormatEvt("GLOBAL", "CHAT", "QuestSys "+msg)):
-					default:
-					}
-				}
-			}
-		}
-
-		// Second pass: gather names
 		for _, q := range c.quests {
 			if strings.HasPrefix(q, "defeated:") {
 				continue
@@ -341,4 +289,55 @@ func (c *Client) handleQuests() {
 		return
 	}
 	c.reply([]byte(protocol.FormatOK(string(data))))
+}
+
+func (c *Client) checkQuestCompletion() {
+	c.hub.do(func() {
+		for i, q := range c.quests {
+			if strings.HasSuffix(q, "_completed") {
+				continue
+			}
+			if strings.HasPrefix(q, "defeated:") {
+				continue
+			}
+			questData, exists := c.hub.worldMap.Quests[q]
+			if !exists {
+				continue
+			}
+			
+			completed := false
+			if questData.Type == "fetch" {
+				for _, item := range c.inventory {
+					if item == questData.Target {
+						completed = true
+						break
+					}
+				}
+			} else if questData.Type == "defeat" {
+				for _, hist := range c.quests {
+					if hist == "defeated:"+questData.Target {
+						completed = true
+						break
+					}
+				}
+			}
+
+			if completed {
+				if q == "defeat_shadow" {
+					c.quests[i] = q + "_found"
+				} else {
+					c.quests[i] = q + "_completed"
+					c.hub.logger.Info("quest_completed",
+						"username", c.username,
+						"quest_id", q,
+					)
+					msg := "You completed a quest: " + questData.Name + "! " + questData.Reward
+					select {
+					case c.send <- []byte(protocol.FormatEvt("GLOBAL", "CHAT", "QuestSys "+msg)):
+					default:
+					}
+				}
+			}
+		}
+	})
 }

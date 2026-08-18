@@ -159,7 +159,15 @@ func (c *Client) handleChat(cmd protocol.Command) {
 }
 
 func (c *Client) handleWho() {
-	c.reply([]byte(protocol.FormatOK(fmt.Sprintf("players=%d", c.hub.PlayerCount()))))
+	var names []string
+	c.hub.do(func() {
+		for client := range c.hub.clients {
+			if client.authenticated {
+				names = append(names, client.username)
+			}
+		}
+	})
+	c.reply([]byte(protocol.FormatOK(fmt.Sprintf("players=%d (%s)", len(names), strings.Join(names, ", ")))))
 }
 
 func (c *Client) handleQuit() {
