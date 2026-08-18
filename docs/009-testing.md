@@ -48,11 +48,11 @@ The server should gracefully return `ERR` messages and never crash, proving that
 | Resource Interaction | `TAKE <item>` | Picks up an obtainable item from the current room. |
 | Resource Interaction | `DROP <item>` | Drops an item from the inventory into the room. |
 | Resource Interaction | `INVENTORY` | Lists items currently held by the player. |
-| Resource Interaction | `TALK <npc>` | Initiates dialogue with an NPC. |
-| Resource Interaction | `ATTACK <target>` | Initiates or continues combat with an enemy NPC. |
-| Resource Interaction | `STATUS` | Displays current health and combat status. |
-| Resource Interaction | `QUEST <npc>` | Manages specific quest interactions. |
-| Resource Interaction | `QUESTS` | Lists active and completed quests. |
+| NPC Interaction | `TALK <npc>` | Initiates dialogue with an NPC. |
+| NPC Interaction | `ATTACK <target>` | Initiates or continues combat with an enemy NPC. |
+| NPC Interaction | `STATUS` | Displays current health and combat status. |
+| NPC Interaction | `QUEST <npc>` | Manages specific quest interactions. |
+| NPC Interaction | `QUESTS` | Lists active and completed quests. |
 
 ## Events Testing
 
@@ -227,8 +227,7 @@ The server shall ensure the group management data structure does not break or pa
 - **Test:** Run `make test-group` in a separate terminal while the server is running.
 - **Expected Result**: The server should handle the locks cleanly. If `Alice` leaves first, `Bob`'s join command should return `ERR 401 NOT_IN_GROUP` (or similar) because the group dissolved. If `Bob` joins first, he should receive the `EVT GROUP JOIN Bob` followed immediately by `EVT GROUP LEAVE Alice`. The server should not panic or encounter a map-read concurrent exception.
 
-
-# Network Features
+# Features
 
 ## Server Features
 
@@ -252,6 +251,102 @@ The server shall reject or safely strip unprintable ASCII control characters (li
 - **Test:** Send a chat message containing raw escape codes (e.g., `\x1b[31mRedText`) or null bytes.
 - **Expected Result**: The server either sanitizes the characters out, or immediately responds with an `ERR` (e.g., `ERR 400 INVALID_COMMAND_FORMAT`). It must never crash or forward raw escape sequences that corrupt the recipient's CLI.
 
+# Gameplay Features
+
 ## Inventory Interaction Features
 
-## NPC Interaction features
+### TAKE Command
+The server shall allow clients to pick up items that are present in the current room.
+- **Test:** Connect via the CLI client and send `TAKE potion` in a room that contains a potion.
+- **Expected Result:** The server returns an `OK` confirming the item was taken. The item is removed from the room, and all other players in the room receive an `EVT ROOM ITEM_TAKEN <username> potion`.
+
+### DROP Command
+The server shall allow clients to drop items from their inventory into the current room.
+- **Test:** Send `DROP potion` while possessing a potion in your inventory.
+- **Expected Result:** The server returns an `OK` confirming the drop. The item is added back to the room, and all other players in the room receive an `EVT ROOM ITEM_DROPPED <username> potion`.
+
+### INVENTORY Command
+The server shall accurately return a list of all items currently held by the player.
+- **Test:** Send the `INVENTORY` command.
+- **Expected Result:** The server returns an `OK` accompanied by a JSON payload listing the items (e.g., `OK {"items":["potion"]}`). If the inventory is empty, it should return an empty list or appropriate empty state.
+
+### Dynamic Item Management
+The server shall dynamically manage item ownership and room states flawlessly to prevent item duplication and ensure robust parsing.
+- **Test:** 
+  1. Send `LOOK` to confirm an item exists. Send `TAKE <item>`, then send `LOOK` again to verify it is removed from the room payload.
+  2. Attempt to send `TAKE <item>` again for the same item.
+  3. Have a second connected player attempt to send `TAKE <item>` for that item.
+  4. Send `DROP <item>`, and have the second player send `LOOK` to verify it has reappeared.
+  5. Repeat the above interactions explicitly testing both the item's raw ID (e.g., `item.herbs`), its capitalized display name (e.g., `Herbs`), and a multi-word item name (e.g., `Loaf of Bread`).
+- **Expected Result:** The first `TAKE` succeeds. Any subsequent `TAKE` (by either player) returns an error (e.g., `ERR 404 ITEM_NOT_FOUND`). Dropping the item cleanly restores it to the room. The command parser successfully maps and interacts with the item regardless of whether the player inputted the ID, the exact name, or a multi-word string.
+
+## NPC Interaction Features
+
+### TALK Command
+The server shall allow clients to interact with friendly or neutral NPCs.
+- **Test:** Connect via the CLI client and send `TALK yen_sid` in a room that contains the NPC.
+- **Expected Result:** The server returns an `OK` followed by the NPC's dialog string in the payload.
+
+### ATTACK Command
+The server shall allow clients to initiate combat with enemy NPCs.
+- **Test:** Send `ATTACK heartless` in a room containing the enemy NPC.
+- **Expected Result:** The server returns an `OK` acknowledging combat has started, and begins broadcasting periodic `EVT COMBAT` events detailing the ongoing battle until the enemy or player is defeated.
+
+### STATUS Command
+The server shall accurately return the player's health and combat status.
+- **Test:** Send the `STATUS` command before engaging in combat, and again while actively in combat.
+- **Expected Result:** The server returns an `OK` along with a JSON payload indicating current HP, max HP, and whether the player is currently engaged in an active battle.
+
+### Combat System
+The server shall robustly handle combat mechanics, damage tracking, and respawning.
+- **Test:** 
+  1. Send `STATUS` to verify players start with exactly 100 HP.
+  2. Send `ATTACK <enemy>` and observe the combat loop to confirm damage is dealt to the enemy.
+  3. Allow the combat loop to run and verify the enemy NPC successfully counter-attacks, reducing your HP.
+  4. Allow the player's HP to reach 0 to verify the player respawns at a safe location (e.g., `destiny_islands`) with appropriately restored/reduced health.
+  5. Attempt to send `ATTACK yen_sid` (or another non-hostile NPC).
+  6. Verify server logs and other clients in the room to ensure `EVT COMBAT` is correctly broadcast.
+  7. Check the project's root `README.md` to ensure the group's combat mechanics and design decisions are explicitly documented with clear justifications.
+- **Expected Result:** The player starts at 100 HP. Combat dynamically reduces both participant's health pools over time. Dying instantly teleports the player and resets combat state. Attacking friendly NPCs safely returns an `ERR 400 NPC_NOT_HOSTILE` (or similar) without starting combat. All broadcasts and logs perfectly reflect the battle.
+
+### Quest System
+The server shall robustly handle quest progression, completion logic, and reward distribution.
+- **Test:**
+  1. Send `QUEST <npc>` on an eligible quest-giver NPC to receive a quest.
+  2. Send the `QUESTS` command to verify the active quest is accurately listed in your log.
+  3. Verify the game world configuration explicitly implements at least two distinct quest types (e.g., "fetch item", "defeat NPC", or "deliver item").
+  4. Perform the necessary quest objectives and interact with the quest giver again to test completion validation and ensure the reward system triggers correctly.
+  5. Attempt to send `QUEST` to a standard NPC that does not offer quests.
+  6. Check the project's root `README.md` to verify the group's quest progression mechanics and implementation approach are clearly documented.
+- **Expected Result:** The player successfully requests, tracks, and completes dynamic quests. Rewards are correctly allocated upon completion validation. Interacting with standard NPCs securely returns an `ERR` (e.g., `NO_QUEST_AVAILABLE`). The required technical documentation is present in the README.
+
+# Data Integrity
+
+### JSON Validation and Consistent IDs
+The server shall ensure that all `LOOK` outputs are perfectly valid JSON, containing correct string and list identifiers that precisely match the active world configuration.
+- **Test:** Connect to the server, send the `LOOK` command, and inspect the JSON payload.
+- **Expected Result:** The server returns `OK` accompanied by a flawless JSON payload. The `id`, `name`, `exits`, `players`, `items`, and `npcs` keys must be present, and all IDs correctly reflect the actual runtime game state.
+
+### World Data Referential Integrity
+The server shall ensure that all items, NPCs, and exit destinations advertised in a room's configuration correspond to valid, defined entities in the global world data schema.
+- **Test:** Send `LOOK` to get the list of entities in a room. Proceed to interact with them (e.g., `TAKE` every item, `TALK` to every NPC).
+- **Expected Result:** The server correctly recognizes every item and NPC without throwing internal errors. The game does not panic, and it does not return `ERR 404 NOT_FOUND` for anything that was explicitly advertised as being present in the room.
+
+### Spatial Consistency
+The server shall ensure that navigating back and forth between interconnected rooms results in consistent, accurate `LOOK` data.
+- **Test:** Send `LOOK` and record the room's exits and items. Send `MOVE <direction>` to enter a neighboring room. Send `MOVE <opposite_direction>` to return to the original room, and send `LOOK` again.
+- **Expected Result:** The data returned by the final `LOOK` command precisely matches the data from the first `LOOK` command (assuming no other players interacted with the room). The geometric map safely preserves spatial consistency.
+
+# Server Logging
+The server must implement a comprehensive, structured logging system (MANDATORY).
+- **Test:** Actively play the game, trigger errors, engage in combat, complete quests, and simulate abuse (e.g., command flooding) while monitoring the server's output streams.
+- **Expected Result:** The server logs must rigorously adhere to the following criteria:
+  - **Connections:** All client connections and disconnections strictly log the timestamp and IP address.
+  - **Inputs:** Every command received logs the player name, action, and parameters.
+  - **Outputs:** All server responses and outgoing error codes are logged.
+  - **State Changes:** Critical world state changes (item movements, combat results, quest progression/completion) are logged.
+  - **Formatting:** The logs utilize a structured, easily parsable format (JSON recommended).
+  - **Levels:** The logs include explicit severity levels (e.g., `INFO`, `WARN`, `ERROR`).
+  - **Security:** Potential abuse patterns (like command flooding or rapid connection cycling) are successfully monitored and logged.
+  - **Streams:** The logging system writes to appropriate output streams with precise timestamps.
+  - **Performance:** The volume of logging does not bottleneck or significantly impact the server's responsiveness under heavy load.
