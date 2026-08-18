@@ -66,7 +66,7 @@ The Answer Protocol (TAP) is built around a robust client-server architecture wr
 
 ## Protocol Implementation
 
-section documenting any deviations from RFC 42TAP and justifying your choices.
+The server strictly adheres to RFC 42TAP for the initial handshake, greeting (`S: OK hello proto=1`), and ABNF parsing. We implemented a few deliberate deviations, such as introducing custom error codes (e.g., `404 ErrRoomNotFound`, `902 ErrNotAuthenticated`) and custom combat/quest events, to enhance error handling clarity and support our extended gameplay mechanics.
 
 > [!NOTE]
 > Read the detailed Protocol Implementation documentation [here](docs/002-protocol-implementation.md).
