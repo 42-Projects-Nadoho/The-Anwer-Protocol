@@ -29,8 +29,8 @@ func main() {
 	addr = *httpAddr
 	gameServerAddr = *gAddr
 
-	http.Handle("/", noCache(http.FileServer(http.Dir("cmd/gui/web"))))
-	http.Handle("/assets/", noCache(http.StripPrefix("/assets/", http.FileServer(http.Dir("data")))))
+	http.Handle("/", noCache(http.FileServer(http.Dir("tap/src/cmd/gui/web"))))
+	http.Handle("/assets/", noCache(http.StripPrefix("/assets/", http.FileServer(http.Dir("tap/data")))))
 	http.HandleFunc("/ws", handleWS)
 
 	browserURL := addr

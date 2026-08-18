@@ -7,13 +7,13 @@ import (
 	"net"
 	"os"
 
-	"the_answer_protocol/internal/server"
-	"the_answer_protocol/internal/world"
+	"the_answer_protocol/tap/src/internal/server"
+	"the_answer_protocol/tap/src/internal/world"
 )
 
 func main() {
 	addr := flag.String("addr", ":8080", "Server address to listen on")
-	worldFile := flag.String("world", "data/world.yaml", "Path to world data file")
+	worldFile := flag.String("world", "tap/data/world.yaml", "Path to world data file")
 	flag.Parse()
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))

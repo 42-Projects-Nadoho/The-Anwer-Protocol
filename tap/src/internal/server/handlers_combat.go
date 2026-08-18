@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"the_answer_protocol/internal/protocol"
+	"the_answer_protocol/tap/src/internal/protocol"
 )
 
 func (c *Client) handleAttack(args []string) {

@@ -7,7 +7,7 @@ RUN	:= $(GO) run
 BINDIR  := bin
 ADDR    ?= 127.0.0.1:4242
 HTTP    ?= 127.0.0.1:8080
-WORLD   ?= data/world.yaml
+WORLD   ?= tap/data/world.yaml
 
 # ------------------------------------------------------------
 #  Ansi Colors
@@ -59,15 +59,15 @@ build: server cli gui
 
 server:
 	@$(ECHO) ">>> $(YELLOW)Building TAP server...$(RESET)"
-	$(GO) build -o $(BINDIR)/tap-server ./cmd/server
+	$(GO) build -o $(BINDIR)/tap-server ./tap/src/cmd/server
 
 cli:
 	@$(ECHO) ">>> $(YELLOW)Building TAP CLI client...$(RESET)"
-	$(GO) build -o $(BINDIR)/tap-cli ./cmd/cli
+	$(GO) build -o $(BINDIR)/tap-cli ./tap/src/cmd/cli
 
 gui:
 	@$(ECHO) ">>> $(YELLOW)Building TAP GUI client...$(RESET)"
-	$(GO) build -o $(BINDIR)/tap-gui ./cmd/gui
+	$(GO) build -o $(BINDIR)/tap-gui ./tap/src/cmd/gui
 
 # ------------------------------------------------------------
 #  run-server — build and run the server
@@ -99,7 +99,7 @@ run-client-gui: gui
 
 lint: vet
 	@$(ECHO) ">>> $(YELLOW)Checking gofmt compliance...$(RESET)"
-	@unformatted=$$(gofmt -l cmd internal); \
+	@unformatted=$$(gofmt -l tap/src/cmd tap/src/internal); \
 	if [ -n "$$unformatted" ]; then \
 		$(ECHO) ">>> $(YELLOW)needs gofmt:$(RESET)"; \
 		echo "$$unformatted"; \
@@ -113,7 +113,7 @@ lint: vet
 
 fmt:
 	@$(ECHO) ">>> $(YELLOW)Formatting Go source files...$(RESET)"
-	gofmt -w cmd internal
+	gofmt -w tap/src/cmd tap/src/internal
 	@$(ECHO) ">>> $(CYAN)Done.$(RESET)"
 
 # ------------------------------------------------------------

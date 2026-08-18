@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"the_answer_protocol/internal/protocol"
+	"the_answer_protocol/tap/src/internal/protocol"
 )
 
 func (c *Client) handleTake(args []string) {
