@@ -91,5 +91,18 @@ The server should gracefully return `ERR` messages and never crash, proving that
 | `406` | `NO_QUEST_AVAILABLE` | Attempt to `QUEST <npc>` when no quest is available from the NPC or conditions are unmet. |
 | `900` | `CONNECTION_FAILED` | Dial the TCP server fails. |
 | `901` | `SEND_FAILED` | Triggered internally by the server if internal JSON serialization fails while packaging complex data structures. |
-| `902` | `NOT_AUTHENTICATED` | Attempt to execute any gameplay command before successfully connecting via `CONNECT`. |
-| `903` | `UNKNOWN_COMMAND` | Send a command format that the server's protocol parser does not recognize. |
+| `902` | `NOT_AUTHENTICATED` | Triggered when attempting to execute any gameplay command before successfully connecting via `CONNECT`. |
+| `903` | `UNKNOWN_COMMAND` | Triggered when sending a command format that the server's protocol parser does not recognize. |
+
+## World Data Validation Testing
+
+The server actively validates the integrity of `data/world.yaml` during boot-up to ensure that no references point to missing entities. 
+
+To test that this validation is working:
+1. Open `data/world.yaml` in your editor.
+2. Find any room (e.g., `destiny_islands`) and intentionally corrupt one of its exits by pointing it to a fake room ID (e.g., change `exits: north: traverse_town` to `exits: north: fake_room`).
+3. Attempt to start the server with `make run-server`.
+4. **Expected Result**: The server should immediately crash and refuse to start, printing an error such as: `Fatal error loading world: world data invalid: room "destiny_islands" exit "north" points to unknown room "fake_room"`.
+5. Restore the broken exit back to normal after confirming.
+
+You can perform similar tests by adding fake items to a room's `items` list or a fake NPC to a room's `spawns` list. The server will catch and reject all of them before booting up.
