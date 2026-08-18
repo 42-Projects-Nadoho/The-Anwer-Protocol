@@ -81,18 +81,18 @@ The server should gracefully return `ERR` messages and never crash, proving that
 | :--- | :--- | :--- |
 | `201` | `NAME_IN_USE` | Attempt to `CONNECT` with a username that is already taken by another active player. |
 | `301` | `NO_EXIT` | Attempt to `MOVE` in a direction that does not exist in the current room
-| `301` | `DIRECTION_REQUIRED`| Attempt to `MOVE` omititing the direction argument. |
+| `301` | `DIRECTION_REQUIRED`| Attempt to `MOVE` omitting the direction argument. |
 | `401` | `NOT_IN_GROUP` | Attempt to use group commands (`GROUP INVITE`, `CHAT GROUP`, `GROUP LEAVE`) while not currently in a group. |
 | `402` | `ALREADY_IN_GROUP` | Attempt to `GROUP INVITE` or `GROUP JOIN` while already being part of a group. |
 | `404` | `ITEM_NOT_FOUND` | Attempt to `TAKE` an item that does not exist in the current room. |
-| `404` | `ITEM_NOT_IN_INVENTORY` | Attemptto `DROP` an item that does not exist in the player's inventory. |
+| `404` | `ITEM_NOT_IN_INVENTORY` | Attempt to `DROP` an item that does not exist in the player's inventory. |
 | `404` | `NPC_NOT_FOUND` | Attempt to `TALK` or `ATTACK` an NPC that does not exist in the current room. |
-| `405` | `NPC_NOT_HOSTILE` | Attempting to `ATTACK` a friendly NPC. |
+| `405` | `NPC_NOT_HOSTILE` | Attempt to `ATTACK` a friendly NPC. |
 | `406` | `NO_QUEST_AVAILABLE` | Attempt to `QUEST <npc>` when no quest is available from the NPC or conditions are unmet. |
 | `900` | `CONNECTION_FAILED` | Dial the TCP server fails. |
-| `901` | `SEND_FAILED` | Triggered internally by the server if internal JSON serialization fails while packaging complex data structures. |
-| `902` | `NOT_AUTHENTICATED` | Triggered when attempting to execute any gameplay command before successfully connecting via `CONNECT`. |
-| `903` | `UNKNOWN_COMMAND` | Triggered when sending a command format that the server's protocol parser does not recognize. |
+| `901` | `SEND_FAILED` | Triggered internally by the server if internal JSON serialisation fails while packaging complex data structures. |
+| `902` | `NOT_AUTHENTICATED` | Attempt to execute any gameplay command before successfully connecting via `CONNECT`. |
+| `903` | `UNKNOWN_COMMAND` | Send a command format that the server's protocol parser does not recognise. |
 
 ## World Data Validation Testing
 
