@@ -192,4 +192,5 @@ OK players=1 (Alice)
 > QUIT
 Goodbye!
 OK bye
-> %                                                                                                                                                                                                      ```
+> %
+```
