@@ -136,14 +136,17 @@ func (c *Client) handleAttack(args []string) {
 
 		// Check if player died from counter-attack
 		var died bool
+		var oldRoom string
+		var nextRoomID string
 		c.hub.do(func() {
 			if c.hp <= 0 {
 				died = true
-				c.hp = 100 // Respawn with full health (or reduced)
+				c.hp = 50 // Respawn with reduced health (e.g. 50 HP)
 				
 				// Move to start room
-				oldRoom := c.currentRoomID
+				oldRoom = c.currentRoomID
 				c.currentRoomID = c.hub.worldMap.StartRoomID
+				nextRoomID = c.currentRoomID
 				
 				c.hub.logger.Info("player_died",
 					"username", c.username,
@@ -157,8 +160,22 @@ func (c *Client) handleAttack(args []string) {
 			deathMsg := fmt.Sprintf("%s has been defeated and sent back to safety.", c.username)
 			c.hub.BroadcastGlobal([]byte(protocol.FormatEvt("GLOBAL", "CHAT", "CombatSys "+deathMsg)))
 			c.reply([]byte(protocol.FormatEvt("ROOM", "CHAT", "CombatSys You died! Respawning...")))
-			// Need to notify player of room change
-			c.reply([]byte(protocol.FormatOK("room=" + c.hub.worldMap.StartRoomID)))
+			
+			// Broadcast presence leave to old room
+			c.hub.BroadcastRoom(
+				oldRoom,
+				[]byte(protocol.FormatEvt("ROOM", "PRESENCE LEAVE", c.username)),
+				c,
+			)
+			// Broadcast presence enter to new room
+			c.hub.BroadcastRoom(
+				nextRoomID,
+				[]byte(protocol.FormatEvt("ROOM", "PRESENCE ENTER", c.username)),
+				c,
+			)
+			
+			// Send the look command to update their UI
+			c.handleLook()
 		}
 	}
 }
