@@ -97,11 +97,7 @@ The game world in The Answer Protocol is meticulously designed as a fully interc
 Server logging is implemented using Go's modern `log/slog` package, emitting structured JSON logs for robust monitoring. 
 - **Monitoring & Abuse Detection:** We actively monitor incoming traffic for malicious behavior. The `checkFlood()` function tracks command frequency per session, while the `RecordConnection()` system flags rapid connection cycling (port-exhaustion attacks). If thresholds are exceeded, the server emits `WARN` level `possible_abuse` events while continuing to operate smoothly.
 
-## Group Contributions
-- **mosmond:** Core network architecture, TCP packet coalescing/fragmentation handling, and testing scripts.
-- **tbaricau:** World design (`world.yaml`), GUI client implementation, and quest system.
-- **nadoho:** Combat mechanics, respawn logic, and CLI client implementation.
-- **spacotto:** Protocol serialization (RFC compliance), server logging, and abuse prevention systems.
+## Group Contributio
 
 
 
