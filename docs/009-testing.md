@@ -135,3 +135,35 @@ To verify that the server's broadcast loop does not block or crash if a client a
 4. **Expected Result**: 
    - `Alice` should continue receiving combat events without any lag, interruption, or server crash. 
    - The server logs should show `Bob` disconnecting and being cleanly unregistered, proving that dead sockets do not stall the global event loop.
+
+# CLI Client Testing
+
+The CLI client (`bin/tap-cli`) must be tested to ensure it correctly handles user input and asynchronous server communication.
+
+## 1. Interactive Commands
+To verify that players can organically send commands in real-time, test the CLI client's interactive prompt:
+1. **Setup**: Start the server (`make run-server`) and the CLI client (`make run-client`).
+2. **Connect**: Type `CONNECT <username>` and press Enter.
+3. **Interact**: Type any command at your own pace.
+4. **Expected Result**: Every time you press Enter, the CLI should instantly forward your command to the server.
+
+## 2. Immediate Responses & Asynchronous Events
+To verify that the CLI correctly handles the background goroutine reading from the TCP socket:
+1. **Setup**: Have `Alice` and `Bob` connected via two separate CLI tabs.
+2. **Test Immediate Responses**: Have `Alice` type `LOOK`. She should immediately receive the room description.
+3. **Test Asynchronous Events**: While `Alice` is idling and waiting for input at her terminal prompt, have `Bob` type `CHAT ROOM Hello!`.
+4. **Expected Result**: `Alice` should immediately see `EVT ROOM CHAT Bob Hello!` pop up on her screen asynchronously, without it interrupting her own pending prompt input.
+
+## 3. Full Flow Integration
+To verify that a full standard gameplay loop functions seamlessly from start to finish without breaking the client:
+
+**Flow**: Execute the following commands in order:
+```bash
+> CONNECT Alice
+> LOOK
+> MOVE north
+> CHAT GLOBAL Testing full flow
+> WHO
+> QUIT
+```
+**Expected Result**: The CLI should handle every command, display the results cleanly, and finally safely terminate its process upon receiving the `QUIT` acknowledgement.
