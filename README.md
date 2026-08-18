@@ -83,8 +83,11 @@ section describing your world layout, room connections, NPC roles, and item dist
 section documenting your logging implementation, including log format, event types, output destinations, and how to monitor server behavior and detect abuse patterns.
 
 ## Group Contributions
+- **nadoho:** Server implementation and CLI client.
+- **spacotto:** GUI client and world design.
 
-section clearly indicating each team member’s respon- sibilities and contributions to different components (server, CLI client, GUI client, world design, etc.).
+> [!NOTE]
+> Read the detailed Group Contributions documentation [here](docs/007-group-contributions.md).
 
 ## Testing
 
