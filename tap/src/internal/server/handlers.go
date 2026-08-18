@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"unicode"
 
 	"the_answer_protocol/tap/src/internal/protocol"
 )
@@ -133,6 +134,18 @@ func (c *Client) handleChat(cmd protocol.Command) {
 
 	scope := strings.ToUpper(cmd.Args[0])
 	message := strings.TrimSpace(cmd.Raw[len(cmd.Args[0]):])
+
+	for _, r := range message {
+		if unicode.IsControl(r) {
+			c.reply([]byte(protocol.FormatErr(protocol.ErrInvalidCommandFormat, "INVALID_COMMAND_FORMAT")))
+			return
+		}
+	}
+
+	if strings.Contains(message, "\\x1b") || strings.Contains(message, "\\033") || strings.Contains(message, "\\e") {
+		c.reply([]byte(protocol.FormatErr(protocol.ErrInvalidCommandFormat, "INVALID_COMMAND_FORMAT")))
+		return
+	}
 
 	evt := []byte(protocol.FormatEvt(scope, "CHAT", c.username+" "+message))
 

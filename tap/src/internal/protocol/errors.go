@@ -17,6 +17,7 @@ const (
 
 // Custom deviations / Not in RFC 42TAP
 const (
+	ErrInvalidCommandFormat = 400
 	ErrRoomNotFound     = 404
 	ErrNotAuthenticated = 902
 	ErrUnknownCommand   = 903

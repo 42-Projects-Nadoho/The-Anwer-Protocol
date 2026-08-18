@@ -78,6 +78,8 @@ func (w *World) RoomByID(id string) (*Room, bool) {
 	return r, ok
 }
 
+// LoadWorld reads the provided YAML file (e.g., world.yaml) from disk,
+// parses it into memory, and triggers the referential integrity validation.
 func LoadWorld(filename string) (*World, error) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
@@ -148,7 +150,10 @@ func (w *World) index() error {
 	return nil
 }
 
-// Rejects any exit pointing to a room ID that doesn't exist, items that don't exist, etc.
+// validate performs referential integrity checks across the entire world state.
+// It explicitly verifies that no room exit, spawned NPC, or placed item points
+// to an ID that doesn't exist in the global configuration, thereby preventing
+// broken pointers or 404 errors during gameplay.
 func (w *World) validate() error {
 	for roomID, r := range w.Rooms {
 		for direction, target := range r.Exits {
