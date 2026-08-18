@@ -93,7 +93,7 @@ section documenting your logging implementation, including log format, event typ
 
 ## Testing
 
-Our testing documentation covers how to manually verify the RFC protocol handshake, test multiplayer interactions, and validate the combat and quest systems.
+Our testing documentation covers how to manually verify the RFC protocol handshake, test multiplayer interactions, and validate the combat and quest systems. It also details our extensive suite of automated tests designed to verify high-concurrency stability, race-condition safety, group volatility, network-layer robustness (TCP coalescing and fragmentation), and security measures against abuse (command flooding and connection cycling).
 
 > [!NOTE]
 > Read the detailed Testing documentation [here](docs/009-testing.md) for step-by-step verification instructions.

@@ -1,3 +1,17 @@
+# 009 - Testing Guide
+
+This document serves as the comprehensive testing manual for The Answer Protocol (TAP). It outlines both the automated tests designed to verify network robustness and abuse prevention, as well as the manual verification steps needed to audit protocol compliance, multiplayer interactions, combat, and quest mechanics.
+
+## Automated Testing
+
+The project includes a suite of automated Go scripts located in the `scripts/` directory. These can be easily executed via the `Makefile` to verify complex network features, concurrency edge-cases, and security measures:
+- `make test-concurrency`: Simulates massive numbers of simultaneous connections and actions to ensure the server remains stable under load.
+- `make test-race`: Aggressively triggers specific event overlaps to audit the server's goroutine safety and `hub` mutex synchronization.
+- `make test-group`: Repeatedly creates, joins, and disbands groups with rapid volatility to ensure state consistency.
+- `make test-coalescing`: Verifies the server correctly parses multiple commands arriving simultaneously in a single TCP packet.
+- `make test-fragmentation`: Verifies the server correctly buffers incomplete commands split across multiple TCP packets.
+- `make test-abuse`: Verifies the server's stability against rapid TCP connection cycling (port exhaustion) and its ability to detect and log application-layer command flooding.
+
 # Protocol Compliance 
 This section focuses on verifying that the server strictly adheres to the RFC 42TAP specification. This includes ensuring that the server strictly parses ABNF syntax, outputs the exact expected string formats for events, and strictly returns the correct standard error codes for all client interactions.
 
