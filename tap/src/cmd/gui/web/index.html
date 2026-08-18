@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TAP - The Answer Protocol</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <audio id="theme" autoplay loop>
+    <source src="/assets/audios/loading_page.mp3" type="audio/mpeg">
+  </audio>
+
+  <div id="login-view" class="login-view">
+    <div class="panel">
+      <h1>TAP - Spadoho Quest</h1>
+      <form id="connect-form">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="username">
+        <button type="submit">Connect</button>
+      </form>
+      <p id="status"></p>
+    </div>
+  </div>
+
+  <div id="game-view" class="game-view hidden">
+    <div class="top-bar">
+      <div id="room-name" class="room-name">-</div>
+      <div class="top-bar-actions">
+        <span id="who-count">Players online: ?</span>
+        <button id="who-btn" type="button">WHO</button>
+        <button id="quit-btn" type="button">QUIT</button>
+      </div>
+    </div>
+
+    <div class="main-area">
+      <aside class="side-panel">
+        <div class="card">
+          <h2>Player</h2>
+          <div class="row">
+            <span id="player-hp" style="flex:1; align-self:center;">HP: ?</span>
+            <button id="status-btn" type="button">Refresh</button>
+          </div>
+          <div class="row" style="align-items: center; margin-top: 10px;">
+            <h3 style="margin: 0; flex: 1;">Inventory</h3>
+            <button id="inv-btn" type="button" style="padding: 0.2rem 0.5rem;">↻</button>
+          </div>
+          <ul id="inventory-list" class="item-list"></ul>
+          
+          <div class="row" style="align-items: center; margin-top: 10px;">
+            <h3 style="margin: 0; flex: 1;">Quests</h3>
+            <button id="quests-btn" type="button" style="padding: 0.2rem 0.5rem;">↻</button>
+          </div>
+          <ul id="quests-list" class="item-list"></ul>
+        </div>
+
+        <div class="card">
+          <div class="row" style="align-items: center; margin-bottom: 10px;">
+            <h2 style="margin: 0; flex: 1;">Room</h2>
+            <button id="look-btn" type="button" style="padding: 0.2rem 0.5rem;">↻</button>
+          </div>
+          <p id="room-desc"></p>
+          <p id="room-players"></p>
+          <div id="exits" class="exits"></div>
+          
+          <h3 style="margin-top: 15px; margin-bottom: 5px;">Items</h3>
+          <div id="room-items" class="entity-list" style="font-size: 0.9em; color: #ccc;">None</div>
+          
+          <h3 style="margin-top: 15px; margin-bottom: 5px;">NPCs</h3>
+          <div id="room-npcs" class="entity-list" style="font-size: 0.9em; color: #ccc;">None</div>
+        </div>
+
+        <div class="card">
+          <h2>Group</h2>
+          <p id="group-status">Not in a group.</p>
+          <div class="row">
+            <button id="group-create-btn" type="button">Create</button>
+            <button id="group-leave-btn" type="button">Leave</button>
+          </div>
+          <form id="group-invite-form" class="row">
+            <input type="text" id="invite-username" placeholder="username to invite">
+            <button type="submit">Invite</button>
+          </form>
+          <form id="group-join-form" class="row">
+            <input type="text" id="join-groupid" placeholder="leader name">
+            <button type="submit">Join</button>
+          </form>
+        </div>
+      </aside>
+
+      <section class="chat-area">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="chat">Chat</button>
+          <button class="tab-btn" data-tab="log">Log</button>
+        </div>
+
+        <div id="chat-tab" class="tab-panel active">
+          <pre id="chat-log" class="log-box"></pre>
+          <form id="chat-form" class="row">
+            <select id="chat-scope">
+              <option value="GLOBAL">Global</option>
+              <option value="ROOM">Room</option>
+              <option value="GROUP">Group</option>
+            </select>
+            <input type="text" id="chat-input" placeholder="Message...">
+            <button type="submit">Send</button>
+          </form>
+        </div>
+
+        <div id="log-tab" class="tab-panel">
+          <pre id="event-log" class="log-box"></pre>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>

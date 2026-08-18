@@ -1,0 +1,223 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: sans-serif;
+}
+
+body {
+  color: #eee;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --- Login view --- */
+
+.login-view {
+  height: 100%;
+  background: url('/assets/images/image_for_tap.jpg') center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panel {
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  text-align: center;
+  color: white;
+  min-width: 280px;
+}
+
+.panel h1 {
+  margin-top: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  padding-bottom: 0.5rem;
+}
+
+.panel label {
+  display: block;
+  text-align: left;
+  margin-top: 0.75rem;
+}
+
+.panel input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem;
+  margin: 0.35rem 0 1rem;
+  border-radius: 6px;
+  border: none;
+}
+
+.panel button {
+  width: 100%;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 6px;
+  background: #d88a3a;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#status {
+  min-height: 1.2em;
+}
+
+#status.error {
+  color: #ff8080;
+}
+
+/* --- Game view --- */
+
+.game-view {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #1b1f2a;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background: #14171f;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.room-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.main-area {
+  flex: 1;
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.side-panel {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 0.35rem;
+}
+
+.exits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.row input, .row select {
+  flex: 1;
+  min-width: 0;
+}
+
+button {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  background: #d88a3a;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #e69a4a;
+}
+
+input, select {
+  padding: 0.4rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #eee;
+}
+
+.chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.tab-btn {
+  background: none;
+  border-radius: 0;
+  padding: 0.6rem 1.2rem;
+  color: #aaa;
+}
+
+.tab-btn.active {
+  color: white;
+  border-bottom: 2px solid #d88a3a;
+}
+
+.tab-panel {
+  flex: 1;
+  display: none;
+  flex-direction: column;
+  padding: 0.75rem;
+  overflow: hidden;
+}
+
+.tab-panel.active {
+  display: flex;
+}
+
+.log-box {
+  flex: 1;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: monospace;
+  font-size: 0.85rem;
+  margin: 0 0 0.5rem;
+}
+
+.item-list, .entity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

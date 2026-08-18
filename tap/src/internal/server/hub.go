@@ -2,9 +2,18 @@ package server
 
 import (
 	"fmt"
-	"the_answer_protocol/internal/protocol"
-	"the_answer_protocol/internal/world"
+	"log/slog"
+	"time"
+
+	"the_answer_protocol/tap/src/internal/protocol"
+	"the_answer_protocol/tap/src/internal/world"
 )
+
+type DynamicNPC struct {
+	ID      string
+	NPCType string
+	HP      int
+}
 
 type Hub struct {
 	clients   map[*Client]bool
@@ -21,20 +30,83 @@ type Hub struct {
 	ops chan func()
 
 	worldMap *world.World
+	logger   *slog.Logger
+
+	// connAttempts tracks recent connection timestamps per IP, for the
+	// rapid-connections abuse signal.
+	connAttempts map[string][]time.Time
+
+	// dynamic world state
+	roomItems map[string]map[string]bool
+	roomNPCs  map[string]map[string]*DynamicNPC
 }
 
-func NewHub(w *world.World) *Hub {
-	return &Hub{
-		broadcast:  make(chan []byte),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		ops:        make(chan func()),
-		clients:    make(map[*Client]bool),
-		usernames:  make(map[string]*Client),
-		groups:     make(map[string]map[*Client]bool),
-		worldMap:   w,
-		nextGroup:  0,
+func NewHub(w *world.World, logger *slog.Logger) *Hub {
+	h := &Hub{
+		broadcast:    make(chan []byte),
+		register:     make(chan *Client),
+		unregister:   make(chan *Client),
+		ops:          make(chan func()),
+		clients:      make(map[*Client]bool),
+		usernames:    make(map[string]*Client),
+		groups:       make(map[string]map[*Client]bool),
+		worldMap:     w,
+		logger:       logger,
+		nextGroup:    0,
+		connAttempts: make(map[string][]time.Time),
+		roomItems:    make(map[string]map[string]bool),
+		roomNPCs:     make(map[string]map[string]*DynamicNPC),
 	}
+
+	// Initialize dynamic state from world
+	for roomID, r := range w.Rooms {
+		h.roomItems[roomID] = make(map[string]bool)
+		for _, itemID := range r.Items {
+			h.roomItems[roomID][itemID] = true
+		}
+
+		h.roomNPCs[roomID] = make(map[string]*DynamicNPC)
+		for _, spawn := range r.Spawns {
+			npcData, ok := w.NPCs[spawn.NPCType]
+			if !ok {
+				continue
+			}
+			for i := 0; i < spawn.Count; i++ {
+				id := spawn.NPCType
+				if spawn.Count > 1 {
+					id = fmt.Sprintf("%s_%d", spawn.NPCType, i+1)
+				}
+				h.roomNPCs[roomID][id] = &DynamicNPC{
+					ID:      id,
+					NPCType: spawn.NPCType,
+					HP:      npcData.Stats.HP,
+				}
+			}
+		}
+	}
+	return h
+}
+
+// RecordConnection registers a connection attempt from ip and returns how
+// many attempts from that same ip landed within the last window — a simple
+// rapid-connections abuse signal for the caller to act on.
+func (h *Hub) RecordConnection(ip string) int {
+	const window = 10 * time.Second
+	count := 0
+	h.do(func() {
+		now := time.Now()
+		cutoff := now.Add(-window)
+		var kept []time.Time
+		for _, t := range h.connAttempts[ip] {
+			if t.After(cutoff) {
+				kept = append(kept, t)
+			}
+		}
+		kept = append(kept, now)
+		h.connAttempts[ip] = kept
+		count = len(kept)
+	})
+	return count
 }
 
 func (h *Hub) Run() {
@@ -147,10 +219,17 @@ func (h *Hub) CreateGroup(c *Client) string {
 	return groupName
 }
 
-func (h *Hub) JoinGroup(c *Client, groupID string) (string, bool) {
+func (h *Hub) JoinGroup(c *Client, leaderName string) (string, bool) {
 	ok := false
+	var groupID string
 
 	h.do(func() {
+		leader, exists := h.usernames[leaderName]
+		if !exists || leader.groupName == "" {
+			return
+		}
+		groupID = leader.groupName
+
 		members, exists := h.groups[groupID]
 		if !exists {
 			return
@@ -158,7 +237,7 @@ func (h *Hub) JoinGroup(c *Client, groupID string) (string, bool) {
 
 		invited := false
 		for i, g := range c.isInvited {
-			if g == groupID {
+			if g == leaderName {
 				invited = true
 				c.isInvited = append(c.isInvited[:i], c.isInvited[i+1:]...)
 				break
@@ -191,12 +270,12 @@ func (h *Hub) InviteGroup(c *Client, targetUsername string) bool {
 			return
 		}
 		for _, g := range target.isInvited {
-			if g == c.groupName {
+			if g == c.username {
 				return
 			}
 		}
-		evt := []byte(protocol.FormatEvt("GROUP", "INVITE", c.username+" "+c.groupName))
-		target.isInvited = append(target.isInvited, c.groupName)
+		evt := []byte(protocol.FormatEvt("GROUP", "INVITE", c.username))
+		target.isInvited = append(target.isInvited, c.username)
 		select {
 		case target.send <- evt:
 		default:
