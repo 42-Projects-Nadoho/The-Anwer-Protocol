@@ -72,7 +72,10 @@ The server strictly adheres to RFC 42TAP for the initial handshake, greeting (`S
 > Read the detailed Protocol Implementation documentation [here](docs/002-protocol-implementation.md).
 
 ## Combat System
-section describing your turn-based combat mechanics, damage formulas, initiative order, and additional combat commands (DEFEND, FLEE, etc.).
+Our combat system employs a synchronous, real-time architecture where actions are processed instantly. Players engage hostile NPCs using the `ATTACK <npc>` command. Damage is calculated on the server, followed immediately by an automatic NPC counter-attack if it survives. Upon dropping to 0 HP, players are instantly teleported to the safety of the starting room with 50 HP.
+
+> [!NOTE]
+> Read the detailed Combat System documentation [here](docs/003-combat-system.md).
 
 ## Quest System
 section explaining your quest progression mechanics, completion validation, and reward systems.
