@@ -122,11 +122,11 @@ tap
 
 | Module | Scope |
 | :--- | :--- |
-| `data/` | Manages the static world data (loaded from YAML), as well as audio and image assets for the GUI client. |
-| `src/cmd/` | Contains the main application entry points for the server, CLI, and GUI. |
-| `src/internal/server/` | Houses the core network listener, connection management, the centralized `Hub`, and the event-driven dispatcher handlers (`handlers_*.go`). |
-| `src/internal/protocol/` | Implements the RFC 42TAP specifications, handling ABNF syntax parsing, error code generation, and message serialization. |
-| `src/internal/world/` | Handles the loading and parsing of the `world.yaml` configuration into the server's internal structs. |
+| `tap/data/` | Manages the static world data (loaded from YAML), as well as audio and image assets for the GUI client. |
+| `tap/src/cmd/` | Contains the main application entry points for the server, CLI, and GUI. |
+| `tap/src/internal/server/` | Houses the core network listener, connection management, the centralized `Hub`, and the event-driven dispatcher handlers (`handlers_*.go`). |
+| `tap/src/internal/protocol/` | Implements the RFC 42TAP specifications, handling ABNF syntax parsing, error code generation, and message serialization. |
+| `tap/src/internal/world/` | Handles the loading and parsing of the `world.yaml` configuration into the server's internal structs. |
 
 ## Client Architecture
 
