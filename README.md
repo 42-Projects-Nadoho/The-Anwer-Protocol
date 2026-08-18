@@ -116,4 +116,9 @@ Our testing documentation covers how to manually verify the RFC protocol handsha
 - **Go Standard Library:** `net`, `log/slog`, `bufio`, `sync`
 
 ### AI usage
-- 
+- **Brainstorming:** Drafting initial ideas for world topology, quest structures, and Kingdom Hearts theme integration.
+- **Research:** Deep dives into RFC 42TAP specifications, ABNF syntax edge cases, and Go's concurrency primitives (`log/slog`, channels, goroutines).
+- **Bugfixing:** Identifying and resolving race conditions during concurrent client accesses and TCP packet fragmentation issues.
+- **Linting:** Enforcing idiomatic Go styling and checking for potential memory leaks or missing error handling.
+- **Audit:** Reviewing the entire codebase against the subject to guarantee 100% compliance with mandatory requirements.
+- **Documentation Assistance:** Drafting the detailed Markdown files, Mermaid diagrams, and tables found in the `docs/` folder to ensure clean, professional project presentation.
