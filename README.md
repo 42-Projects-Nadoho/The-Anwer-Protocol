@@ -51,55 +51,40 @@ The project utilizes `make` for dependency management, compilation, and executio
 
 > [!TIP]
 > To simply build all binaries without running them, use `make build` or `make`.
-> 
 > Read the detailed Building and Running documentation [here](docs/008-building-and-running.md).
 
 ## Architecture
-The Answer Protocol (TAP) is built around a robust client-server architecture written in Go, specifically designed to handle concurrent connections and real-time state synchronization over TCP. The core server acts as the single source of truth, employing an event-driven dispatcher to manage player actions, combat, and world state across a shared environment. By isolating responsibilities into distinct modules—such as protocol serialization, world management, and network I/O—the system remains highly maintainable and scalable. This backend seamlessly supports two independent client implementations: a fast, text-based CLI and a richer, interactive GUI.
-
-The primary components of the system include:
-
-| Component | Path(s) | Description |
-| :--- | :--- | :--- |
-| **TCP server implementation** | `cmd/server/`, `internal/server/` | Handles concurrent connections and orchestrates the shared game state. |
-| **CLI client** | `cmd/cli/` | A lightweight, text-based terminal interface. |
-| **GUI client** | `cmd/gui/` | A richer graphical interface offering enhanced accessibility. |
-| **Static world data** | `data/world.yaml` | Defines the rooms, NPCs, and items that construct the game world. |
+section explaining your server design choices (dispatcher/router vs inline handling, concurrency model, etc.).
 
 > [!NOTE]
 > Read the detailed Architecture documentation [here](docs/001-architecture.md).
 
 ## Protocol Implementation
 
-The server handshake, initial greeting (`S: OK hello proto=1`), and all subsequent command parsing strictly adhere to the RFC 42TAP specifications for both CLI and GUI clients.
+section documenting any deviations from RFC 42TAP and justifying your choices.
 
 > [!NOTE]
 > Read the detailed Protocol Implementation documentation [here](docs/002-protocol-implementation.md).
 
 ## Combat System
-Our combat system employs a synchronous, turn-less architecture where actions are processed in real-time as they arrive. Players engage hostile NPCs using the `ATTACK <npc>` command.
-- **Damage Calculation & Response:** When an attack lands, the server calculates damage based on predefined stats. If the NPC survives, it immediately counter-attacks, dealing damage to the player's HP.
-- **Death & Respawn:** If a player's HP drops to 0, they do not face permanent death. Instead, they are instantly teleported back to the `StartRoomID` (Destiny Islands) and respawn with 50 HP. This triggers broadcasted `PRESENCE LEAVE` and `PRESENCE ENTER` events to correctly update the world state for all clients in the affected rooms.
+section describing your turn-based combat mechanics, damage formulas, initiative order, and additional combat commands (DEFEND, FLEE, etc.).
 
 ## Quest System
-The quest engine is designed to handle multiple objective types to keep progression engaging:
-- **Quest Types:** We implemented two distinct quest types: `multi_stage` (e.g., retrieving a specific item or finding a location) and `defeat` (e.g., slaying a specific enemy). 
-- **Progression & Validation:** Quests are acquired from `quest_giver` NPCs via the `QUEST <npc>` command. The server securely validates objectives on the backend—preventing client-side cheating—and players can track their progress anytime using the `QUESTS` command.
-- **Rewards:** Completing a quest grants rewards ranging from unlocked progression paths to full HP restoration, handled seamlessly by the server.
+section explaining your quest progression mechanics, completion validation, and reward systems.
 
 ## World Design
-The game world in The Answer Protocol is meticulously designed as a fully interconnected, non-linear environment that encourages deep exploration and cooperative gameplay. Moving away from simple linear paths, the layout features a central hub with branching loops and secret optional areas, ensuring players can freely traverse the world without hitting dead ends. This rich environment is populated by a diverse cast of NPCs—ranging from helpful dialogue characters and quest-givers to hostile enemies—and is scattered with unique items to discover, collect, and use. The deliberate distribution of these elements not only breathes life into the world but also seamlessly integrates with our dynamic combat and questing systems.
+section describing your world layout, room connections, NPC roles, and item distribution.\
 
 > [!NOTE]
 > Read the detailed World Design documentation [here](docs/005-world%20-design.md).
 
 ## Server Logging
-Server logging is implemented using Go's modern `log/slog` package, emitting structured JSON logs for robust monitoring. 
-- **Monitoring & Abuse Detection:** We actively monitor incoming traffic for malicious behavior. The `checkFlood()` function tracks command frequency per session, while the `RecordConnection()` system flags rapid connection cycling (port-exhaustion attacks). If thresholds are exceeded, the server emits `WARN` level `possible_abuse` events while continuing to operate smoothly.
 
-## Group Contributio
+section documenting your logging implementation, including log format, event types, output destinations, and how to monitor server behavior and detect abuse patterns.
 
+## Group Contributions
 
+section clearly indicating each team member’s respon- sibilities and contributions to different components (server, CLI client, GUI client, world design, etc.).
 
 ## Testing
 
@@ -113,4 +98,4 @@ Our testing documentation covers how to manually verify the RFC protocol handsha
 - **Go Standard Library:** `net`, `log/slog`, `bufio`, `sync`
 
 ### AI usage
-- Used LLMs (GitHub Copilot / ChatGPT) strictly for brainstorming, generating boilerplate structures (like the initial `world.yaml`), and debugging complex TCP race conditions. All core protocol implementations and architectural designs were written manually.
+- 
