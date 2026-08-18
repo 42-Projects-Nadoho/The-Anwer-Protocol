@@ -33,8 +33,12 @@ func main() {
 	http.Handle("/assets/", noCache(http.StripPrefix("/assets/", http.FileServer(http.Dir("data")))))
 	http.HandleFunc("/ws", handleWS)
 
+	browserURL := addr
+	if len(addr) > 0 && addr[0] == ':' {
+		browserURL = "localhost" + addr
+	}
 	fmt.Println("Listening on " + addr)
-	go openBrowser("http://localhost" + addr)
+	go openBrowser("http://" + browserURL)
 	http.ListenAndServe(addr, nil)
 }
 
