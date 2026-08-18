@@ -1,3 +1,9 @@
+/*
+This script tests the server's group state volatility handling.
+It verifies that the group management locks do not break or deadlock when 
+members join and leave chaotically (e.g., someone accepts a group invite 
+at the exact same millisecond the group leader dissolves the group).
+*/
 package main
 
 import (

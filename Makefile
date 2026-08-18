@@ -18,6 +18,7 @@ BLUE     := \033[1;94m
 CYAN     := \033[1;96m
 GREEN    := \033[1;92m
 YELLOW   := \033[1;93m
+MAGENTA  := \033[1;95m
 ECHO     := echo -e
 
 # ============================================================
@@ -27,7 +28,8 @@ ECHO     := echo -e
 .PHONY: all install lint clean help \
 	run-server run-client run-client-gui \
 	deps build server cli gui run fmt vet \
-	test_concurrency test_race_conditions test_group_volatility
+	test-concurrency test-race test-group \
+	test-coalescing test-fragmentation
 
 # ------------------------------------------------------------
 #  all — default target
@@ -149,20 +151,28 @@ clean:
 
 help:
 	@$(ECHO) ""
-	@$(ECHO) " $(BLUE)AVAILABLE RULES$(RESET)"
+	@$(ECHO) " $(MAGENTA)MANDATORY RULES$(RESET)"
+	@$(ECHO) "     $(MAGENTA)install$(RESET)		Resolve module dependencies"
+	@$(ECHO) "     $(MAGENTA)build$(RESET)            	Compile the server, CLI client and GUI client"
+	@$(ECHO) "     $(MAGENTA)run-server$(RESET)       	Build and run the server"
+	@$(ECHO) "     $(MAGENTA)run-client$(RESET)       	Build and run the CLI client"
+	@$(ECHO) "     $(MAGENTA)run-client-gui$(RESET)	Build and run the GUI client"
+	@$(ECHO) "     $(MAGENTA)lint$(RESET)             	Vet the code and check gofmt compliance"
+	@$(ECHO) "     $(MAGENTA)clean$(RESET)            	Remove build artifacts"
 	@$(ECHO) ""
-	@$(ECHO) "     $(BLUE)all$(RESET)              Default target (build)"
-	@$(ECHO) "     $(BLUE)deps$(RESET)             Resolve module dependencies"
-	@$(ECHO) "     $(BLUE)install$(RESET)          Alias for deps"
-	@$(ECHO) "     $(BLUE)build$(RESET)            Compile the server, CLI client and GUI client"
-	@$(ECHO) "     $(BLUE)run-server$(RESET)       Build and run the server"
-	@$(ECHO) "     $(BLUE)run-client$(RESET)       Build and run the CLI client"
-	@$(ECHO) "     $(BLUE)run-client-gui$(RESET)   Build and run the GUI client"
-	@$(ECHO) "     $(BLUE)lint$(RESET)             Vet the code and check gofmt compliance"
-	@$(ECHO) "     $(BLUE)fmt$(RESET)              Format all Go source"
-	@$(ECHO) "     $(BLUE)vet$(RESET)              Run go vet"
-	@$(ECHO) "     $(BLUE)test$(RESET)             Run the Go test suite"
-	@$(ECHO) "     $(BLUE)clean$(RESET)            Remove build artifacts"
+	@$(ECHO) " $(YELLOW)HELPER RULES$(RESET)"
+	@$(ECHO) "     $(YELLOW)all$(RESET)              	Default target (build)"
+	@$(ECHO) "     $(YELLOW)deps$(RESET)             	Alias for install"
+	@$(ECHO) "     $(YELLOW)fmt$(RESET)              	Format all Go source"
+	@$(ECHO) "     $(YELLOW)vet$(RESET)              	Run go vet"
+	@$(ECHO) "     $(YELLOW)test$(RESET)             	Run the standard Go test suite"
+	@$(ECHO) ""
+	@$(ECHO) " $(CYAN)TESTING SCRIPTS$(RESET)"
+	@$(ECHO) "     $(CYAN)test-concurrency$(RESET)   Run the high-concurrency stress test"
+	@$(ECHO) "     $(CYAN)test-race$(RESET)          Run the simultaneous movement race condition test"
+	@$(ECHO) "     $(CYAN)test-group$(RESET)         Run the group state volatility test"
+	@$(ECHO) "     $(CYAN)test-coalescing$(RESET)    Run the TCP packet coalescing test"
+	@$(ECHO) "     $(CYAN)test-fragmentation$(RESET) Run the TCP packet fragmentation test"
 	@$(ECHO) ""
 
 # ------------------------------------------------------------
@@ -180,3 +190,11 @@ test-race:
 test-group:
 	@$(ECHO) ">>> $(YELLOW)Running Group Volatility Test...$(RESET)"
 	$(RUN) scripts/test_group_volatility.go
+
+test-coalescing:
+	@$(ECHO) ">>> $(YELLOW)Running TCP Coalescing Test...$(RESET)"
+	$(RUN) scripts/test_coalescing.go
+
+test-fragmentation:
+	@$(ECHO) ">>> $(YELLOW)Running TCP Fragmentation Test...$(RESET)"
+	$(RUN) scripts/test_fragmentation.go

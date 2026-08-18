@@ -1,3 +1,9 @@
+/*
+This script tests for simultaneous movement race conditions on the server.
+It verifies that if two clients move at the exact same millisecond, the 
+presence broadcast events are cleanly and sequentially distributed without
+crashing the global event loop or corrupting room state.
+*/
 package main
 
 import (

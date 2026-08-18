@@ -226,3 +226,32 @@ The server shall correctly broadcast presence events without race conditions whe
 The server shall ensure the group management data structure does not break or panic when members join and leave chaotically.
 - **Test:** Run `make test-group` in a separate terminal while the server is running.
 - **Expected Result**: The server should handle the locks cleanly. If `Alice` leaves first, `Bob`'s join command should return `ERR 401 NOT_IN_GROUP` (or similar) because the group dissolved. If `Bob` joins first, he should receive the `EVT GROUP JOIN Bob` followed immediately by `EVT GROUP LEAVE Alice`. The server should not panic or encounter a map-read concurrent exception.
+
+
+# Network Features
+
+## Server Features
+
+### TCP Packet Coalescing
+The server shall correctly parse and execute multiple newline-terminated commands that arrive concatenated within a single TCP packet.
+- **Test:** Run `make test-coalescing` in a separate terminal while the server is running.
+- **Expected Result**: The server processes both commands sequentially and returns two distinct responses.
+
+### TCP Packet Fragmentation
+The server shall correctly buffer and reconstruct commands that are split across multiple TCP packets.
+- **Test:** Run `make test-fragmentation` in a separate terminal while the server is running.
+- **Expected Result**: The server waits until the newline `\n` is received, then correctly executes `CHAT GLOBAL test frag` without throwing a parse error.
+
+### Unicode Encoding Resilience
+The server shall safely process, store, and broadcast Unicode characters (like emojis or non-Latin alphabets) without mangling the text or crashing.
+- **Test:** Connect to the server, login with the username `ユーザー`, and send the command `CHAT GLOBAL 🌍 Hello`.
+- **Expected Result**: Other connected clients receive `EVT GLOBAL_CHAT ユーザー 🌍 Hello` perfectly intact.
+
+### Control Character Sanitization
+The server shall reject or safely strip unprintable ASCII control characters (like `\x00` null bytes or ANSI escape sequences) to prevent terminal injection attacks.
+- **Test:** Send a chat message containing raw escape codes (e.g., `\x1b[31mRedText`) or null bytes.
+- **Expected Result**: The server either sanitizes the characters out, or immediately responds with an `ERR` (e.g., `ERR 400 INVALID_COMMAND_FORMAT`). It must never crash or forward raw escape sequences that corrupt the recipient's CLI.
+
+## Inventory Interaction Features
+
+## NPC Interaction features
