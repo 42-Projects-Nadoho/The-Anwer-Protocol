@@ -15,8 +15,9 @@ const (
 	ErrSendFailed         = 901
 )
 
-// Not in RFC 42TAP; documented as deviations in the README.
+// Custom deviations / Not in RFC 42TAP
 const (
+	ErrRoomNotFound     = 404
 	ErrNotAuthenticated = 902
 	ErrUnknownCommand   = 903
 )

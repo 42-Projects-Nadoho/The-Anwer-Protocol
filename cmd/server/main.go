@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log/slog"
 	"net"
@@ -11,10 +12,14 @@ import (
 )
 
 func main() {
+	addr := flag.String("addr", ":8080", "Server address to listen on")
+	worldFile := flag.String("world", "data/world.yaml", "Path to world data file")
+	flag.Parse()
+
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	fmt.Println("Loading world data...")
-	gameWorld, err := world.LoadWorld("data/world.yaml")
+	fmt.Println("Loading world data from", *worldFile, "...")
+	gameWorld, err := world.LoadWorld(*worldFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Fatal error loading world: %v\n", err)
 		os.Exit(1)
@@ -27,9 +32,9 @@ func main() {
 	hub := server.NewHub(gameWorld, logger)
 	go hub.Run()
 
-	fmt.Println("Starting server on port 8080......")
+	fmt.Println("Starting server on port", *addr, "......")
 
-	listener, err := net.Listen("tcp", ":8080")
+	listener, err := net.Listen("tcp", *addr)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Lancement Error: %v\n", err)
 		os.Exit(1)

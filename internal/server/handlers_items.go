@@ -112,7 +112,7 @@ func (c *Client) handleInventory() {
 
 	data, err := json.Marshal(inv)
 	if err != nil {
-		c.reply([]byte(protocol.FormatErr(protocol.ErrSendFailed, "SERIALIZATION_FAILED")))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrSendFailed, "SEND_FAILED")))
 		return
 	}
 

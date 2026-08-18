@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"net"
 	"net/http"
@@ -11,9 +12,9 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-const (
-	addr           = ":8081"
-	gameServerAddr = "localhost:8080"
+var (
+	addr           string
+	gameServerAddr string
 )
 
 var upgrader = websocket.Upgrader{
@@ -21,6 +22,13 @@ var upgrader = websocket.Upgrader{
 }
 
 func main() {
+	httpAddr := flag.String("http", ":8081", "HTTP server address to listen on")
+	gAddr := flag.String("addr", "localhost:8080", "Game server address to connect to")
+	flag.Parse()
+
+	addr = *httpAddr
+	gameServerAddr = *gAddr
+
 	http.Handle("/", noCache(http.FileServer(http.Dir("cmd/gui/web"))))
 	http.Handle("/assets/", noCache(http.StripPrefix("/assets/", http.FileServer(http.Dir("data")))))
 	http.HandleFunc("/ws", handleWS)
@@ -44,7 +52,7 @@ func handleWS(w http.ResponseWriter, r *http.Request) {
 
 	game, err := net.Dial("tcp", gameServerAddr)
 	if err != nil {
-		ws.WriteMessage(websocket.TextMessage, []byte("ERR 900 SERVER_UNREACHABLE"))
+		ws.WriteMessage(websocket.TextMessage, []byte("ERR 900 CONNECTION_FAILED"))
 		return
 	}
 	defer game.Close()

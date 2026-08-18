@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"net"
 	"os"
@@ -9,12 +10,15 @@ import (
 )
 
 func main() {
-	fmt.Println("=== Welcome to TAP ===")
-	fmt.Println("Connecting to localhost:8080...")
+	addr := flag.String("addr", "localhost:8080", "Server address to connect to")
+	flag.Parse()
 
-	conn, err := net.Dial("tcp", "localhost:8080")
+	fmt.Println("=== Welcome to TAP ===")
+	fmt.Printf("Connecting to %s...\n", *addr)
+
+	conn, err := net.Dial("tcp", *addr)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Connection Error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERR 900 CONNECTION_FAILED\n")
 		os.Exit(1)
 	}
 	defer conn.Close()
@@ -22,6 +26,7 @@ func main() {
 	fmt.Println("Connected! You can now type your commands.")
 
 	readerDone := make(chan struct{})
+	quitting := false
 
 	go func() {
 		defer close(readerDone)
@@ -29,8 +34,9 @@ func main() {
 		for serverScanner.Scan() {
 			fmt.Printf("\r%s\n> ", serverScanner.Text())
 		}
-		if err := serverScanner.Err(); err != nil {
-			fmt.Fprintf(os.Stderr, "Error reading from server: %v\n", err)
+		if !quitting {
+			fmt.Fprintf(os.Stderr, "\rERR 900 CONNECTION_FAILED\n")
+			os.Exit(1)
 		}
 	}()
 
@@ -50,9 +56,14 @@ func main() {
 			continue
 		}
 
-		fmt.Fprintf(conn, "%s\n", rawText)
+		_, err := fmt.Fprintf(conn, "%s\n", rawText)
+		if err != nil && !quitting {
+			fmt.Fprintf(os.Stderr, "\rERR 900 CONNECTION_FAILED\n")
+			os.Exit(1)
+		}
 
 		if cmd.Action == "QUIT" {
+			quitting = true
 			// Server closes the connection after replying; wait for that.
 			fmt.Println("Goodbye!")
 			<-readerDone

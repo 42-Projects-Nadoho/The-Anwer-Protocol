@@ -155,7 +155,7 @@ func (c *Client) handleTalk(args []string) {
 
 	data, err := json.Marshal(resp)
 	if err != nil {
-		c.reply([]byte(protocol.FormatErr(protocol.ErrSendFailed, "SERIALIZATION_FAILED")))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrSendFailed, "SEND_FAILED")))
 		return
 	}
 	c.reply([]byte(protocol.FormatOK(string(data))))
@@ -285,7 +285,7 @@ func (c *Client) handleQuests() {
 
 	data, err := json.Marshal(activeQuests)
 	if err != nil {
-		c.reply([]byte(protocol.FormatErr(protocol.ErrSendFailed, "SERIALIZATION_FAILED")))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrSendFailed, "SEND_FAILED")))
 		return
 	}
 	c.reply([]byte(protocol.FormatOK(string(data))))

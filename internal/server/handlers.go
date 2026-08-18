@@ -51,7 +51,7 @@ type lookResponse struct {
 func (c *Client) handleLook() {
 	room, ok := c.hub.worldMap.RoomByID(c.currentRoomID)
 	if !ok {
-		c.reply([]byte(protocol.FormatErr(protocol.ErrConnectionFailed, "ROOM_NOT_FOUND")))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrRoomNotFound, "ROOM_NOT_FOUND")))
 		return
 	}
 
@@ -82,7 +82,7 @@ func (c *Client) handleLook() {
 
 	data, err := json.Marshal(resp)
 	if err != nil {
-		c.reply([]byte(protocol.FormatErr(protocol.ErrSendFailed, "SERIALIZATION_FAILED")))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrSendFailed, "SEND_FAILED")))
 		return
 	}
 
@@ -98,7 +98,7 @@ func (c *Client) handleMove(args []string) {
 
 	room, ok := c.hub.worldMap.RoomByID(c.currentRoomID)
 	if !ok {
-		c.reply([]byte(protocol.FormatErr(protocol.ErrConnectionFailed, "ROOM_NOT_FOUND")))
+		c.reply([]byte(protocol.FormatErr(protocol.ErrRoomNotFound, "ROOM_NOT_FOUND")))
 		return
 	}
 

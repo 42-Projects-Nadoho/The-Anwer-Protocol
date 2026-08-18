@@ -50,7 +50,7 @@ The server should gracefully return `ERR` messages and never crash, proving that
 | Resource Interaction | `TALK <npc>` | Initiates dialogue with an NPC. |
 | Resource Interaction | `ATTACK <target>` | Initiates or continues combat with an enemy NPC. |
 | Resource Interaction | `STATUS` | Displays current health and combat status. |
-| Resource Interaction | `QUEST <action>` | Manages specific quest interactions. |
+| Resource Interaction | `QUEST <npc>` | Manages specific quest interactions. |
 | Resource Interaction | `QUESTS` | Lists active and completed quests. |
 
 ## Events Testing
@@ -77,3 +77,19 @@ The server should gracefully return `ERR` messages and never crash, proving that
 
 ## Error Testing
 
+| Code | Name | Triggers |
+| :--- | :--- | :--- |
+| `201` | `NAME_IN_USE` | Attempt to `CONNECT` with a username that is already taken by another active player. |
+| `301` | `NO_EXIT` | Attempt to `MOVE` in a direction that does not exist in the current room
+| `301` | `DIRECTION_REQUIRED`| Attempt to `MOVE` omititing the direction argument. |
+| `401` | `NOT_IN_GROUP` | Attempt to use group commands (`GROUP INVITE`, `CHAT GROUP`, `GROUP LEAVE`) while not currently in a group. |
+| `402` | `ALREADY_IN_GROUP` | Attempt to `GROUP INVITE` or `GROUP JOIN` while already being part of a group. |
+| `404` | `ITEM_NOT_FOUND` | Attempt to `TAKE` an item that does not exist in the current room. |
+| `404` | `ITEM_NOT_IN_INVENTORY` | Attemptto `DROP` an item that does not exist in the player's inventory. |
+| `404` | `NPC_NOT_FOUND` | Attempt to `TALK` or `ATTACK` an NPC that does not exist in the current room. |
+| `405` | `NPC_NOT_HOSTILE` | Attempting to `ATTACK` a friendly NPC. |
+| `406` | `NO_QUEST_AVAILABLE` | Attempt to `QUEST <npc>` when no quest is available from the NPC or conditions are unmet. |
+| `900` | `CONNECTION_FAILED` | Dial the TCP server fails. |
+| `901` | `SEND_FAILED` | Triggered internally by the server if internal JSON serialization fails while packaging complex data structures. |
+| `902` | `NOT_AUTHENTICATED` | Attempt to execute any gameplay command before successfully connecting via `CONNECT`. |
+| `903` | `UNKNOWN_COMMAND` | Send a command format that the server's protocol parser does not recognize. |

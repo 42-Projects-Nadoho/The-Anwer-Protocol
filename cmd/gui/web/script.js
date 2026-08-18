@@ -94,7 +94,7 @@ function openConnection(username) {
   ws = new WebSocket('ws://' + location.host + '/ws');
 
   ws.onerror = () => {
-    status.textContent = 'Connection failed.';
+    status.textContent = 'ERR 900 CONNECTION_FAILED';
     status.classList.add('error');
     connectButton.disabled = false;
   };
