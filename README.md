@@ -66,13 +66,13 @@ The Answer Protocol (TAP) is built around a robust client-server architecture wr
 
 ## Protocol Implementation
 
-The server strictly adheres to RFC 42TAP for the initial handshake, greeting (`S: OK hello proto=1`), and ABNF parsing. We implemented a few deliberate deviations, such as introducing custom error codes (e.g., `404 ErrRoomNotFound`, `902 ErrNotAuthenticated`) and custom combat/quest events, to enhance error handling clarity and support our extended gameplay mechanics.
+The server strictly adheres to RFC 42TAP for the initial handshake, greeting (`S: OK hello proto=1`), and ABNF parsing (implemented in [`tap/src/internal/protocol/`](tap/src/internal/protocol/)). We implemented a few deliberate deviations, such as introducing custom error codes in [`errors.go`](tap/src/internal/protocol/errors.go) (e.g., `404 ErrRoomNotFound`, `902 ErrNotAuthenticated`) and custom combat/quest events, to enhance error handling clarity and support our extended gameplay mechanics.
 
 > [!NOTE]
 > Read the detailed Protocol Implementation documentation [here](docs/002-protocol-implementation.md).
 
 ## Combat System
-Our combat system employs a synchronous, real-time architecture where actions are processed instantly. Players engage hostile NPCs using the `ATTACK <npc>` command. Damage is calculated on the server, followed immediately by an automatic NPC counter-attack if it survives. Upon dropping to 0 HP, players are instantly teleported to the safety of the starting room with 50 HP.
+Our combat system employs a synchronous, real-time architecture where actions are processed instantly in [`tap/src/internal/server/handlers_combat.go`](tap/src/internal/server/handlers_combat.go). Players engage hostile NPCs using the `ATTACK <npc>` command. Damage is calculated on the server, followed immediately by an automatic NPC counter-attack if it survives. Upon dropping to 0 HP, players are instantly teleported to the safety of the starting room with 50 HP.
 
 > [!NOTE]
 > Read the detailed Combat System documentation [here](docs/003-combat-system.md).
