@@ -1,4 +1,5 @@
 # Protocol Compliance 
+This section focuses on verifying that the server strictly adheres to the RFC 42TAP specification. This includes ensuring that the server strictly parses ABNF syntax, outputs the exact expected string formats for events, and strictly returns the correct standard error codes for all client interactions.
 
 ## Protocol Handshake
 
@@ -95,6 +96,7 @@ The server should gracefully return `ERR` messages and never crash, proving that
 | `903` | `UNKNOWN_COMMAND` | Send a command format that the server's protocol parser does not recognise. |
 
 # Server Behaviour
+This section focuses on testing the internal game logic, mechanics, and state management of the server. While protocol compliance ensures we speak the right language, server behaviour testing ensures the actual "game" functions correctly—validating that events don't leak across boundaries, configuration files are structurally sound, and gameplay mechanics work as intended.
 
 ## World Data Validation Testing
 
