@@ -231,7 +231,7 @@ func (c *Client) handleGroup(args []string) {
 			c.reply([]byte(protocol.FormatErr(protocol.ErrAlreadyInGroup, "ALREADY_IN_GROUP")))
 			return
 		} else if len(args) < 2 {
-			c.reply([]byte(protocol.FormatErr(protocol.ErrUnknownCommand, "USAGE: GROUP JOIN <leader-name>")))
+			c.reply([]byte(protocol.FormatErr(protocol.ErrUnknownCommand, "USAGE: GROUP JOIN <group-id>")))
 			return
 		} else if groupID, ok := c.hub.JoinGroup(c, args[1]); ok {
 			c.reply([]byte(protocol.FormatOK("group=" + groupID)))

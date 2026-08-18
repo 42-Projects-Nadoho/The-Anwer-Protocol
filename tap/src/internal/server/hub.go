@@ -219,17 +219,15 @@ func (h *Hub) CreateGroup(c *Client) string {
 	return groupName
 }
 
-func (h *Hub) JoinGroup(c *Client, leaderName string) (string, bool) {
+// JoinGroup takes a group id directly (not a username) — a deliberate RFC
+// deviation, documented in the README: since groups have no leader role and
+// can outlive their creator, resolving "join by naming a member" breaks as
+// soon as that member has left, even though the group itself may still
+// exist.
+func (h *Hub) JoinGroup(c *Client, groupID string) (string, bool) {
 	ok := false
-	var groupID string
 
 	h.do(func() {
-		leader, exists := h.usernames[leaderName]
-		if !exists || leader.groupName == "" {
-			return
-		}
-		groupID = leader.groupName
-
 		members, exists := h.groups[groupID]
 		if !exists {
 			return
@@ -237,7 +235,7 @@ func (h *Hub) JoinGroup(c *Client, leaderName string) (string, bool) {
 
 		invited := false
 		for i, g := range c.isInvited {
-			if g == leaderName {
+			if g == groupID {
 				invited = true
 				c.isInvited = append(c.isInvited[:i], c.isInvited[i+1:]...)
 				break
@@ -262,6 +260,11 @@ func (h *Hub) JoinGroup(c *Client, leaderName string) (string, bool) {
 	return groupID, ok
 }
 
+// InviteGroup's event carries the group id in addition to the inviter
+// (EVT GROUP INVITE <inviter> <group-id>, not the RFC's EVT GROUP INVITE
+// <leader>) — a direct consequence of JoinGroup taking a group id: the
+// invitee has to learn that id from somewhere, and this event is the only
+// place that can carry it.
 func (h *Hub) InviteGroup(c *Client, targetUsername string) bool {
 	ok := false
 	h.do(func() {
@@ -270,12 +273,12 @@ func (h *Hub) InviteGroup(c *Client, targetUsername string) bool {
 			return
 		}
 		for _, g := range target.isInvited {
-			if g == c.username {
+			if g == c.groupName {
 				return
 			}
 		}
-		evt := []byte(protocol.FormatEvt("GROUP", "INVITE", c.username))
-		target.isInvited = append(target.isInvited, c.username)
+		evt := []byte(protocol.FormatEvt("GROUP", "INVITE", c.username+" "+c.groupName))
+		target.isInvited = append(target.isInvited, c.groupName)
 		select {
 		case target.send <- evt:
 		default:
