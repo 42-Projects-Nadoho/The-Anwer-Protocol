@@ -67,7 +67,7 @@ While executing the above commands with multiple connected clients, verify that 
 | `GROUP` | `JOIN` | `EVT GROUP JOIN <username>` | Broadcasted when a player joins the group. |
 | `GROUP` | `LEAVE` | `EVT GROUP LEAVE <username>` | Broadcasted when a player leaves the group. |
 | `GROUP` | `CHAT` | `EVT GROUP CHAT <username> <message>` | Broadcasted to group members. |
-| `COMBAT`| `UPDATE` | `EVT COMBAT <details>` | Broadcasted during attack rounds. |
+| `ROOM` | `CHAT` | `EVT ROOM CHAT CombatSys <details>` | Broadcasted during attack rounds. |
 | `STATS` | `PLAYERS` | `EVT STATS players=<count>` | Updated server player count. |
 
 If any command returns an `ERR` instead of `OK` (or if an event fails to broadcast to other connected clients), cross-reference the exact syntax with the RFC 42TAP specification document.
