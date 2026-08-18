@@ -1,6 +1,6 @@
 # Testing
 
-### Protocol Handshake
+## Protocol Handshake
 
 To verify that the initial greeting matches the RFC 42TAP specification:
 1. Start the server in one terminal: 
@@ -20,7 +20,7 @@ To verify that the initial greeting matches the RFC 42TAP specification:
    S: OK hello proto=1
    ```
 
-### ABNF Syntax Compliance
+## ABNF Syntax Compliance
 
 To verify that message formats strictly follow the [ABNF syntax definitions](https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form), test the server's error handling by sending malformed commands from the CLI client:
 
@@ -30,7 +30,7 @@ To verify that message formats strictly follow the [ABNF syntax definitions](htt
 
 The server should gracefully return `ERR` messages and never crash, proving that the ABNF syntax definitions are strictly enforced.
 
-### Commands Testing
+## Commands Testing
 
 | Category | Command | Description |
 | :--- | :--- | :--- |
@@ -53,10 +53,9 @@ The server should gracefully return `ERR` messages and never crash, proving that
 | Resource Interaction | `QUEST <action>` | Manages specific quest interactions. |
 | Resource Interaction | `QUESTS` | Lists active and completed quests. |
 
-### Events Testing
+## Events Testing
 
-While executing the above commands with multiple connected clients, verify that the server correctly pushes the following asynchronous events to the appropriate clients.
-
+### Mandatory Events
 | Category | Type | Event | Description |
 | :--- | :--- | :--- | :--- |
 | `ROOM` | `PRESENCE ENTER` | `EVT ROOM PRESENCE ENTER <username>` | Broadcasted when a player enters your room. |
@@ -70,11 +69,11 @@ While executing the above commands with multiple connected clients, verify that 
 | `ROOM` | `COMBAT` | `EVT ROOM COMBAT DEFEAT <username> <npc_id>` | Custom event broadcasted when a hostile NPC is defeated. |
 | `STATS` | `PLAYERS` | `EVT STATS players=<count>` | Updated server player count. |
 
-2 custom events have been added to the mandatory events list:
-
+### Custom Events
 | Category | Type | Event | Description |
 | :--- | :--- | :--- | :--- |
 | `ROOM` | `CUSTOM` | `EVT ROOM COMBAT <details>` | Broadcasted during attack rounds. |
 | `ROOM` | `CUSTOM` | `EVT ROOM RESPAWN The air shifts... <npc_id> has respawned!` | Broadcasted when a defeated NPC respawns after 30 seconds. |
 
-If any command returns an `ERR` instead of `OK` (or if an event fails to broadcast to other connected clients), cross-reference the exact syntax with the RFC 42TAP specification document.
+## Error Testing
+
