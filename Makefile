@@ -29,7 +29,7 @@ ECHO     := echo -e
 	run-server run-client run-client-gui \
 	deps build server cli gui run fmt vet \
 	test-concurrency test-race test-group \
-	test-coalescing test-fragmentation
+	test-coalescing test-fragmentation test-abuse
 
 # ------------------------------------------------------------
 #  all — default target
@@ -173,6 +173,7 @@ help:
 	@$(ECHO) "     $(CYAN)test-group$(RESET)         Run the group state volatility test"
 	@$(ECHO) "     $(CYAN)test-coalescing$(RESET)    Run the TCP packet coalescing test"
 	@$(ECHO) "     $(CYAN)test-fragmentation$(RESET) Run the TCP packet fragmentation test"
+	@$(ECHO) "     $(CYAN)test-abuse$(RESET)         Run the command flooding and abuse test"
 	@$(ECHO) ""
 
 # ------------------------------------------------------------
@@ -198,3 +199,7 @@ test-coalescing:
 test-fragmentation:
 	@$(ECHO) ">>> $(YELLOW)Running TCP Fragmentation Test...$(RESET)"
 	$(RUN) scripts/test_fragmentation.go
+
+test-abuse:
+	@$(ECHO) ">>> $(YELLOW)Running Server Abuse Test...$(RESET)"
+	$(RUN) scripts/test_abuse.go

@@ -179,9 +179,6 @@ func ServeClient(hub *Hub, conn net.Conn) {
 
 	client.hub.register <- client
 
-	go client.writePump()
-	go client.readPump()
-
 	hub.logger.Info("client_connected", "remote_addr", remoteAddr)
 
 	ip, _, err := net.SplitHostPort(remoteAddr)
@@ -196,4 +193,7 @@ func ServeClient(hub *Hub, conn net.Conn) {
 	}
 
 	client.reply([]byte(protocol.FormatOK("hello proto=1")))
+
+	go client.writePump()
+	go client.readPump()
 }
