@@ -195,4 +195,15 @@ OK bye
 > %
 ```
 
-# GUI Client
+# GUI Client Testing
+
+To ensure the web-based graphical client (`bin/tap-gui`) correctly parses JSON and visually renders the game state:
+
+1. **Setup**: Start the server (`make run-server`) and the GUI client (`make run-client-gui`).
+2. **Connect**: Open your browser to the local GUI address and use the interface to connect to the game.
+3. **Elements Checklist**: 
+   - [x] **Room details, items, NPCs, and exits** are accurately displayed in the UI panels.
+   - [x] **Chat** is visually separated by scope (Global, Room, Group) and renders properly.
+   - [x] **Buttons** for actions (like moving or looking) send the correct commands to the server and update the UI.
+   - [x] **Player counts** (both in the room and on the server globally) update in real-time as other clients connect and move around.
+4. **Performance**: Ensure the GUI remains fully responsive, scrollable, and clickable even while actively receiving heavy bursts of events (like combat).
