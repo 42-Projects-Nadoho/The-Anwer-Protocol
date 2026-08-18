@@ -1,6 +1,6 @@
 # Testing
 
-## Verifying Protocol Handshake
+### Protocol Handshake
 
 To verify that the initial greeting matches the RFC 42TAP specification:
 1. Start the server in one terminal: 
@@ -20,11 +20,7 @@ To verify that the initial greeting matches the RFC 42TAP specification:
    S: OK hello proto=1
    ```
 
-## Commands and Events Testing
-
-To confirm that the implementation behaves strictly as specified by the RFC, you must manually execute every mandatory command and verify the broadcasted events.
-
-### Verifying ABNF Syntax Compliance
+### ABNF Syntax Compliance
 
 To verify that message formats strictly follow the [ABNF syntax definitions](https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form), test the server's error handling by sending malformed commands from the CLI client:
 
