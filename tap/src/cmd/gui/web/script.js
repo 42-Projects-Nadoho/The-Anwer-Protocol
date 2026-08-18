@@ -230,6 +230,13 @@ function handleLine(line, username) {
     return;
   }
 
+  if (/^EVT ROOM PRESENCE (ENTER|LEAVE) /.test(line)) {
+    appendChat(`[System] ${line.slice(9)}`);
+    send('LOOK');
+    send('WHO');
+    return;
+  }
+
   if (line.startsWith('EVT GROUP LEAVE') && line.includes(username)) {
     myGroupID = '';
     groupStatus.textContent = 'Not in a group.';

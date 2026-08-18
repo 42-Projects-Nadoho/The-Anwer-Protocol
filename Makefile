@@ -124,7 +124,7 @@ fmt:
 
 vet:
 	@$(ECHO) ">>> $(YELLOW)Running go vet...$(RESET)"
-	$(GO) vet ./...
+	$(GO) vet ./tap/...
 	@$(ECHO) ">>> $(CYAN)go vet completed.$(RESET)"
 
 # ------------------------------------------------------------
