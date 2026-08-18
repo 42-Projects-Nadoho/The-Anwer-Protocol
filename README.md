@@ -54,7 +54,12 @@ The project utilizes `make` for dependency management, compilation, and executio
 > Read the detailed Building and Running documentation [here](docs/008-building-and-running.md).
 
 ## Architecture
-section explaining your server design choices (dispatcher/router vs inline handling, concurrency model, etc.).
+
+The Answer Protocol (TAP) is built around a robust client-server architecture written in Go, specifically designed to handle concurrent connections and real-time state synchronization over TCP. 
+
+- **Concurrency Model:** The server employs a `readPump` and `writePump` goroutine per client connection to handle non-blocking I/O.
+- **State Synchronization:** To prevent race conditions, the server acts as the single source of truth. All game state modifications (movement, combat, items) are serialized through a centralized `Hub` using a single operation channel (`Hub.do()`), eliminating the need for complex, scattered mutex locks.
+- **Event-Driven Dispatcher:** Rather than inline handling, incoming client commands are parsed and routed through a central dispatcher. This isolates responsibilities, making the backend highly maintainable and easily extensible for new commands or game features.
 
 > [!NOTE]
 > Read the detailed Architecture documentation [here](docs/001-architecture.md).
