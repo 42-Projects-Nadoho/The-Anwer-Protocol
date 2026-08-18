@@ -82,7 +82,7 @@ world:
         north: "destiny_islands"
       spawns:
         - npc_type: "shadow_heartless"
-          count: 2
+          count: 3
 
   npcs:
     yen_sid:
