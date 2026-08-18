@@ -45,7 +45,7 @@ func (c *Client) handleAttack(args []string) {
 						enemyDied = true
 						// Delete from room
 						delete(c.hub.roomNPCs[c.currentRoomID], id)
-						
+
 						c.hub.logger.Info("npc_defeated",
 							"username", c.username,
 							"npc_id", id,
@@ -57,7 +57,7 @@ func (c *Client) handleAttack(args []string) {
 						respawnRoom := c.currentRoomID
 						respawnMaxHP := npcData.Stats.HP
 						respawnType := npcType
-						
+
 						time.AfterFunc(30*time.Second, func() {
 							c.hub.do(func() {
 								if c.hub.roomNPCs[respawnRoom] == nil {
@@ -96,12 +96,11 @@ func (c *Client) handleAttack(args []string) {
 	if enemyDied {
 		msg := fmt.Sprintf("%s dealt %d damage to %s. The enemy is defeated!", c.username, dmgDealt, npcID)
 		c.hub.BroadcastRoom(c.currentRoomID, []byte(protocol.FormatEvt("ROOM", "COMBAT", msg)), nil)
-		
+
 		// Broadcast custom combat event for client parsing
 		customEvt := fmt.Sprintf("DEFEAT %s %s", c.username, npcID)
 		c.hub.BroadcastRoom(c.currentRoomID, []byte(protocol.FormatEvt("ROOM", "COMBAT", customEvt)), nil)
 
-		
 		var php int
 		c.hub.do(func() { php = c.hp })
 		resp := map[string]interface{}{
@@ -112,17 +111,17 @@ func (c *Client) handleAttack(args []string) {
 		}
 		data, _ := json.Marshal(resp)
 		c.reply([]byte(protocol.FormatOK(string(data))))
-		
+
 		// If player had a defeat quest for this, mark it (simple logic)
 		c.hub.do(func() {
 			c.quests = append(c.quests, "defeated:"+npcType)
 		})
 		c.checkQuestCompletion()
 	} else {
-		msg := fmt.Sprintf("%s dealt %d damage to %s. %s has %d HP left. %s counter-attacked for %d damage!", 
+		msg := fmt.Sprintf("%s dealt %d damage to %s. %s has %d HP left. %s counter-attacked for %d damage!",
 			c.username, dmgDealt, npcID, npcID, enemyHp, npcID, counterDmg)
 		c.hub.BroadcastRoom(c.currentRoomID, []byte(protocol.FormatEvt("ROOM", "COMBAT", msg)), nil)
-		
+
 		var php int
 		c.hub.do(func() { php = c.hp })
 		resp := map[string]interface{}{
@@ -142,12 +141,12 @@ func (c *Client) handleAttack(args []string) {
 			if c.hp <= 0 {
 				died = true
 				c.hp = 50 // Respawn with reduced health (e.g. 50 HP)
-				
+
 				// Move to start room
 				oldRoom = c.currentRoomID
 				c.currentRoomID = c.hub.worldMap.StartRoomID
 				nextRoomID = c.currentRoomID
-				
+
 				c.hub.logger.Info("player_died",
 					"username", c.username,
 					"killed_by", npcID,
@@ -160,7 +159,7 @@ func (c *Client) handleAttack(args []string) {
 			deathMsg := fmt.Sprintf("%s has been defeated and sent back to safety.", c.username)
 			c.hub.BroadcastGlobal([]byte(protocol.FormatEvt("GLOBAL", "CHAT", "CombatSys "+deathMsg)))
 			c.reply([]byte(protocol.FormatEvt("ROOM", "CHAT", "CombatSys You died! Respawning...")))
-			
+
 			// Broadcast presence leave to old room
 			c.hub.BroadcastRoom(
 				oldRoom,
@@ -173,7 +172,7 @@ func (c *Client) handleAttack(args []string) {
 				[]byte(protocol.FormatEvt("ROOM", "PRESENCE ENTER", c.username)),
 				c,
 			)
-			
+
 			// Send the look command to update their UI
 			c.handleLook()
 		}

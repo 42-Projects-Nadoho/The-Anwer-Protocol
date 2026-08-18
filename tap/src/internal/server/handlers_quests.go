@@ -83,7 +83,7 @@ func (c *Client) handleTalk(args []string) {
 					isAllCompleted = true
 				}
 			}
-			
+
 			if hasFoundWayfinder {
 				dialogue = []string{"Ah, you found it! Now, you must push back the darkness."}
 				questUnlocked = "defeat_shadow"
@@ -134,7 +134,7 @@ func (c *Client) handleTalk(args []string) {
 			c.hub.do(func() { c.hp = 100 })
 		}
 		var qName, qReward string
-		c.hub.do(func() { 
+		c.hub.do(func() {
 			qData := c.hub.worldMap.Quests[completedQuest]
 			qName = qData.Name
 			qReward = qData.Reward
@@ -212,7 +212,7 @@ func (c *Client) handleQuest(args []string) {
 			if !has {
 				questID = q
 				c.quests = append(c.quests, q)
-				
+
 				c.hub.logger.Info("quest_accepted",
 					"username", c.username,
 					"quest_id", questID,
@@ -246,7 +246,7 @@ func (c *Client) handleQuest(args []string) {
 
 func (c *Client) handleQuests() {
 	activeQuests := make([]map[string]interface{}, 0)
-	
+
 	c.checkQuestCompletion()
 
 	c.hub.do(func() {
@@ -304,7 +304,7 @@ func (c *Client) checkQuestCompletion() {
 			if !exists {
 				continue
 			}
-			
+
 			completed := false
 			if questData.Type == "fetch" {
 				for _, item := range c.inventory {

@@ -65,7 +65,7 @@ func (c *Client) handleDrop(args []string) {
 
 	var itemID string
 	var foundIdx = -1
-	
+
 	c.hub.do(func() {
 		for i, id := range c.inventory {
 			itemData, exists := c.hub.worldMap.Items[id]
