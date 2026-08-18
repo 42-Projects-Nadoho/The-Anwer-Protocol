@@ -83,8 +83,10 @@ section describing your world layout, room connections, NPC roles, and item dist
 section documenting your logging implementation, including log format, event types, output destinations, and how to monitor server behavior and detect abuse patterns.
 
 ## Group Contributions
-- **nadoho:** Server implementation and CLI client.
-- **spacotto:** GUI client and world design.
+| Memeber | Role |
+| :--- | :--- |
+| nadoho | Server Implementation and CLI Client |
+| spacotto | GUI Client and World Design |
 
 > [!NOTE]
 > Read the detailed Group Contributions documentation [here](docs/007-group-contributions.md).
