@@ -95,10 +95,10 @@ The server should gracefully return `ERR` messages and never crash, proving that
 | `902` | `NOT_AUTHENTICATED` | Attempt to execute any gameplay command before successfully connecting via `CONNECT`. |
 | `903` | `UNKNOWN_COMMAND` | Send a command format that the server's protocol parser does not recognise. |
 
-# Server Behaviour
+# Server & Client Testing
 This section focuses on testing the internal game logic, mechanics, and state management of the server. While protocol compliance ensures we speak the right language, server behaviour testing ensures the actual "game" functions correctly—validating that events don't leak across boundaries, configuration files are structurally sound, and gameplay mechanics work as intended.
 
-## World Data Validation Testing
+## Server: World Data Validation Testing
 
 The server actively validates the integrity of `data/world.yaml` during boot-up to ensure that no references point to missing entities. 
 
@@ -111,7 +111,7 @@ To test that this validation is working:
 
 You can perform similar tests by adding fake items to a room's `items` list or a fake NPC to a room's `spawns` list. The server will catch and reject all of them before booting up.
 
-## Event Isolation Testing
+## Server: Event Isolation Testing
 
 To ensure that room presence and room chat events do not "leak" to players in other locations across the world, perform the following multi-client test:
 
@@ -125,7 +125,7 @@ To ensure that room presence and room chat events do not "leak" to players in ot
 6. **Test Presence Arrival**: Have Alice move into the room Charlie is currently standing in.
    - **Expected Result**: Charlie should receive `EVT ROOM PRESENCE ENTER Alice`. Bob should receive **nothing**.
 
-## Disconnection Resilience Testing
+## Server: Disconnection Resilience Testing
 
 To verify that the server's broadcast loop does not block or crash if a client abruptly disconnects during heavy event traffic:
 
@@ -136,25 +136,22 @@ To verify that the server's broadcast loop does not block or crash if a client a
    - `Alice` should continue receiving combat events without any lag, interruption, or server crash. 
    - The server logs should show `Bob` disconnecting and being cleanly unregistered, proving that dead sockets do not stall the global event loop.
 
-# CLI Client Testing
-
-The CLI client (`bin/tap-cli`) must be tested to ensure it correctly handles user input and asynchronous server communication.
-
-## Interactive Commands
+## CLI Client: Interactive Commands
 To verify that players can organically send commands in real-time, test the CLI client's interactive prompt:
 1. **Setup**: Start the server (`make run-server`) and the CLI client (`make run-client`).
 2. **Connect**: Type `CONNECT <username>` and press Enter.
 3. **Interact**: Type any command at your own pace.
 4. **Expected Result**: Every time you press Enter, the CLI should instantly forward your command to the server.
 
-## Immediate Responses & Asynchronous Events
+## CLI Client: Immediate Responses & Asynchronous Events
 To verify that the CLI correctly handles the background goroutine reading from the TCP socket:
+1. **Setup**: Start the server (`make run-server`) and the CLI client (`make run-client`).
 1. **Setup**: Have `Alice` and `Bob` connected via two separate CLI tabs.
 2. **Test Immediate Responses**: Have `Alice` type `LOOK`. She should immediately receive the room description.
 3. **Test Asynchronous Events**: While `Alice` is idling and waiting for input at her terminal prompt, have `Bob` type `CHAT ROOM Hello!`.
 4. **Expected Result**: `Alice` should immediately see `EVT ROOM CHAT Bob Hello!` pop up on her screen asynchronously, without it interrupting her own pending prompt input.
 
-## Full Flow Integration
+## CLI Client: Full Flow Integration
 To verify that a full standard gameplay loop functions seamlessly from start to finish without breaking the client:
 
 **Flow**: Execute the following commands in order:
@@ -195,8 +192,7 @@ OK bye
 > %
 ```
 
-# GUI Client Testing
-
+## GUI Client
 To ensure the web-based graphical client (`bin/tap-gui`) correctly parses JSON and visually renders the game state:
 
 1. **Setup**: Start the server (`make run-server`) and the GUI client (`make run-client-gui`).
@@ -207,3 +203,13 @@ To ensure the web-based graphical client (`bin/tap-gui`) correctly parses JSON a
    - [x] **Buttons** for actions (like moving or looking) send the correct commands to the server and update the UI.
    - [x] **Player counts** (both in the room and on the server globally) update in real-time as other clients connect and move around.
 4. **Performance**: Ensure the GUI remains fully responsive, scrollable, and clickable even while actively receiving heavy bursts of events (like combat).
+
+## Edge Cases
+
+### Abrupt client disconnection
+
+### ???
+
+### ???
+
+### ???
