@@ -1,4 +1,4 @@
-# 009 - Testing Guide
+# Testing Guide
 
 This document serves as the comprehensive testing manual for The Answer Protocol (TAP). It outlines both the automated tests designed to verify network robustness and abuse prevention, as well as the manual verification steps needed to audit protocol compliance, multiplayer interactions, combat, and quest mechanics.
 
