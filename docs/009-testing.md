@@ -1,4 +1,4 @@
-# Testing
+# Protocol Compliance 
 
 ## Protocol Handshake
 
@@ -94,6 +94,8 @@ The server should gracefully return `ERR` messages and never crash, proving that
 | `902` | `NOT_AUTHENTICATED` | Attempt to execute any gameplay command before successfully connecting via `CONNECT`. |
 | `903` | `UNKNOWN_COMMAND` | Send a command format that the server's protocol parser does not recognise. |
 
+# Server Behaviour
+
 ## World Data Validation Testing
 
 The server actively validates the integrity of `data/world.yaml` during boot-up to ensure that no references point to missing entities. 
@@ -106,3 +108,17 @@ To test that this validation is working:
 5. Restore the broken exit back to normal after confirming.
 
 You can perform similar tests by adding fake items to a room's `items` list or a fake NPC to a room's `spawns` list. The server will catch and reject all of them before booting up.
+
+## Event Isolation Testing
+
+To ensure that room presence and room chat events do not "leak" to players in other locations across the world, perform the following multi-client test:
+
+1. **Setup**: Start the server and launch 3 separate client instances (e.g., three CLI tabs).
+2. **Connect**: Connect all 3 players: `CONNECT Alice`, `CONNECT Bob`, and `CONNECT Charlie`. By default, they will all spawn in the exact same starting room.
+3. **Isolate**: Have Charlie leave the room by typing `MOVE north` (or any valid exit). Charlie is now in a different room than Alice and Bob.
+4. **Test Room Chat**: Have Alice type `CHAT ROOM Hello everyone!`. 
+   - **Expected Result**: Bob should receive `EVT ROOM CHAT Alice Hello everyone!`. Charlie should receive **nothing**.
+5. **Test Presence Leak**: Have Alice type `MOVE south` (or any exit that Charlie is not in).
+   - **Expected Result**: Bob should receive `EVT ROOM PRESENCE LEAVE Alice`. Charlie should receive **nothing**.
+6. **Test Presence Arrival**: Have Alice move into the room Charlie is currently standing in.
+   - **Expected Result**: Charlie should receive `EVT ROOM PRESENCE ENTER Alice`. Bob should receive **nothing**.
