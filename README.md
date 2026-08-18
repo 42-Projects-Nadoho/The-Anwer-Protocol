@@ -84,10 +84,10 @@ The quest engine (implemented in [`tap/src/internal/server/handlers_quests.go`](
 > Read the detailed Quest System documentation [here](docs/004-quest-system.md).
 
 ## World Design
-section describing your world layout, room connections, NPC roles, and item distribution.\
+The game world is purely data-driven, defined entirely within [`tap/data/world.yaml`](tap/data/world.yaml). The map consists of an 8-room central loop (Destiny Islands, Traverse Town, Olympus Coliseum, etc.) with branching optional areas to encourage exploration. Rooms are populated dynamically with obtainable items (like Potions and Keyblades) and NPCs that serve distinct roles: `quest_giver`, `dialogue`, and `enemy`.
 
 > [!NOTE]
-> Read the detailed World Design documentation [here](docs/005-world%20-design.md).
+> Read the detailed World Design documentation [here](docs/005-world-design.md).
 
 ## Server Logging
 
