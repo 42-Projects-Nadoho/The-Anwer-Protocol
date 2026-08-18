@@ -3,6 +3,7 @@
 # ============================================================
 
 GO      ?= go
+RUN	:= $(GO) run
 BINDIR  := bin
 ADDR    ?= 127.0.0.1:4242
 HTTP    ?= 127.0.0.1:8080
@@ -23,7 +24,10 @@ ECHO     := echo -e
 #  RULES
 # ============================================================
 
-.PHONY: all deps install build server cli gui run run-server run-client run-client-gui lint fmt vet test clean help
+.PHONY: all install lint clean help \
+	run-server run-client run-client-gui \
+	deps build server cli gui run fmt vet \
+	test_concurrency test_race_conditions test_group_volatility
 
 # ------------------------------------------------------------
 #  all — default target
@@ -160,3 +164,19 @@ help:
 	@$(ECHO) "     $(BLUE)test$(RESET)             Run the Go test suite"
 	@$(ECHO) "     $(BLUE)clean$(RESET)            Remove build artifacts"
 	@$(ECHO) ""
+
+# ------------------------------------------------------------
+# Edge Case Test Scripts
+# ------------------------------------------------------------
+
+test-concurrency:
+	@$(ECHO) ">>> $(YELLOW)Running Concurrency Test...$(RESET)"
+	$(RUN) scripts/test_concurrency.go
+
+test-race:
+	@$(ECHO) ">>> $(YELLOW)Running Race Condition Test...$(RESET)"
+	$(RUN) scripts/test_race_conditions.go
+
+test-group:
+	@$(ECHO) ">>> $(YELLOW)Running Group Volatility Test...$(RESET)"
+	$(RUN) scripts/test_group_volatility.go

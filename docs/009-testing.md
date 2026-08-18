@@ -99,7 +99,6 @@ The server should gracefully return `ERR` messages and never crash, proving that
 This section focuses on testing the internal game logic, mechanics, and state management of the server. While protocol compliance ensures we speak the right language, server behaviour testing ensures the actual "game" functions correctly—validating that events don't leak across boundaries, configuration files are structurally sound, and gameplay mechanics work as intended.
 
 ## Server: World Data Validation Testing
-
 The server actively validates the integrity of `data/world.yaml` during boot-up to ensure that no references point to missing entities. 
 
 To test that this validation is working:
@@ -112,7 +111,6 @@ To test that this validation is working:
 You can perform similar tests by adding fake items to a room's `items` list or a fake NPC to a room's `spawns` list. The server will catch and reject all of them before booting up.
 
 ## Server: Event Isolation Testing
-
 To ensure that room presence and room chat events do not "leak" to players in other locations across the world, perform the following multi-client test:
 
 1. **Setup**: Start the server and launch 3 separate client instances (e.g., three CLI tabs).
@@ -126,7 +124,6 @@ To ensure that room presence and room chat events do not "leak" to players in ot
    - **Expected Result**: Charlie should receive `EVT ROOM PRESENCE ENTER Alice`. Bob should receive **nothing**.
 
 ## Server: Disconnection Resilience Testing
-
 To verify that the server's broadcast loop does not block or crash if a client abruptly disconnects during heavy event traffic:
 
 1. **Setup**: Start the server and launch 2 separate CLI client tabs. Connect `Alice` and `Bob`.
@@ -146,7 +143,7 @@ To verify that players can organically send commands in real-time, test the CLI 
 ## CLI Client: Immediate Responses & Asynchronous Events
 To verify that the CLI correctly handles the background goroutine reading from the TCP socket:
 1. **Setup**: Start the server (`make run-server`) and the CLI client (`make run-client`).
-1. **Setup**: Have `Alice` and `Bob` connected via two separate CLI tabs.
+1. **Connect**: Have `Alice` and `Bob` connected via two separate CLI tabs.
 2. **Test Immediate Responses**: Have `Alice` type `LOOK`. She should immediately receive the room description.
 3. **Test Asynchronous Events**: While `Alice` is idling and waiting for input at her terminal prompt, have `Bob` type `CHAT ROOM Hello!`.
 4. **Expected Result**: `Alice` should immediately see `EVT ROOM CHAT Bob Hello!` pop up on her screen asynchronously, without it interrupting her own pending prompt input.
@@ -154,6 +151,7 @@ To verify that the CLI correctly handles the background goroutine reading from t
 ## CLI Client: Full Flow Integration
 To verify that a full standard gameplay loop functions seamlessly from start to finish without breaking the client:
 
+**Setup**: Start the server (`make run-server`) and the CLI client (`make run-client`).
 **Flow**: Execute the following commands in order:
 ```bash
 > CONNECT Alice
@@ -205,11 +203,26 @@ To ensure the web-based graphical client (`bin/tap-gui`) correctly parses JSON a
 4. **Performance**: Ensure the GUI remains fully responsive, scrollable, and clickable even while actively receiving heavy bursts of events (like combat).
 
 ## Edge Cases
+All the edge cases apply to the server and both clients. So, you need to start the server (`make run-server`) and both clients (`make run-client` and `make run-client-gui`)
 
-### Abrupt client disconnection
+### Abrupt Client Disconnection
+The server's broadcast loop shall not block or crash if a client abruptly disconnects during heavy event traffic.
+2. **Setup**: Connect `Alice` and `Bob`.
+3. **Trigger Heavy Broadcasts**: Have `Alice` initiate combat with an enemy. This triggers a recurring 3-second broadcast to both players.
+4. **Abrupt Disconnect**: While the combat is running, aggressively kill `Bob`'s terminal (e.g., `Ctrl+C` or closing the window) instead of typing `QUIT`.
+5. **Expected Result**: `Alice` should continue receiving combat events without lag. The server logs should show `Bob` disconnecting and being cleanly unregistered, proving dead sockets do not stall the global event loop.
 
-### ???
+### High-Concurrency Input Handling
+The server shall correctly queue and process rapid-fire commands from multiple clients simultaneously without corrupting state or dropping responses. 
+- **Test:** Run `make test-concurrency` in a separate terminal while the server is running.
+- **Expected Result:** The server should not crash. Both clients should receive the correct number of responses back in exactly the order they were received. 
 
-### ???
+### Simultaneous Movement Race Conditions
+The server shall correctly broadcast presence events without race conditions when multiple clients move at the exact same time.
+- **Test:** Run `make test-race` in a separate terminal while the server is running.
+- **Expected Result**: `Charlie` (still in the starting room) should receive both `EVT ROOM PRESENCE LEAVE Alice` and `EVT ROOM PRESENCE LEAVE Bob` in rapid succession. Neither `Alice` nor `Bob` should receive each other's leave events because they exited the room at the same time.
 
-### ???
+### Group State Volatility
+The server shall ensure the group management data structure does not break or panic when members join and leave chaotically.
+- **Test:** Run `make test-group` in a separate terminal while the server is running.
+- **Expected Result**: The server should handle the locks cleanly. If `Alice` leaves first, `Bob`'s join command should return `ERR 401 NOT_IN_GROUP` (or similar) because the group dissolved. If `Bob` joins first, he should receive the `EVT GROUP JOIN Bob` followed immediately by `EVT GROUP LEAVE Alice`. The server should not panic or encounter a map-read concurrent exception.
