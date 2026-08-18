@@ -166,4 +166,30 @@ To verify that a full standard gameplay loop functions seamlessly from start to 
 > WHO
 > QUIT
 ```
-**Expected Result**: The CLI should handle every command, display the results cleanly, and finally safely terminate its process upon receiving the `QUIT` acknowledgement.
+
+**Expected Result**: 
+```bash
+make run-client
+>>> Building TAP CLI client...
+go build -o bin/tap-cli ./cmd/cli
+>>> Starting TAP CLI client...
+bin/tap-cli -addr 127.0.0.1:4242
+=== Welcome to TAP ===
+Connecting to 127.0.0.1:4242...
+Connected! You can now type your commands.
+OK hello proto=1
+> CONNECT Alice
+OK connected
+> LOOK
+OK {"room":{"id":"destiny_islands","name":"Destiny Islands","description":"A beautiful tropical island where journeys begin. The sun is shining brightly.","exits":{"east":"traverse_town","north":"secret_cave","south":"hollow_bastion"}},"players":["Alice"],"items":["potion"],"npcs":["yen_sid"]}
+> MOVE north
+OK room=secret_cave
+> CHAT GLOBAL Testing full flow   
+OK
+EVT GLOBAL CHAT Alice Testing full flow
+> WHO
+OK players=1 (Alice)
+> QUIT
+Goodbye!
+OK bye
+> %                                                                                                                                                                                                      ```
