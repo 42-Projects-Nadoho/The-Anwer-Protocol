@@ -124,3 +124,14 @@ To ensure that room presence and room chat events do not "leak" to players in ot
    - **Expected Result**: Bob should receive `EVT ROOM PRESENCE LEAVE Alice`. Charlie should receive **nothing**.
 6. **Test Presence Arrival**: Have Alice move into the room Charlie is currently standing in.
    - **Expected Result**: Charlie should receive `EVT ROOM PRESENCE ENTER Alice`. Bob should receive **nothing**.
+
+## Disconnection Resilience Testing
+
+To verify that the server's broadcast loop does not block or crash if a client abruptly disconnects during heavy event traffic:
+
+1. **Setup**: Start the server and launch 2 separate CLI client tabs. Connect `Alice` and `Bob`.
+2. **Trigger Broadcasts**: Have `Alice` initiate combat with an enemy (e.g., `ATTACK shadow_heartless_1`). This will trigger a recurring 3-second `EVT ROOM COMBAT` broadcast to both players.
+3. **Abrupt Disconnect**: While the combat is running (and events are rapidly broadcasting), abruptly kill `Bob`'s terminal (e.g., press `Ctrl+C` or completely close the terminal window) instead of typing `QUIT`.
+4. **Expected Result**: 
+   - `Alice` should continue receiving combat events without any lag, interruption, or server crash. 
+   - The server logs should show `Bob` disconnecting and being cleanly unregistered, proving that dead sockets do not stall the global event loop.
