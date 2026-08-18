@@ -90,8 +90,10 @@ The game world is purely data-driven, defined entirely within [`tap/data/world.y
 > Read the detailed World Design documentation [here](docs/005-world-design.md).
 
 ## Server Logging
+The server utilizes Go's built-in `log/slog` package to implement structured, JSON-formatted logging. This allows for centralized monitoring of all incoming commands, broadcasted events, and dispatched errors (handled in [`tap/src/internal/server/logging.go`](tap/src/internal/server/logging.go)). Regular traffic is logged at the `Info` level, while protocol violations and `ERR` responses are elevated to `Warn` for easy anomaly detection and abuse prevention.
 
-section documenting your logging implementation, including log format, event types, output destinations, and how to monitor server behavior and detect abuse patterns.
+> [!NOTE]
+> Read the detailed Server Logging documentation [here](docs/006-server-logging.md).
 
 ## Group Contributions
 | Memeber | Role |
