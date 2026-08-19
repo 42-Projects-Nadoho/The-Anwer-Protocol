@@ -40,6 +40,7 @@ func (c *Client) readPump() {
 				[]byte(protocol.FormatEvt("ROOM", "PRESENCE LEAVE", c.username)),
 				c,
 			)
+			c.hub.BroadcastGlobal([]byte(protocol.FormatEvt("GLOBAL", "PRESENCE LEAVE", c.username)))
 		}
 		c.hub.logger.Info("client_disconnected",
 			"username", c.username,
