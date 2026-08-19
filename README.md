@@ -59,7 +59,7 @@ The Answer Protocol (TAP) is built around a robust client-server architecture wr
 
 - **Concurrency Model:** The server employs a `readPump` and `writePump` goroutine per client connection to handle non-blocking I/O.
 - **State Synchronization:** To prevent race conditions, the server acts as the single source of truth. All game state modifications (movement, combat, items) are serialized through a centralized `Hub` using a single operation channel (`Hub.do()`), eliminating the need for complex, scattered mutex locks.
-- **Event-Driven Dispatcher:** Rather than inline handling, incoming client commands are parsed and routed through a central dispatcher. This isolates responsibilities, making the backend highly maintainable and easily extensible for new commands or game features.
+- **Command Dispatch:** Incoming client commands are parsed and routed inline via a `switch` in each connection's `readPump` goroutine, rather than through a separate dispatcher object — the subject explicitly allows either approach, and the command set is small enough that a switch stays readable without the extra indirection.
 
 > [!NOTE]
 > Read the detailed Architecture documentation [here](docs/001-architecture.md).

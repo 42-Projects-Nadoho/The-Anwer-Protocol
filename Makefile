@@ -128,12 +128,26 @@ vet:
 	@$(ECHO) ">>> $(CYAN)go vet completed.$(RESET)"
 
 # ------------------------------------------------------------
-#  test — run the Go test suite
+#  test — run the Go test suite, then the integration scripts
+#  against a live server (started and torn down automatically)
 # ------------------------------------------------------------
 
-test:
-	@$(ECHO) ">>> $(YELLOW)Running Go test suite...$(RESET)"
+test: server
+	@$(ECHO) ">>> $(YELLOW)Running Go unit test suite...$(RESET)"
 	$(GO) test ./...
+	@$(ECHO) ">>> $(YELLOW)Running integration scripts against a live server...$(RESET)"
+	@( \
+		$(BINDIR)/tap-server -addr $(ADDR) -world $(WORLD) & \
+		SERVER_PID=$$!; \
+		trap "kill $$SERVER_PID 2>/dev/null" EXIT; \
+		sleep 1; \
+		($(ECHO) "$(CYAN)[1/6] TCP Coalescing$(RESET)" && $(GO) run ./scripts/test_coalescing) && \
+		($(ECHO) "$(CYAN)[2/6] TCP Fragmentation$(RESET)" && $(GO) run ./scripts/test_fragmentation) && \
+		($(ECHO) "$(CYAN)[3/6] Concurrency$(RESET)" && $(GO) run ./scripts/test_concurrency) && \
+		($(ECHO) "$(CYAN)[4/6] Race Conditions$(RESET)" && $(GO) run ./scripts/test_race_conditions) && \
+		($(ECHO) "$(CYAN)[5/6] Group Volatility$(RESET)" && $(GO) run ./scripts/test_group_volatility) && \
+		($(ECHO) "$(CYAN)[6/6] Abuse / Flooding$(RESET)" && $(GO) run ./scripts/test_abuse) \
+	)
 	@$(ECHO) ">>> $(CYAN)Tests completed.$(RESET)"
 
 # ------------------------------------------------------------
@@ -182,24 +196,24 @@ help:
 
 test-concurrency:
 	@$(ECHO) ">>> $(YELLOW)Running Concurrency Test...$(RESET)"
-	$(RUN) scripts/test_concurrency.go
+	$(RUN) ./scripts/test_concurrency
 
 test-race:
 	@$(ECHO) ">>> $(YELLOW)Running Race Condition Test...$(RESET)"
-	$(RUN) scripts/test_race_conditions.go
+	$(RUN) ./scripts/test_race_conditions
 
 test-group:
 	@$(ECHO) ">>> $(YELLOW)Running Group Volatility Test...$(RESET)"
-	$(RUN) scripts/test_group_volatility.go
+	$(RUN) ./scripts/test_group_volatility
 
 test-coalescing:
 	@$(ECHO) ">>> $(YELLOW)Running TCP Coalescing Test...$(RESET)"
-	$(RUN) scripts/test_coalescing.go
+	$(RUN) ./scripts/test_coalescing
 
 test-fragmentation:
 	@$(ECHO) ">>> $(YELLOW)Running TCP Fragmentation Test...$(RESET)"
-	$(RUN) scripts/test_fragmentation.go
+	$(RUN) ./scripts/test_fragmentation
 
 test-abuse:
 	@$(ECHO) ">>> $(YELLOW)Running Server Abuse Test...$(RESET)"
-	$(RUN) scripts/test_abuse.go
+	$(RUN) ./scripts/test_abuse
