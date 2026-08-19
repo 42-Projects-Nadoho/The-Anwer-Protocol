@@ -71,6 +71,13 @@ document.querySelectorAll('.tab-btn').forEach((btn) => {
 // --- Connection ---
 let ws = null;
 let myGroupID = '';
+let whoPollInterval = null;
+let whoQueue = []; // tracks whether each in-flight WHO was silent (background refresh) or explicit (WHO button)
+
+function sendWho(silent) {
+  whoQueue.push(silent);
+  send('WHO');
+}
 
 document.getElementById('connect-form').addEventListener('submit', (event) => {
   event.preventDefault();
@@ -100,6 +107,8 @@ function openConnection(username) {
   };
 
   ws.onclose = () => {
+    clearInterval(whoPollInterval);
+    whoPollInterval = null;
     if (!gameView.classList.contains('hidden')) {
       gameView.classList.add('hidden');
       loginView.classList.remove('hidden');
@@ -147,12 +156,12 @@ function handleLine(line, username) {
       } else if (data.hp !== undefined) {
         playerHp.textContent = `HP: ${data.hp}/${data.max_hp} (${data.status})`;
       } else if (data.quest_id !== undefined) {
-        appendChat(`[System] Quest: ${data.quest_id} - ${data.description}`);
+        appendLog(`[System] Quest: ${data.quest_id} - ${data.description}`);
         send('QUESTS');
       } else if (data.npc !== undefined) {
-        appendChat(`[${data.npc}]: ${data.dialogue}`);
+        appendLog(`[${data.npc}]: ${data.dialogue}`);
       } else if (data.attacker_hp !== undefined) {
-        appendChat(`[Combat] You hit for ${data.damage}. Target HP: ${data.target_hp}. Your HP: ${data.attacker_hp}. Status: ${data.status}`);
+        appendLog(`[Combat] You hit for ${data.damage}. Target HP: ${data.target_hp}. Your HP: ${data.attacker_hp}. Status: ${data.status}`);
         send('STATUS');
         if (data.status === 'victory') {
           send('LOOK');
@@ -183,14 +192,14 @@ function handleLine(line, username) {
   }
 
   if (line.startsWith('OK taken=')) {
-    appendChat(`[System] Item taken.`);
+    appendLog(`[System] Item taken.`);
     send('LOOK');
     send('INVENTORY');
     return;
   }
 
   if (line.startsWith('OK dropped=')) {
-    appendChat(`[System] Item dropped.`);
+    appendLog(`[System] Item dropped.`);
     send('LOOK');
     send('INVENTORY');
     return;
@@ -204,7 +213,9 @@ function handleLine(line, username) {
   if (line.startsWith('OK players=')) {
     const text = line.slice('OK players='.length);
     whoCount.textContent = 'Players online: ' + text.split(' ')[0]; // Just the count for the top bar
-    appendChat(`[System] Players online: ${text}`);
+    if (!whoQueue.shift()) {
+      appendLog(`[System] Players online: ${text}`);
+    }
     return;
   }
 
@@ -226,14 +237,19 @@ function handleLine(line, username) {
   }
 
   if (/^EVT ROOM (COMBAT|RESPAWN) /.test(line)) {
-    appendChat(`[System] ${line.slice(9)}`);
+    appendLog(`[System] ${line.slice(9)}`);
     return;
   }
 
   if (/^EVT ROOM PRESENCE (ENTER|LEAVE) /.test(line)) {
-    appendChat(`[System] ${line.slice(9)}`);
+    appendLog(`[System] ${line.slice(9)}`);
     send('LOOK');
-    send('WHO');
+    sendWho(true);
+    return;
+  }
+
+  if (/^EVT GLOBAL PRESENCE (ENTER|LEAVE) /.test(line)) {
+    sendWho(true);
     return;
   }
 
@@ -251,6 +267,9 @@ function showGameView() {
   send('STATUS');
   send('INVENTORY');
   send('QUESTS');
+  sendWho(true);
+  clearInterval(whoPollInterval);
+  whoPollInterval = setInterval(() => sendWho(true), 5000);
 }
 
 function renderInventory(items) {
@@ -434,5 +453,5 @@ document.getElementById('group-join-form').addEventListener('submit', (event) =>
 });
 
 // --- Top bar actions ---
-document.getElementById('who-btn').addEventListener('click', () => send('WHO'));
+document.getElementById('who-btn').addEventListener('click', () => sendWho(false));
 document.getElementById('quit-btn').addEventListener('click', () => send('QUIT'));

@@ -32,6 +32,7 @@ func (c *Client) handleConnect(args []string) {
 		[]byte(protocol.FormatEvt("ROOM", "PRESENCE ENTER", c.username)),
 		c,
 	)
+	c.hub.BroadcastGlobal([]byte(protocol.FormatEvt("GLOBAL", "PRESENCE ENTER", c.username)))
 }
 
 // Items/NPCs stay empty until that system exists (spacotto's lot).
